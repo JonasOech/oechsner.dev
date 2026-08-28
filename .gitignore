@@ -21,3 +21,8 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Claude Code worktrees. Each one holds a .git file, so `git add -A` records the
+# directory as a gitlink with no .gitmodules entry — which fails the Cloudflare
+# build with "No url found for submodule path".
+.claude/worktrees/
