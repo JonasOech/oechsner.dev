@@ -1,6 +1,6 @@
 ---
 title: Reproducing a neurosymbolic model for RPM problems
-date: '2026-08-20'
+date: '2026-05-20'
 summary: >-
   Six months of trying to rebuild a published three-stage reasoning pipeline from the paper
   alone. What the paper said, what it left out, and where the accuracy actually came from.

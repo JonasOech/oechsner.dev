@@ -43,17 +43,30 @@
 				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
 			{/if}
 
-			<p class="meta enter" style="--i: 4">
+			<p class="meta lead__meta enter" style="--i: 4">
 				<time datetime={lead.date}>{formatDate(lead.date)}</time>
 				<span class="lead__dot" aria-hidden="true">·</span>
 				{lead.readingMinutes} min read
 			</p>
 
+			<!-- The visible affordance. Not a tab stop: the title above is the accessible
+			     link to the same post, and three tab stops to one destination is noise. -->
+			<a
+				class="lead__cta enter"
+				style="--i: 5"
+				href="/blog/{lead.slug}"
+				tabindex="-1"
+				aria-hidden="true"
+			>
+				Read the post
+				<Icon name="arrow-right" size={15} />
+			</a>
+
 			{#if lead.cover}
 				<!-- Decorative: the title above is the accessible link to the same post. -->
 				<a
 					class="lead__media enter"
-					style="--i: 5"
+					style="--i: 2"
 					href="/blog/{lead.slug}"
 					tabindex="-1"
 					aria-hidden="true"
@@ -62,25 +75,12 @@
 						class="lead__cover"
 						src={lead.cover}
 						alt=""
-						width="1200"
-						height="675"
+						width="720"
+						height="540"
 						decoding="async"
 					/>
 				</a>
 			{/if}
-
-			<!-- The visible affordance. Not a tab stop: the title above is the accessible
-			     link to the same post, and three tab stops to one destination is noise. -->
-			<a
-				class="lead__cta enter"
-				style="--i: 6"
-				href="/blog/{lead.slug}"
-				tabindex="-1"
-				aria-hidden="true"
-			>
-				Read the post
-				<Icon name="arrow-right" size={15} />
-			</a>
 		</article>
 	{/if}
 
@@ -137,10 +137,21 @@
 		color: var(--text-secondary);
 	}
 
+	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
+	   than source order, so the mobile stack can put the image between the meta line
+	   and the call to action without reordering the markup. */
 	.lead {
 		display: grid;
-		gap: var(--s-4);
-		max-width: var(--measure-prose);
+		grid-template-columns: minmax(0, 1fr) 360px;
+		grid-template-areas:
+			'eyebrow media'
+			'title   media'
+			'summary media'
+			'meta    media'
+			'cta     media';
+		column-gap: var(--s-7);
+		row-gap: var(--s-4);
+		align-items: start;
 		padding-top: var(--s-6);
 	}
 
@@ -148,11 +159,15 @@
 	   .hero-title. Left-aligned, not centred — it is content now, and content on this
 	   site aligns to the rail. */
 	.lead__title {
-		max-width: 20ch;
+		grid-area: title;
+		/* Smaller than the old full-bleed hero, but still the largest type on the site —
+		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
+		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
 		margin: 0;
 	}
 
 	.lead__eyebrow {
+		grid-area: eyebrow;
 		font-family: var(--font-display);
 		font-size: 0.8125rem;
 		font-weight: 400;
@@ -187,6 +202,7 @@
 		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
 		   bottom rule sits under the words rather than spanning the whole measure. */
 		justify-self: start;
+		grid-area: cta;
 		margin-top: var(--s-2);
 		min-height: 44px;
 		font-size: 0.875rem;
@@ -224,10 +240,14 @@
 	}
 
 	.lead__summary {
-		font-size: 1.0625rem;
+		grid-area: summary;
+		font-size: 1rem;
 		line-height: 1.7;
 		color: var(--text-secondary);
-		max-width: var(--measure);
+	}
+
+	.lead__meta {
+		grid-area: meta;
 	}
 
 	.lead__dot {
@@ -236,8 +256,9 @@
 	}
 
 	.lead__media {
+		grid-area: media;
+		align-self: start;
 		display: block;
-		margin-top: var(--s-3);
 		border-radius: 6px;
 		overflow: hidden;
 		border: 1px solid var(--line);
@@ -245,7 +266,7 @@
 
 	.lead__cover {
 		width: 100%;
-		aspect-ratio: 16 / 9;
+		aspect-ratio: 4 / 3;
 		object-fit: cover;
 		transition: transform 480ms var(--ease-out);
 	}
@@ -313,12 +334,30 @@
 		box-shadow: var(--focus-ring);
 	}
 
+	@media (max-width: 1023px) {
+		.lead {
+			grid-template-columns: minmax(0, 1fr) 260px;
+			column-gap: var(--s-6);
+		}
+	}
+
 	@media (max-width: 767px) {
 		.byline {
 			padding-top: var(--s-6);
 		}
-		.lead__title {
-			max-width: none;
+		/* Stack, with the cover sitting between the meta line and the CTA. */
+		.lead {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-areas:
+				'eyebrow'
+				'title'
+				'summary'
+				'meta'
+				'media'
+				'cta';
+		}
+		.lead__cover {
+			aspect-ratio: 16 / 9;
 		}
 	}
 </style>
