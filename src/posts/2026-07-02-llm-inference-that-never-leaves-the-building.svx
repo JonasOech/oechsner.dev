@@ -1,0 +1,78 @@
+---
+title: LLM inference that never leaves the building
+date: '2026-07-02'
+summary: >-
+  Classifying survey questions against Article 9 GDPR means the data is, by definition, the
+  data you are not allowed to send anywhere. Notes on building the whole thing on-premise.
+tags: ['gdpr', 'llm', 'docker']
+cover: /img/cover-onprem.svg
+coverAlt: Three stacked containers inside a closed network boundary, with the route to the internet blocked
+---
+
+> **This is starter content.** Replace it with your own write-up.
+
+Article 9 of the GDPR names the *special categories* of personal data: racial or ethnic origin,
+political opinions, religious beliefs, trade union membership, genetic and biometric data,
+health, sex life, sexual orientation. Processing them is prohibited by default, with a short
+list of exceptions.
+
+Social science surveys ask about all nine of those, constantly. A longitudinal study asks about
+health, income, education, religion, and family structure in a single wave. Somebody has to go
+through the item bank and flag which questions touch Article 9 — and at the Leibniz Institute
+for Educational Trajectories, that somebody was a person with a spreadsheet.
+
+## The obvious solution is the illegal one
+
+An LLM is very good at this task. The reasoning is short, the categories are well defined, and
+the input is a sentence.
+
+The obvious implementation — call a hosted API — is exactly the thing you cannot do. The
+questions themselves are institute research material, and the reason you are classifying them
+is that they are sensitive. Shipping them to a third-party endpoint to find out whether they
+are sensitive is a circular argument that a data protection officer will not enjoy.
+
+So: everything local.
+
+## Three containers
+
+```yaml
+services:
+  web:
+    build: .
+    environment:
+      DATABASE_URL: postgres://app:$POSTGRES_PASSWORD@db:5432/classifier
+      OLLAMA_HOST: http://ollama:11434
+    depends_on: [db, ollama]
+
+  db:
+    image: postgres:17
+    volumes: ['pgdata:/var/lib/postgresql/data']
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes: ['models:/root/.ollama']
+    # No published ports. Reachable only on the compose network.
+```
+
+The last line is the important one. `ollama` has no `ports:` entry, so nothing outside the
+compose network can reach it — including anything that gets compromised on the host later.
+
+## What surprised me
+
+**Structured output matters more than model size.** A 7B model asked for free text was worse
+than a 7B model constrained to a JSON schema of the nine categories plus a confidence. Most of
+what looked like reasoning failure was formatting failure.
+
+**Latency stopped being a UX problem once the work was batched.** Reviewers do not classify one
+question; they classify a wave. Queueing a few hundred items and mailing a result changed the
+requirement from "sub-second" to "before lunch".
+
+**The audit trail is the product.** The classifier's output is a recommendation. What the
+institute actually needed was a record: which model version, which prompt, which day, which
+human confirmed it. That is a Postgres schema problem, not a machine learning problem, and it
+took longer than the model work.
+
+## What I would do differently
+
+Start with the schema and the audit log, then bolt on the model. I did it in the other order,
+and rewrote the interesting half twice.

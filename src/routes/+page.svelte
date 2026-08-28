@@ -1,203 +1,104 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import Seo from '$lib/components/Seo.svelte';
+	import Avatar from '$lib/components/Avatar.svelte';
+	import Icon from '$lib/components/Icon.svelte';
+	import Rail from '$lib/components/Rail.svelte';
+	import ArticleRow from '$lib/components/ArticleRow.svelte';
+	import { site, cvPath } from '$lib/data/site';
+	import { about } from '$lib/data/resume';
+	import { posts } from '$lib/posts';
 
-	type Hello = {
-		siteName: string;
-		channel: string;
-		servedAt: string;
-		edge: {
-			colo: string;
-			country: string | null;
-			city: string | null;
-			httpProtocol: string;
-			tlsVersion: string;
-		} | null;
-	};
-
-	let state = $state<{ status: 'loading' | 'ok' | 'error'; data?: Hello; error?: string }>({
-		status: 'loading'
-	});
-
-	async function load() {
-		state = { status: 'loading' };
-		try {
-			const res = await fetch('/api/hello');
-			if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-			state = { status: 'ok', data: await res.json() };
-		} catch (e) {
-			state = { status: 'error', error: e instanceof Error ? e.message : String(e) };
-		}
-	}
-
-	onMount(load);
+	const latest = posts.slice(0, 4);
 </script>
 
-<svelte:head>
-	<title>oechsner.dev — SvelteKit on Cloudflare Pages</title>
-	<meta name="description" content="A small SvelteKit demo deployed to Cloudflare Pages." />
-</svelte:head>
+<Seo title={site.name} />
 
-<main>
-	<header>
-		<p class="eyebrow">SvelteKit · Cloudflare Pages</p>
-		<h1>It runs at the edge.</h1>
-		<p class="lede">
-			The page below is static. The card is filled in by <code>/api/hello</code>, a SvelteKit
-			server route that the Cloudflare adapter compiles into the Pages Worker.
-		</p>
-	</header>
-
-	<section class="card" aria-live="polite">
-		{#if state.status === 'loading'}
-			<p class="muted">Asking the Worker…</p>
-		{:else if state.status === 'error'}
-			<p class="err">Could not reach the Worker: {state.error}</p>
-		{:else if state.data}
-			<dl>
-				<div><dt>Site</dt><dd>{state.data.siteName}</dd></div>
-				<div><dt>Channel</dt><dd>{state.data.channel}</dd></div>
-				<div><dt>Served at</dt><dd>{state.data.servedAt}</dd></div>
-				{#if state.data.edge}
-					<div><dt>Data centre</dt><dd>{state.data.edge.colo}</dd></div>
-					<div>
-						<dt>Request from</dt>
-						<dd>{[state.data.edge.city, state.data.edge.country].filter(Boolean).join(', ') || '—'}</dd>
-					</div>
-					<div><dt>Protocol</dt><dd>{state.data.edge.httpProtocol} · {state.data.edge.tlsVersion}</dd></div>
-				{:else}
-					<div>
-						<dt>Edge</dt>
-						<dd class="muted">not on the Workers runtime — try <code>npm run preview</code></dd>
-					</div>
-				{/if}
-			</dl>
-		{/if}
-		<button onclick={load} disabled={state.status === 'loading'}>Ask again</button>
+<div class="container">
+	<section class="hero">
+		<div class="enter" style="--i: 0"><Avatar size={64} /></div>
+		<p class="eyebrow enter" style="--i: 1">{site.eyebrow}</p>
+		<h1 class="hero-title enter" style="--i: 2">{site.headline}</h1>
+		<div class="btn-row hero__actions enter" style="--i: 3">
+			<a class="btn btn--primary" href="/contact">
+				<Icon name="arrow-right" />
+				Get In Touch
+			</a>
+			<a class="btn btn--secondary" href={cvPath} download>
+				<Icon name="arrow-down" />
+				Download CV
+			</a>
+		</div>
 	</section>
 
-	<footer>
-		<p>
-			Push to <code>main</code> and Cloudflare Pages builds and deploys this itself. See
-			<code>README.md</code>.
+	<Rail label="About" id="about">
+		<div class="stack">
+			<p>{about[0]}</p>
+			<p>{about[2]}</p>
+		</div>
+		<p class="about__more">
+			<a class="link" href="/about">Read the longer version</a>
 		</p>
-	</footer>
-</main>
+	</Rail>
+
+	{#if latest.length}
+		<Rail label="Articles" id="articles" wide>
+			<div class="articles">
+				{#each latest as post (post.slug)}
+					<ArticleRow {post} />
+				{/each}
+			</div>
+			<div class="articles__more">
+				<a class="btn btn--secondary" href="/blog">
+					<Icon name="arrow-right" />
+					Read more
+				</a>
+			</div>
+		</Rail>
+	{/if}
+</div>
 
 <style>
-	main {
-		max-width: 44rem;
-		margin: 0 auto;
-		padding: 4rem 1.5rem;
+	.hero {
 		display: grid;
-		gap: 2.5rem;
+		justify-items: center;
+		text-align: center;
+		gap: var(--s-5);
+		padding-top: var(--s-10);
+		padding-bottom: var(--gap-hero);
 	}
 
-	.eyebrow {
-		margin: 0 0 0.75rem;
-		font-size: 0.8rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-		color: var(--muted);
+	.hero-title {
+		max-width: 18ch;
 	}
 
-	h1 {
-		margin: 0 0 1rem;
-		font-size: clamp(2rem, 6vw, 3rem);
-		line-height: 1.1;
-		letter-spacing: -0.02em;
+	.hero__actions {
+		margin-top: var(--s-2);
+		justify-content: center;
 	}
 
-	.lede {
-		margin: 0;
-		color: var(--muted);
-		font-size: 1.05rem;
-		line-height: 1.6;
+	.about__more {
+		margin-top: var(--s-5);
 	}
 
-	.card {
-		border: 1px solid var(--line);
-		border-radius: 12px;
-		padding: 1.5rem;
-		background: var(--panel);
+	.articles {
 		display: grid;
-		gap: 1.25rem;
+		gap: var(--s-2);
+		max-width: var(--measure);
 	}
 
-	dl {
-		margin: 0;
-		display: grid;
-		gap: 0.6rem;
+	.articles__more {
+		display: flex;
+		justify-content: center;
+		margin-top: var(--s-7);
+		max-width: var(--measure);
 	}
 
-	dl > div {
-		display: grid;
-		grid-template-columns: 9rem 1fr;
-		gap: 1rem;
-		align-items: baseline;
-	}
-
-	@media (max-width: 30rem) {
-		dl > div {
-			grid-template-columns: 1fr;
-			gap: 0.15rem;
+	@media (max-width: 767px) {
+		.hero {
+			padding-top: var(--s-7);
 		}
-	}
-
-	dt {
-		color: var(--muted);
-		font-size: 0.85rem;
-	}
-
-	dd {
-		margin: 0;
-		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-		font-size: 0.9rem;
-		overflow-wrap: anywhere;
-	}
-
-	button {
-		justify-self: start;
-		font: inherit;
-		font-size: 0.9rem;
-		padding: 0.5rem 1rem;
-		border-radius: 8px;
-		border: 1px solid var(--line);
-		background: transparent;
-		color: inherit;
-		cursor: pointer;
-	}
-
-	button:hover:not(:disabled) {
-		background: var(--line);
-	}
-
-	button:disabled {
-		opacity: 0.5;
-		cursor: default;
-	}
-
-	.muted {
-		color: var(--muted);
-		margin: 0;
-	}
-
-	.err {
-		color: #e5484d;
-		margin: 0;
-	}
-
-	footer p {
-		margin: 0;
-		color: var(--muted);
-		font-size: 0.85rem;
-	}
-
-	code {
-		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-		font-size: 0.9em;
-		background: var(--panel);
-		border: 1px solid var(--line);
-		border-radius: 4px;
-		padding: 0.05em 0.35em;
+		.hero-title {
+			max-width: none;
+		}
 	}
 </style>

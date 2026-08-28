@@ -1,49 +1,32 @@
 <script lang="ts">
+	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
+	import Header from '$lib/components/Header.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<meta name="theme-color" content="#0e0f12" />
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 </svelte:head>
 
-{@render children()}
+<a class="skip-link" href="#main">Skip to content</a>
+
+<Header />
+
+<main id="main" tabindex="-1">
+	{@render children()}
+</main>
+
+<Footer />
 
 <style>
-	:global(:root) {
-		--bg: #ffffff;
-		--fg: #16181d;
-		--muted: #6b7280;
-		--line: #e5e7eb;
-		--panel: #f9fafb;
-		color-scheme: light dark;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		:global(:root) {
-			--bg: #0e1013;
-			--fg: #e8eaed;
-			--muted: #9aa0a6;
-			--line: #24272c;
-			--panel: #16181c;
-		}
-	}
-
-	:global(body) {
-		margin: 0;
-		background: var(--bg);
-		color: var(--fg);
-		font-family:
-			system-ui,
-			-apple-system,
-			'Segoe UI',
-			Roboto,
-			sans-serif;
-		-webkit-font-smoothing: antialiased;
-	}
-
-	:global(a) {
-		color: inherit;
+	main {
+		display: block;
+		outline: none;
 	}
 </style>

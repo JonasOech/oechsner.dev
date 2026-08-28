@@ -1,0 +1,75 @@
+/**
+ * Single source of truth for identity, navigation and contact details.
+ *
+ * Deliberately excludes the postal address and phone number that appear in
+ * `resume.tex` — those stay inside the downloadable PDF and off any crawlable page.
+ */
+
+export const site = {
+	name: 'Jonas Öchsner',
+	shortName: 'oechsner.dev',
+	url: 'https://oechsner.dev',
+	eyebrow: "I'm Jonas Öchsner,",
+	headline: 'Welcome To My Portfolio.',
+	role: 'B.Sc. Applied Computer Science, Universität Bamberg',
+	description:
+		'Applied computer science student in Bamberg, building machine-learning and data-protection systems. Writing about ML, distributed systems and the software behind them.',
+	locale: 'en',
+	startYear: 2026
+} as const;
+
+export type NavItem = { href: string; label: string };
+
+export const nav: NavItem[] = [
+	{ href: '/', label: 'Home' },
+	{ href: '/about', label: 'About' },
+	{ href: '/blog', label: 'Blog' },
+	{ href: '/contact', label: 'Contact' }
+];
+
+export const footerNav: NavItem[] = [
+	{ href: '/', label: 'Home' },
+	{ href: '/about', label: 'About' },
+	{ href: '/blog', label: 'Articles' },
+	{ href: '/contact', label: 'Contact' }
+];
+
+/**
+ * Contact channels rendered on /contact and in the footer.
+ *
+ * TODO(jonas): replace the two placeholder handles below with your real ones,
+ * or delete the entry entirely — the page renders whatever is in this list.
+ */
+export const contacts = [
+	{
+		label: 'Email',
+		value: 'jonasoechsner06@gmail.com',
+		href: 'mailto:jonasoechsner06@gmail.com',
+		icon: 'mail' as const,
+		primary: true
+	},
+	{
+		label: 'University',
+		value: 'j_oechsner@stud.uni-bamberg.de',
+		href: 'mailto:j_oechsner@stud.uni-bamberg.de',
+		icon: 'mail' as const,
+		primary: false
+	},
+	{
+		label: 'GitHub',
+		value: '@jonasoechsner',
+		href: 'https://github.com/jonasoechsner',
+		icon: 'github' as const,
+		primary: false
+	},
+	{
+		label: 'LinkedIn',
+		value: 'in/jonas-oechsner',
+		href: 'https://www.linkedin.com/in/jonas-oechsner',
+		icon: 'linkedin' as const,
+		primary: false
+	}
+];
+
+/** Compiled from `resume.tex` — see `npm run cv`. */
+export const cvPath = '/resume-en.pdf';

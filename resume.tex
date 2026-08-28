@@ -1,0 +1,256 @@
+% !TEX root = resume-en.tex
+
+\documentclass[letterpaper,11pt]{article}
+
+%----------LANGUAGE SWITCH----------
+% This file holds both language versions; it is not compiled directly.
+%   pdflatex resume-en  -> resume-en.pdf (English)
+%   pdflatex resume-de  -> resume-de.pdf (Deutsch)
+% The drivers select the language by defining \GERMANCV or not.
+\newif\ifgerman
+\ifdefined\GERMANCV\germantrue\else\germanfalse\fi
+
+\usepackage{latexsym}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\ifgerman
+  \usepackage[ngerman]{babel}
+\else
+  \usepackage[english]{babel}
+\fi
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+
+% \bi{English}{Deutsch} -- picks the language selected by the switch above
+\newcommand{\bi}[2]{\ifgerman#2\else#1\fi}
+
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+%----------HEADING----------
+% \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+%   \textbf{\href{http://sourabhbajaj.com/}{\Large Sourabh Bajaj}} & Email : \href{mailto:sourabh@sourabhbajaj.com}{sourabh@sourabhbajaj.com}\\
+%   \href{http://sourabhbajaj.com/}{http://www.sourabhbajaj.com} & Mobile : +1-123-456-7890 \\
+% \end{tabular*}
+
+\begin{center}
+    \textbf{\Huge \scshape Jonas Christian Öchsner} \\ \vspace{3pt}
+    \small Schleifweg 23, 97273 Kürnach, \bi{Germany}{Deutschland} \\ \vspace{2pt}
+    \small +49 1573 5544890 $|$ \href{mailto:jonasoechsner06@gmail.com}{\underline{jonasoechsner06@gmail.com}} $|$
+    \href{mailto:j_oechsner@stud.uni-bamberg.de}{\underline{j\_oechsner@stud.uni-bamberg.de}}
+\end{center}
+
+
+%-----------EDUCATION-----------
+\section{\bi{Education}{Ausbildung}}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {TU Dublin}{Dublin, \bi{Ireland}{Irland}}
+      {\bi{ERASMUS Exchange (Computing)}{ERASMUS-Auslandsstudium (Informatik)}}{\bi{Sept. 2026 -- May 2027}{Sep. 2026 -- Mai 2027}}
+    \resumeSubheading
+      {Universität Bamberg}{Bamberg, \bi{Germany}{Deutschland}}
+      {\bi{B.Sc. Angewandte Informatik (Applied Computer Science)}{B.Sc. Angewandte Informatik}}{\bi{Oct. 2024 -- PRESENT}{Okt. 2024 -- HEUTE}}
+    \resumeSubheading
+      {Röntgen-Gymnasium Würzburg}{Würzburg, \bi{Germany}{Deutschland}}
+      {\bi{Abitur (Grade 2.0)}{Abitur (Note 2,0)}}{\bi{Sep. 2016 -- Jul. 2024}{Sep. 2016 -- Juli 2024}}
+  \resumeSubHeadingListEnd
+
+
+%-----------EXPERIENCE-----------
+\section{\bi{Experience}{Berufserfahrung}}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {\bi{Software Development for AI-Powered Data Protection Classification}{Softwareentwicklung für KI-gestützte Datenschutzklassifikation}}{\bi{Oct. 2025 -- PRESENT}{Okt. 2025 -- HEUTE}}
+      {LIfBi: Leibniz-Institut für Bildungsverläufe}{Bamberg, \bi{Germany}{Deutschland}}
+      \resumeItemListStart
+        \resumeItem{\bi
+          {Run an own agile-managed software project (see below), from requirements engineering through maintenance}
+          {Eigenverantwortliche Leitung eines agil gesteuerten Softwareprojekts (siehe unten), von der Anforderungserhebung bis zur Wartung}}
+        \resumeItem{\bi
+          {Ensure the solution complies with European data protection law}
+          {Sicherstellung der Konformität der Lösung mit dem europäischen Datenschutzrecht}}
+        \resumeItem{\bi
+          {Handle customer communication and set up Continuous Integration for the project}
+          {Kundenkommunikation sowie Aufbau der Continuous Integration für das Projekt}}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {\bi{Tutor, ``Introduction to AI''}{Tutor, „Einführung in die KI“}}{\bi{Jul. 2026 -- PRESENT}{Juli 2026 -- HEUTE}}
+      {\bi{Cognitive Systems Chair, Otto-Friedrich University Bamberg}{Lehrstuhl für Kognitive Systeme, Otto-Friedrich-Universität Bamberg}}{Bamberg, \bi{Germany}{Deutschland}}
+      \resumeItemListStart
+        \resumeItem{\bi
+          {Teach and support students in the ``Introduction to AI'' course}
+          {Lehre und Betreuung der Studierenden im Kurs „Einführung in die KI“}}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {\bi{Temporary Delivery Driver}{Aushilfsfahrer (Auslieferung)}}{\bi{Jul. 2024 -- Aug. 2024}{Juli 2024 -- Aug. 2024}}
+      {Viktor Nußbaumer Bestes für Küche und Gastlichkeit GmbH \& Co. KG}{Kürnach, \bi{Germany}{Deutschland}}
+
+    \resumeSubheading
+      {\bi{Picker}{Kommissionierer}}{\bi{Jul. 2022 -- Aug. 2022}{Juli 2022 -- Aug. 2022}}
+      {Hans Geis GmbH + Co KG}{Kürnach, \bi{Germany}{Deutschland}}
+
+  \resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{\bi{Projects (both closed source)}{Projekte (beide Closed Source)}}
+    \resumeSubHeadingListStart
+      \resumeProjectHeading
+          {\textbf{\bi{Raven's Progressive Matrices -- Abstract Visual Reasoning}{Raven's Progressive Matrices -- abstraktes visuelles Schließen}} $|$ \emph{Python, PyTorch}}{\bi{Mar. 2026 -- Aug. 2026}{März 2026 -- Aug. 2026}}
+          \resumeItemListStart
+            \resumeItem{\bi
+              {Team project (Cognitive Systems, Universität Bamberg) on trying to replicate ``An Interpretable Neuro-symbolic Model for Raven's Progressive Matrices Reasoning'', Zhao et al. (2023)}
+              {Teamprojekt (Kognitive Systeme, Universität Bamberg) zur Replikation von „An Interpretable Neuro-symbolic Model for Raven's Progressive Matrices Reasoning“, Zhao et al. (2023)}}
+            \resumeItem{\bi
+              {Reproduced two published dataset generators (RAVEN, RAVEN-FAIR)}
+              {Nachbildung zweier veröffentlichter Datensatzgeneratoren (RAVEN, RAVEN-FAIR)}}
+            \resumeItem{\bi
+              {Reproduced the three-stage neuro-symbolic reasoning pipeline (CNN $\rightarrow$ supervised VAE for semantic attribute extraction $\rightarrow$ cognitive-map relational reasoning) from the paper, achieving 94\% Prediction Accuracy}
+              {Reproduktion der dreistufigen neuro-symbolischen Reasoning-Pipeline aus dem Paper (CNN $\rightarrow$ überwachter VAE zur semantischen Attributextraktion $\rightarrow$ relationales Schlussfolgern auf einer Cognitive Map) mit 94\% Vorhersagegenauigkeit}}
+          \resumeItemListEnd
+      \resumeProjectHeading
+          {\textbf{\bi{LLM-Powered GDPR Compliance Classifier}{LLM-basierter DSGVO-Compliance-Klassifikator}} $|$ \emph{Python, PostgreSQL, Docker, Ollama}}{\bi{Oct. 2025 -- PRESENT}{Okt. 2025 -- HEUTE}}
+          \resumeItemListStart
+            \resumeItem{\bi
+              {Built a tool for LIfBi that classifies survey questions against the special categories of personal data from Art. 9 GDPR}
+              {Entwicklung eines Tools für das LIfBi, das Befragungsfragen anhand der besonderen Kategorien personenbezogener Daten nach Art. 9 DSGVO klassifiziert}}
+            \resumeItem{\bi
+              {Developed full stack: SvelteKit/TypeScript frontend and API routes, PostgreSQL schema, and a three-container Docker Compose deployment (load balancing with Kubernetes is planned)}
+              {Umsetzung des gesamten Stacks: SvelteKit/TypeScript-Frontend und API-Routen, PostgreSQL-Schema sowie ein Deployment aus drei Containern mit Docker Compose (Load balancing mit Kubernetes ist geplant)}}
+            \resumeItem{\bi
+              {Ran all LLM inference locally through Ollama to protect sensitive institute data}
+              {Lokale LLM-Inferenz über Ollama zum Schutz sensibler Institutsdaten}}
+          \resumeItemListEnd
+    \resumeSubHeadingListEnd
+
+
+%-----------HIGHLIGHTED GRADES-----------
+\section{\bi{Highlighted Grades (Average Score 1.98}{Ausgewählte Noten (Notendurchschnitt 1,98}, \bi{99 credited ETCS}{99 angerechnete ETCS})}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \bi
+      {Statistics \& Data Science (2.0) $|$ Discrete Modelling (1.3) $|$ Java Programming (1.3) $|$ Linear Algebra (1.3) \\
+       DevOps for AI Systems (1.3) $|$ Analysis (1.7) $|$ Introduction to AI (1.7) $|$ Introduction to ML (1.7) $|$ European Data Protection Law (2.3)}
+      {Statistik \& Data Science (2,0) $|$ Diskrete Modellierung (1,3) $|$ Java-Programmierung (1,3) $|$ Lineare Algebra (1,3) \\
+       DevOps für KI-Systeme (1,3) $|$ Analysis (1,7) $|$ Einführung in die KI (1,7) $|$ Einführung in ML (1,7), $|$ Europäisches Datenschutzrecht (2,3)}
+    }}
+ \end{itemize}
+
+
+%-----------SKILLS-----------
+\section{\bi{Skills}{Kenntnisse}}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+     \textbf{\bi{Languages}{Programmiersprachen}}{: \bi
+       {Python, Java, R, SPSS (introductory), C-style languages (introductory)}
+       {Python, Java, R, SPSS (Grundkenntnisse), C-artige Sprachen (Grundkenntnisse)}} \\
+     \textbf{\bi{Libraries \& Tools}{Bibliotheken \& Werkzeuge}}{: PyTorch, NumPy, Pandas, UML, Git} \\
+     \textbf{\bi{Concepts}{Konzepte}}{: \bi
+       {Machine Learning, Data Science, Distributed Systems, Object-Oriented Architecture Patterns}
+       {Maschinelles Lernen, Data Science, Verteilte Systeme, objektorientierte Architekturmuster}} \\
+     \textbf{\bi{Practices}{Methoden}}{: \bi
+       {Agile Project Management, Requirements Engineering, Continuous Integration, Software Maintenance}
+       {Agiles Projektmanagement, Requirements Engineering, Continuous Integration, Softwarewartung}} \\
+     \textbf{\bi{Spoken Languages}{Sprachen}}{: \bi
+       {German (native), English (certified B2)}
+       {Deutsch (Muttersprache), Englisch (zertifiziert B2)}} \\
+    }}
+ \end{itemize}
+
+
+%-------------------------------------------
+\end{document}

@@ -1,15 +1,9 @@
-import adapter from '@sveltejs/adapter-cloudflare';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
+// Adapter, runes mode and the mdsvex preprocessor all live in `svelte.config.js`.
+// mdsvex needs `extensions` at the SvelteKit-config level (svelte-kit sync reads it
+// from there to route `.svx` files), so the config can no longer be inline here.
 export default defineConfig({
-	plugins: [
-		sveltekit({
-			compilerOptions: {
-				// Force runes mode for the project, except for libraries. Can be removed in svelte 6.
-				runes: ({ filename }) => filename.split(/[/\\]/).includes('node_modules') ? undefined : true
-			},
-			adapter: adapter()
-		})
-	]
+	plugins: [sveltekit()]
 });
