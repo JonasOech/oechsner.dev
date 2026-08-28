@@ -10,14 +10,9 @@ export const site = {
 	name: 'Jonas Öchsner',
 	shortName: 'oechsner.dev',
 	url: 'https://oechsner.dev',
-	/** Used as the page heading on /about. */
-	eyebrow: "Hi, I'm Jonas.",
-	/**
-	 * The site leads with the writing, not the author. This is the only self-description
-	 * above the fold on the home page — keep it to one line.
-	 */
+	intro: "Hi, I'm Jonas. Welcome to my Blog.",
 	byline:
-		'Jonas Öchsner — applied computer science at Bamberg. Machine learning, data protection, and the systems underneath.',
+		'Jonas Öchsner. Applied computer science at Uni Bamberg. Machine learning, Statistics and Distributed Systems. Interested in the Concepts behind the Software.',
 	role: 'B.Sc. Applied Computer Science, Universität Bamberg',
 	description:
 		'Applied computer science student in Bamberg, building machine-learning and data-protection systems. Writing about ML, distributed systems and the software behind them.',

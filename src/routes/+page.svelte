@@ -29,15 +29,22 @@
 <Seo title={site.name} />
 
 <div class="container">
-	<p class="byline enter" style="--i: 0">{site.byline}</p>
+	<!-- Greeting and byline are one unit: tight internally, ruled off from the lead
+	     below. Previously they sat 6rem apart with only 2rem before the post, so the
+	     byline read as the post's standfirst rather than as the author line. -->
+	
+	<header class="intro enter" style="--i: 0">
+		<h3 class="intro__greeting">{site.intro}</h3>
+		<p class="intro__byline">{site.byline}</p>
+	</header>
 
 	{#if lead}
 		<article class="lead">
-			<p class="lead__eyebrow enter" style="--i: 1">Latest</p>
+			<p class="lead__eyebrow enter" style="--i: 1">Latest Blog Post</p>
 
-			<h1 class="hero-title lead__title enter" style="--i: 2">
+			<h2 class="hero-title lead__title enter" style="--i: 2">
 				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
-			</h1>
+			</h2>
 
 			{#if lead.summary}
 				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
@@ -131,10 +138,39 @@
 </div>
 
 <style>
-	.byline {
-		max-width: 54ch;
-		padding-top: var(--s-9);
+	/* The breathing room now sits above the pair rather than between them, and a rule
+	   closes the block off from the lead post. */
+	.intro {
+		display: block;
+		padding-top: var(--s-8);
+		padding-bottom: var(--s-6);
+		border-bottom: 1px solid var(--line);
+		text-align: center;
+	}
+
+	/* Keeps the letterspaced serif of `.eyebrow`, but at full ink instead of
+	   --text-secondary. Contrast, not size, is what lifts it: §11 reserves the
+	   largest type on the page for the writing, never a greeting. */
+	.intro__greeting {
+		font-family: var(--font-display);
+		font-size: 3rem;
+		font-weight: 400;
+		line-height: 1.4;
+		/* letter-spacing: 0.24em; */
+		text-transform: uppercase;
+		color: var(--text);
+		margin: 0 0 var(--s-3);
+		text-align: center;
+	}
+
+	/* Still the single line of 15px body copy §11 specifies for the author. */
+	.intro__byline {
+		display: block;
+		width: 60%;
+		max-width: none;
+		margin: 0 auto;
 		color: var(--text-secondary);
+		text-align: center;
 	}
 
 	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
@@ -152,7 +188,9 @@
 		column-gap: var(--s-7);
 		row-gap: var(--s-4);
 		align-items: start;
-		padding-top: var(--s-6);
+		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
+		   the block above it and the post clearly starts a new zone. */
+		padding-top: var(--s-7);
 	}
 
 	/* The lead title inherits the display face and the one permitted text treatment from
@@ -342,8 +380,14 @@
 	}
 
 	@media (max-width: 767px) {
-		.byline {
+		.intro {
 			padding-top: var(--s-6);
+			padding-bottom: var(--s-5);
+		}
+		.intro__greeting {
+			/* The tracking costs a lot of width at 390px; ease it off rather than wrap. */
+			font-size: 2.9375rem;
+			letter-spacing: 0.18em;
 		}
 		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {
