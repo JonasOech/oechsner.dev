@@ -120,7 +120,7 @@ export const projects: Entry[] = [
 export const projectsNote = 'Both projects are closed source.';
 
 export const grades = {
-	summary: 'Average score 1.98 · 99 credited ECTS',
+	summary: 'Some highlights from my transcript, sorted by grade. Full transcript available on request.',
 	items: [
 		['Discrete Modelling', '1.3'],
 		['Java Programming', '1.3'],

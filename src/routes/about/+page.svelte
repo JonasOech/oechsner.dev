@@ -58,24 +58,6 @@
 		{/each}
 	</Rail>
 
-	<Rail label="Projects" id="projects">
-		{#each projects as project (project.title)}
-			<article class="entry">
-				<h3 class="entry__title">{project.title}</h3>
-				{#if project.stack}
-					<p class="mono entry__stack">{project.stack}</p>
-				{/if}
-				<ul class="entry__list">
-					{#each project.points as point (point)}
-						<li>{point}</li>
-					{/each}
-				</ul>
-				<p class="meta">{project.period}{project.org ? ` · ${project.org}` : ''}</p>
-			</article>
-		{/each}
-		<p class="meta note">{projectsNote}</p>
-	</Rail>
-
 	<Rail label="Education" id="education">
 		{#each education as school (school.title + school.period)}
 			<article class="entry">
@@ -102,21 +84,6 @@
 				<div class="grades__row">
 					<dt>{course}</dt>
 					<dd>{grade}</dd>
-				</div>
-			{/each}
-		</dl>
-	</Rail>
-
-	<Rail label="Skills" id="skills">
-		<dl class="skills">
-			{#each skills as group (group.label)}
-				<div class="skills__group">
-					<dt class="label">{group.label}</dt>
-					<dd class="skills__items">
-						{#each group.items as item (item)}
-							<span class="tag">{item}</span>
-						{/each}
-					</dd>
 				</div>
 			{/each}
 		</dl>

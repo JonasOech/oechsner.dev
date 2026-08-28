@@ -27,12 +27,14 @@ export type NavItem = { href: string; label: string };
 export const nav: NavItem[] = [
 	{ href: '/', label: 'Writing' },
 	{ href: '/about', label: 'About' },
+	{ href: '/skills', label: 'Skills' },
 	{ href: '/contact', label: 'Contact' }
 ];
 
 export const footerNav: NavItem[] = [
 	{ href: '/', label: 'Writing' },
 	{ href: '/about', label: 'About' },
+	{ href: '/skills', label: 'Skills' },
 	{ href: '/contact', label: 'Contact' }
 ];
 
