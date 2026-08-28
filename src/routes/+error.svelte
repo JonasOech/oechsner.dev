@@ -19,11 +19,11 @@
 	<div class="btn-row enter" style="--i: 3">
 		<a class="btn btn--primary" href="/">
 			<Icon name="arrow-right" />
-			Back home
+			Read the writing
 		</a>
-		<a class="btn btn--secondary" href="/blog">
+		<a class="btn btn--secondary" href="/about">
 			<Icon name="arrow-right" />
-			Read the blog
+			About &amp; portfolio
 		</a>
 	</div>
 </div>

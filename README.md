@@ -9,6 +9,11 @@ The visual design is specified in [`DESIGN.md`](DESIGN.md) and derived from the
 by Gaël Duval. **Read DESIGN.md before changing any styling** — it is the contract the CSS
 implements, including the rule that no component may hard-code a colour.
 
+**The site leads with the writing, not the author.** `/` is the post index; the newest post's
+title takes the largest type on the site. The portfolio is a complete page at `/about`, one
+click from anywhere, but it does not lead. `DESIGN.md` §11 states the rule and what depends on
+it — read it before moving anything above the fold.
+
 ## What's in here
 
 | Path | Purpose |
@@ -19,7 +24,9 @@ implements, including the rule that no component may hard-code a colour.
 | `src/lib/posts.ts` | Reads the posts, sorts them, derives tags and neighbours. |
 | `src/lib/data/site.ts` | Identity, navigation, contact channels. |
 | `src/lib/data/resume.ts` | Experience / education / projects / skills, transcribed from `resume.tex`. |
-| `src/lib/components/` | Header, Footer, Rail, ArticleRow, Avatar, Icon, Seo. |
+| `src/routes/+page.svelte` | **The writing index.** Lead post + archive + tag filter. |
+| `src/routes/blog/+server.ts` | 301s `/blog` → `/`. The only non-prerendered route. |
+| `src/lib/components/` | Header, Footer, Rail, ArticleRow, Icon, Seo. |
 | `src/lib/actions/reveal.ts` | The one-shot scroll-reveal action. No animation library. |
 | `resume.tex` | Source of the downloadable CV. Bilingual via the `\bi{}` macro. |
 | `scripts/build-cv.mjs` | Compiles `resume.tex` → `static/resume-en.pdf`. Run locally. |
@@ -93,8 +100,6 @@ A few things are deliberately left as placeholders:
 
 - **`src/lib/data/site.ts`** — the GitHub and LinkedIn handles are guesses. Fix them or delete
   the entries; the contact page renders whatever is in the list.
-- **Avatar** — the hero and footer show a `JÖ` monogram. Drop a square photo at
-  `static/img/avatar.jpg` and pass `src="/img/avatar.jpg"` to the two `<Avatar />` usages.
 - **The three posts in `src/posts/`** are starter content, marked as such in their opening
   lines. `this-blog-is-just-files` doubles as documentation for the publishing flow — worth
   keeping until you've replaced it.
@@ -142,9 +147,15 @@ Two things worth knowing about that form:
 
 ## Architecture notes
 
-Everything is prerendered — `src/routes/+layout.ts` sets `prerender = true`, and the post route
-exports `entries()` so the prerenderer knows every slug. The output is a folder of HTML files
-plus `_worker.js`, which is effectively just a fallback. There are no server routes.
+Everything is prerendered except one route — `src/routes/+layout.ts` sets `prerender = true`,
+and the post route exports `entries()` so the prerenderer knows every slug. The output is a
+folder of HTML files plus `_worker.js`.
+
+The exception is `src/routes/blog/+server.ts`, which opts out of prerendering to return a real
+301 for the retired `/blog` index. That cannot be done with a `_redirects` file: adapter-cloudflare
+writes `_routes.json` with `include: ["/*"]` minus the prerendered paths, so an unmatched `/blog`
+reaches the Worker before Pages ever consults `_redirects`. A prerendered `redirect()` is worse
+still — it emits a 200 page with a meta-refresh.
 
 `src/lib/posts.ts` uses an **eager** `import.meta.glob`, which bundles every post's compiled
 component into the chunk that renders the list. At this scale that costs a few kilobytes and

@@ -1,5 +1,5 @@
 ---
-title: Reproducing a neuro-symbolic model for Raven's Progressive Matrices
+title: Reproducing a neurosymbolic model for RPM problems
 date: '2026-08-20'
 summary: >-
   Six months of trying to rebuild a published three-stage reasoning pipeline from the paper

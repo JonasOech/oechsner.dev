@@ -17,8 +17,7 @@
 <div class="container">
 	<Rail label="Get In Touch" id="contact" level={1} wide>
 		<p class="lede enter" style="--i: 0">
-			The fastest way to reach me is email. I read everything, and I answer anything that isn't a
-			recruiter template.
+			The fastest way to reach me is email.
 		</p>
 
 		<dl class="channels">
@@ -44,8 +43,7 @@
 		</dl>
 
 		<p class="note">
-			Based in Bavaria, Germany. From September 2026, Dublin. Postal address and phone number are in
-			the <a class="link" href="/resume-en.pdf" download>CV</a>.
+			Based in Bavaria, Germany. Currently in Dublin, Ireland.
 		</p>
 	</Rail>
 </div>

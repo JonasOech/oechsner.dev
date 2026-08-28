@@ -10,8 +10,14 @@ export const site = {
 	name: 'Jonas Öchsner',
 	shortName: 'oechsner.dev',
 	url: 'https://oechsner.dev',
-	eyebrow: "I'm Jonas Öchsner,",
-	headline: 'Welcome To My Portfolio.',
+	/** Used as the page heading on /about. */
+	eyebrow: "Hi, I'm Jonas.",
+	/**
+	 * The site leads with the writing, not the author. This is the only self-description
+	 * above the fold on the home page — keep it to one line.
+	 */
+	byline:
+		'Jonas Öchsner — applied computer science at Bamberg. Machine learning, data protection, and the systems underneath.',
 	role: 'B.Sc. Applied Computer Science, Universität Bamberg',
 	description:
 		'Applied computer science student in Bamberg, building machine-learning and data-protection systems. Writing about ML, distributed systems and the software behind them.',
@@ -21,17 +27,17 @@ export const site = {
 
 export type NavItem = { href: string; label: string };
 
+// `/` is the writing index, so there is no separate Blog entry — a "Home" link and a
+// "Blog" link pointing at the same page would just be noise.
 export const nav: NavItem[] = [
-	{ href: '/', label: 'Home' },
+	{ href: '/', label: 'Writing' },
 	{ href: '/about', label: 'About' },
-	{ href: '/blog', label: 'Blog' },
 	{ href: '/contact', label: 'Contact' }
 ];
 
 export const footerNav: NavItem[] = [
-	{ href: '/', label: 'Home' },
+	{ href: '/', label: 'Writing' },
 	{ href: '/about', label: 'About' },
-	{ href: '/blog', label: 'Articles' },
 	{ href: '/contact', label: 'Contact' }
 ];
 
@@ -58,8 +64,8 @@ export const contacts = [
 	},
 	{
 		label: 'GitHub',
-		value: '@jonasoechsner',
-		href: 'https://github.com/jonasoechsner',
+		value: '@jonasoech',
+		href: 'https://github.com/jonasoech',
 		icon: 'github' as const,
 		primary: false
 	},

@@ -112,16 +112,19 @@ titles and umlauts. All three families ship latin-ext; verify any substitution d
 
 **Role split** — this is the whole typographic idea; do not blur it:
 
-- **Playfair Display** — the hero headline, and *rail labels only*. Rail labels are uppercase at
-  `letter-spacing: 0.24em`, which is what gives the template its engraved, monograph feel.
+- **Playfair Display** — the home page's **lead-post title**, and *rail labels only*. Rail
+  labels are uppercase at `letter-spacing: 0.24em`, which is what gives the template its
+  engraved, monograph feel. Note what the display face is *not* used for: the author's name.
+  The largest type on the site is always a piece of writing (see §11).
 - **DM Sans** — every other piece of text on the site. All in-content headings, all body copy,
   all UI, all navigation.
 - **JetBrains Mono** — code in blog posts and inline `code`. Nothing else.
 
 | Token | Element | Family | Size (desktop) | Weight | Line-height | Tracking |
 | --- | --- | --- | --- | --- | --- | --- |
-| `--t-hero` | Home h1 | display | `clamp(2.5rem, 6.5vw, 4.25rem)` | 400 | 1.06 | `-0.015em` |
-| `--t-eyebrow` | "I'M JONAS ÖCHSNER," | display | `0.875rem` | 400 | 1.4 | `0.24em` |
+| `--t-hero` | Home lead-post title | display | `clamp(2.5rem, 6.5vw, 4.25rem)` | 400 | 1.06 | `-0.015em` |
+| `--t-byline` | Home byline | sans | `0.9375rem` | 400 | 1.75 | `0` |
+| `--t-eyebrow` | `/about` page heading | display | `0.875rem` | 400 | 1.4 | `0.24em` |
 | `--t-rail` | `ABOUT` / `ARTICLES` | display | `0.8125rem` | 400 | 1.4 | `0.24em` |
 | `--t-h2` | Page / section title | sans | `clamp(1.5rem, 3vw, 1.875rem)` | 700 | 1.2 | `-0.01em` |
 | `--t-h3` | Article title, job title | sans | `1.1875rem` | 700 | 1.35 | `-0.005em` |
@@ -140,8 +143,8 @@ full-bleed text.
 any script, novelty-display, or condensed face; Playfair Display for body copy; a fourth family;
 faux-bold or faux-italic — load the real weights.
 
-**Text decoration** (per the decoration decision table): the hero `h1` is the **only** element
-permitted a treatment, and it gets exactly one — a near-invisible vertical gradient from
+**Text decoration** (per the decoration decision table): the home page's lead-post `h1` is the
+**only** element permitted a treatment, and it gets exactly one — a near-invisible vertical gradient from
 `--text` to `rgba(244, 244, 246, 0.82)` mimicking the light falloff in the reference shot. No
 gradient on `h2`/`h3`, no `text-shadow` anywhere, no glow on type. The dark canvas already
 supplies all the contrast the headline needs.
@@ -361,8 +364,12 @@ larger than they need to be.
 | Body to meta line | `--s-3` (0.75rem) | |
 | Last section to footer | `--s-11` (11rem) | |
 
-**Alignment** — the hero is centred; *everything after it is left-aligned* against the rail
-column. Body copy is never centred. Article rows put text left, thumbnail right at a fixed 190px.
+**Alignment** — *everything on a content page is left-aligned* against the rail column,
+including the lead-post title. Only the header nav and the footer are centred. Body copy is
+never centred. Article rows put text left, thumbnail right at a fixed 190px.
+
+There is no centred hero block. The centred-portrait-and-name composition the reference uses
+was removed deliberately — see §11.
 
 **Background composition**: `--bg` base, then two `radial-gradient` glows at `15% -10%` (cool)
 and `85% -5%` (warm) at ~50vw radius, then a repeating dot grid
@@ -597,12 +604,12 @@ a no-JS visitor receives a fully rendered page.
 | --- | --- | --- |
 | Canvas | near-black, dot grid, corner glows | `#0e0f12`, 24px dot grid, warm + cool corner glows |
 | Nav | centred, uppercase, tiny, letterspaced | identical, plus a scrolled state |
-| Hero | avatar → serif eyebrow → Didone h1 → two buttons | identical structure |
+| Hero | avatar → serif eyebrow → Didone h1 → two buttons | **replaced** — see §11 |
 | Rail sections | serif letterspaced label left of a narrow column | identical, 200px rail |
 | Article row | text left, 190px thumbnail right, tint on hover | identical |
 | Buttons | white primary + dark secondary, icon left, ~5px radius | identical |
 | Footer | centred link row, avatar, copyright | identical |
-| Pages | Home · About · Blog · Contact (+ 404) | the same five, plus `/blog/[slug]` and `/impressum` |
+| Pages | Home · About · Blog · Contact (+ 404) | Home (= writing index) · About · Contact, plus `/blog/[slug]`, `/impressum`, 404 |
 
 **Deviated deliberately**
 
@@ -627,3 +634,47 @@ a no-JS visitor receives a fully rendered page.
 6. **A Projects section is added to About.** The reference has Experiences and Formations only.
    Both flagship projects here are closed source, so these are prose write-ups with no repo
    links — deliberately not linked cards with GitHub icons.
+
+---
+
+## 11. Content-first hierarchy
+
+The reference template is a *portfolio* — it opens with a centred portrait, the owner's name in
+letterspaced serif, a headline reading "Welcome To My Portfolio.", and two calls to action about
+the owner. The writing appears a screen and a half down, at 19px.
+
+This site inverts that, on purpose. The brief was: *the content should be the centre of
+attention, not me.*
+
+**What changed**
+
+| Reference | Here |
+| --- | --- |
+| `/` is a landing page about the person | `/` **is the writing index** |
+| Centred avatar medallion, hero and footer | **No avatar anywhere** — identity is typographic only |
+| 68px display serif reads "Welcome To My Portfolio." | 68px display serif is the **newest post's title** |
+| Two hero CTAs: Get In Touch · Download CV | None. The CV lives on `/about`; contact is in the nav |
+| Nav: Home · About · Blog · Contact | Nav: **Writing** · About · Contact |
+| Portfolio is the front page | Portfolio is `/about`, one click away, complete and unchanged |
+
+**The load-bearing rule**
+
+> The largest type on any page is a piece of writing — never a name, never a job title, never a
+> greeting. The author appears once above the fold, as a single line of 15px body copy.
+
+**What did *not* change**: the portfolio is still a first-class page, reachable from every page
+in one click, and still carries the full experience, projects, education, grades and skills. The
+goal was to change what leads, not to hide the work.
+
+**Consequences to preserve**
+
+- `/blog` 301-redirects to `/` from `src/routes/blog/+server.ts` — the site's only
+  non-prerendered route, because a real 301 has to come from the Worker. A `_redirects` file
+  does not fire (`_routes.json` sends unmatched paths to the Worker first), and a prerendered
+  `redirect()` emits a 200 page with a meta-refresh. A "Home" link and a "Blog" link pointing
+  at the same page is noise; the redirect keeps older links and feed history valid.
+- Filtering by tag on the home page **drops** the lead-post treatment — a filtered view is a
+  list, not a front page.
+- The lead-post cover image is `aria-hidden` with `tabindex="-1"`, because the title directly
+  above it already links to the same post. Two tab stops to one destination is a regression, not
+  a feature.

@@ -35,7 +35,7 @@
 <div class="container">
 	<article class="post">
 		<header class="post__header enter" style="--i: 0">
-			<a class="post__back" href="/blog">
+			<a class="post__back" href="/">
 				<Icon name="arrow-left" />
 				All articles
 			</a>

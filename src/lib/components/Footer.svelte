@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Avatar from './Avatar.svelte';
 	import { footerNav, site } from '$lib/data/site';
 
 	const year = new Date().getFullYear();
@@ -13,28 +12,14 @@
 			{/each}
 		</nav>
 
-		<Avatar size={48} />
-
 		<p class="footer__copy">
 			© {site.startYear === year ? year : `${site.startYear}–${year}`}
-			{site.name}
+			{site.name} - 
+			<a class="footer__legal-link" href="/impressum">Impressum</a>
 		</p>
 
-		<!-- § 5 DDG requires the Impressum to be "leicht erkennbar, unmittelbar erreichbar
-		     und ständig verfügbar" — the footer puts it one click from every page. -->
-		<nav class="footer__legal" aria-label="Legal">
-			<a class="footer__legal-link" href="/impressum">Impressum</a>
-		</nav>
-
 		<p class="footer__colophon">
-			Built with SvelteKit on Cloudflare Pages. Design derived from the
-			<a
-				class="footer__inline-link"
-				href="https://dribbble.com/shots/20829830-Portfolio-Template-Elevate"
-				target="_blank"
-				rel="noreferrer noopener">Elevate template</a
-			>
-			by Gaël Duval.
+			Deployed with SvelteKit on Cloudflare Pages. Built with AI.
 		</p>
 	</div>
 </footer>
@@ -144,26 +129,6 @@
 		max-width: 46ch;
 		line-height: 1.6;
 		margin: 0;
-	}
-
-	.footer__inline-link {
-		color: var(--text-secondary);
-		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
-		text-underline-offset: 3px;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.footer__inline-link:hover {
-			color: var(--accent);
-		}
-	}
-
-	.footer__inline-link:focus-visible {
-		outline: none;
-		border-radius: 2px;
-		box-shadow: var(--focus-ring);
 	}
 
 	@media (pointer: coarse) {

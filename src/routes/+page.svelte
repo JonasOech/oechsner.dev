@@ -1,83 +1,273 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import Avatar from '$lib/components/Avatar.svelte';
-	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
 	import ArticleRow from '$lib/components/ArticleRow.svelte';
-	import { site, cvPath } from '$lib/data/site';
+	import { reveal } from '$lib/actions/reveal';
+	import Icon from '$lib/components/Icon.svelte';
+	import { site } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
-	import { posts } from '$lib/posts';
+	import { posts, allTags, formatDate } from '$lib/posts';
 
-	const latest = posts.slice(0, 4);
+	let activeTag = $state<string | null>(null);
+
+	/**
+	 * The home page *is* the writing index. The newest post takes the display face that
+	 * used to carry the author's name, so the content occupies the loudest slot on the
+	 * site. Filtering by tag drops the lead treatment — a filtered view is a list, not a
+	 * front page.
+	 */
+	const lead = $derived(activeTag ? undefined : posts[0]);
+	const listed = $derived(
+		activeTag ? posts.filter((p) => p.tags.includes(activeTag!)) : posts.slice(1)
+	);
+
+	function toggleTag(tag: string) {
+		activeTag = activeTag === tag ? null : tag;
+	}
 </script>
 
 <Seo title={site.name} />
 
 <div class="container">
-	<section class="hero">
-		<div class="enter" style="--i: 0"><Avatar size={64} /></div>
-		<p class="eyebrow enter" style="--i: 1">{site.eyebrow}</p>
-		<h1 class="hero-title enter" style="--i: 2">{site.headline}</h1>
-		<div class="btn-row hero__actions enter" style="--i: 3">
-			<a class="btn btn--primary" href="/contact">
-				<Icon name="arrow-right" />
-				Get In Touch
+	<p class="byline enter" style="--i: 0">{site.byline}</p>
+
+	{#if lead}
+		<article class="lead">
+			<p class="lead__eyebrow enter" style="--i: 1">Latest</p>
+
+			<h1 class="hero-title lead__title enter" style="--i: 2">
+				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
+			</h1>
+
+			{#if lead.summary}
+				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
+			{/if}
+
+			<p class="meta enter" style="--i: 4">
+				<time datetime={lead.date}>{formatDate(lead.date)}</time>
+				<span class="lead__dot" aria-hidden="true">·</span>
+				{lead.readingMinutes} min read
+			</p>
+
+			{#if lead.cover}
+				<!-- Decorative: the title above is the accessible link to the same post. -->
+				<a
+					class="lead__media enter"
+					style="--i: 5"
+					href="/blog/{lead.slug}"
+					tabindex="-1"
+					aria-hidden="true"
+				>
+					<img
+						class="lead__cover"
+						src={lead.cover}
+						alt=""
+						width="1200"
+						height="675"
+						decoding="async"
+					/>
+				</a>
+			{/if}
+
+			<!-- The visible affordance. Not a tab stop: the title above is the accessible
+			     link to the same post, and three tab stops to one destination is noise. -->
+			<a
+				class="lead__cta enter"
+				style="--i: 6"
+				href="/blog/{lead.slug}"
+				tabindex="-1"
+				aria-hidden="true"
+			>
+				Read the post
+				<Icon name="arrow-right" size={15} />
 			</a>
-			<a class="btn btn--secondary" href={cvPath} download>
-				<Icon name="arrow-down" />
-				Download CV
-			</a>
+		</article>
+	{/if}
+
+	<Rail label="Writing" id="writing" wide>
+		{#if allTags.length}
+			<div class="tag-row filter" role="group" aria-label="Filter posts by tag">
+				{#each allTags as tag (tag)}
+					<button
+						type="button"
+						class="tag"
+						aria-pressed={activeTag === tag}
+						onclick={() => toggleTag(tag)}
+					>
+						{tag}
+					</button>
+				{/each}
+			</div>
+		{/if}
+
+		<div class="articles" aria-live="polite" use:reveal={{ stagger: true }}>
+			{#if listed.length === 0}
+				<p class="empty">
+					{#if activeTag}
+						Nothing tagged “{activeTag}” yet.
+					{:else}
+						That's the whole archive so far.
+					{/if}
+				</p>
+			{:else}
+				{#key activeTag}
+					{#each listed as post (post.slug)}
+						<ArticleRow {post} />
+					{/each}
+				{/key}
+			{/if}
 		</div>
-	</section>
+	</Rail>
 
 	<Rail label="About" id="about">
-		<div class="stack">
-			<p>{about[0]}</p>
-			<p>{about[2]}</p>
-		</div>
+		<p>{about[0]}</p>
 		<p class="about__more">
 			<a class="inline-cta" href="/about">
-				Read the longer version
+				Background, projects and CV
 				<Icon name="arrow-right" size={14} />
 			</a>
 		</p>
 	</Rail>
-
-	{#if latest.length}
-		<Rail label="Articles" id="articles" wide>
-			<div class="articles">
-				{#each latest as post (post.slug)}
-					<ArticleRow {post} />
-				{/each}
-			</div>
-			<div class="articles__more">
-				<a class="btn btn--secondary" href="/blog">
-					<Icon name="arrow-right" />
-					Read more
-				</a>
-			</div>
-		</Rail>
-	{/if}
 </div>
 
 <style>
-	.hero {
+	.byline {
+		max-width: 54ch;
+		padding-top: var(--s-9);
+		color: var(--text-secondary);
+	}
+
+	.lead {
 		display: grid;
-		justify-items: center;
-		text-align: center;
-		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-9);
+		gap: var(--s-4);
+		max-width: var(--measure-prose);
+		padding-top: var(--s-6);
 	}
 
-	.hero-title {
-		/* Wide enough to keep the headline on one line from ~1200px up. */
-		max-width: 26ch;
+	/* The lead title inherits the display face and the one permitted text treatment from
+	   .hero-title. Left-aligned, not centred — it is content now, and content on this
+	   site aligns to the rail. */
+	.lead__title {
+		max-width: 20ch;
+		margin: 0;
 	}
 
-	.hero__actions {
+	.lead__eyebrow {
+		font-family: var(--font-display);
+		font-size: 0.8125rem;
+		font-weight: 400;
+		line-height: 1.4;
+		letter-spacing: 0.24em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		margin: 0 0 calc(var(--s-1) * -1);
+	}
+
+	.lead__link {
+		color: inherit;
+		text-decoration: none;
+		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
+		   at rest, and the persistent CTA below already carries the affordance. */
+		text-decoration-color: var(--accent-dim);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.14em;
+		transition: text-decoration-color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__link:hover {
+			text-decoration-line: underline;
+		}
+	}
+
+	.lead__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-2);
+		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
+		   bottom rule sits under the words rather than spanning the whole measure. */
+		justify-self: start;
 		margin-top: var(--s-2);
-		justify-content: center;
+		min-height: 44px;
+		font-size: 0.875rem;
+		font-weight: 700;
+		color: var(--text);
+		text-decoration: none;
+		border-bottom: 1px solid var(--line-strong);
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+
+	.lead__cta :global(svg) {
+		transition: transform 220ms var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__cta:hover {
+			color: var(--accent);
+			border-bottom-color: var(--accent);
+		}
+		.lead__cta:hover :global(svg) {
+			transform: translateX(3px);
+		}
+	}
+
+	.lead__cta:active {
+		color: var(--accent-dim);
+	}
+
+	.lead__link:focus-visible {
+		outline: none;
+		border-radius: 4px;
+		box-shadow: var(--focus-ring);
+	}
+
+	.lead__summary {
+		font-size: 1.0625rem;
+		line-height: 1.7;
+		color: var(--text-secondary);
+		max-width: var(--measure);
+	}
+
+	.lead__dot {
+		margin-inline: 0.4em;
+		color: var(--text-muted);
+	}
+
+	.lead__media {
+		display: block;
+		margin-top: var(--s-3);
+		border-radius: 6px;
+		overflow: hidden;
+		border: 1px solid var(--line);
+	}
+
+	.lead__cover {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		transition: transform 480ms var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__media:hover .lead__cover {
+			transform: scale(1.02);
+		}
+	}
+
+	.filter {
+		margin-bottom: var(--s-7);
+	}
+
+	.articles {
+		display: grid;
+		gap: var(--s-2);
+		max-width: var(--measure);
+	}
+
+	.empty {
+		color: var(--text-muted);
 	}
 
 	.about__more {
@@ -123,24 +313,11 @@
 		box-shadow: var(--focus-ring);
 	}
 
-	.articles {
-		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
-	}
-
-	.articles__more {
-		display: flex;
-		justify-content: center;
-		margin-top: var(--s-7);
-		max-width: var(--measure);
-	}
-
 	@media (max-width: 767px) {
-		.hero {
-			padding-top: var(--s-7);
+		.byline {
+			padding-top: var(--s-6);
 		}
-		.hero-title {
+		.lead__title {
 			max-width: none;
 		}
 	}
