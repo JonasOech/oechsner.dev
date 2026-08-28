@@ -77,7 +77,7 @@
 
 	<footer>
 		<p>
-			Push to <code>main</code> and GitHub Actions deploys this to Cloudflare Pages. See
+			Push to <code>main</code> and Cloudflare Pages builds and deploys this itself. See
 			<code>README.md</code>.
 		</p>
 	</footer>

@@ -20,7 +20,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Same file the Cloudflare Pages builder reads, so CI and the
+          # real build can't drift apart.
+          node-version-file: .nvmrc
           cache: npm
 
       - run: npm ci
