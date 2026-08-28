@@ -1,0 +1,58 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deployments race for the same branch.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.deployment-url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Type-checks before deploying. This re-runs `wrangler types --check`,
+      # which `npm run build` also does - cheap, and worth it on the deploy path.
+      - run: npm run check
+
+      # Writes the Pages bundle (static assets + the generated _worker.js)
+      # to .svelte-kit/cloudflare, per `pages_build_output_dir` in wrangler.jsonc.
+      - run: npm run build
+
+      - name: Deploy
+        id: deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # No directory or --project-name here on purpose: wrangler reads the
+          # output directory from `pages_build_output_dir` and the project name
+          # from `name` in wrangler.jsonc, so the config stays the single source
+          # of truth. --branch decides production vs. preview deployment.
+          command: pages deploy --branch=${{ github.ref_name }}
+          # Optional: pin for fully reproducible deploys, e.g. wranglerVersion: "4.127.0"
+
+      - name: Summary
+        run: |
+          echo "### Deployed :rocket:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Branch: \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "URL: ${{ steps.deploy.outputs.deployment-url }}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,16 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "oechsner-dev",
+	"compatibility_date": "2026-08-28",
+	"compatibility_flags": [
+		"nodejs_als"
+	],
+	"pages_build_output_dir": ".svelte-kit/cloudflare",
+
+	// Plain-text vars are exposed to the Worker as `platform.env.*`.
+	// Secrets do NOT belong here - set those with `wrangler pages secret put <NAME>`.
+	"vars": {
+		"SITE_NAME": "oechsner.dev",
+		"BUILD_CHANNEL": "production"
+	}
+}
