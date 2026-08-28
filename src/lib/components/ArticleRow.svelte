@@ -119,7 +119,7 @@
 
 	.card__dot {
 		margin-inline: 0.4em;
-		color: var(--line-strong);
+		color: var(--text-muted);
 	}
 
 	.card__media {

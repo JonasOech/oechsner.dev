@@ -44,7 +44,7 @@ second hex. **Dark is the only theme** — this design commits to it (see §8, D
   /* — Ink ———————————————————————————————————— */
   --text:            #f4f4f6;   --text-rgb:            244, 244, 246;
   --text-secondary:  #a3a4ac;   --text-secondary-rgb:  163, 164, 172;
-  --text-muted:      #6d6e77;   --text-muted-rgb:      109, 110, 119;
+  --text-muted:      #80818a;   --text-muted-rgb:      128, 129, 138;
   --text-inverse:    #0a0b0d;   --text-inverse-rgb:    10, 11, 13;
 
   /* — Structure —————————————————————————————— */
@@ -80,9 +80,17 @@ second hex. **Dark is the only theme** — this design commits to it (see §8, D
 | Hairlines | `--line` | dividers, secondary button border |
 | Link hover, focus, tags | `--accent` | interactive affordance only |
 
-**Contrast** — `--text` on `--bg` is 16.6:1; `--text-secondary` on `--bg` is 8.4:1;
-`--text-muted` on `--bg` is 4.6:1 and is therefore restricted to ≥12px semibold uppercase meta
-text, never body prose. `--accent` on `--bg` is 9.1:1.
+**Contrast** — measured, not estimated. Against `--bg`: `--text` 16.6:1, `--text-secondary`
+7.7:1, `--text-muted` 4.95:1, `--accent` 9.1:1. `--text-muted` must also clear AA against
+**`--surface`**, because tags sit on it and article rows land on it while hovered — there it
+measures 4.63:1. All clear 4.5:1 for normal-size text, so nothing on this page relies on the
+large-text exemption.
+`--text-muted` is nonetheless reserved for meta text — dates, rail labels, captions — never
+body prose, for hierarchy reasons rather than contrast ones.
+
+> `--text-muted` was originally `#6d6e77`, which measures **3.79:1** on `--bg` and fails AA.
+> If you darken it again for atmosphere, re-measure against **both** `--bg` and `--surface` —
+> this is the one token in the palette with no headroom, and `--surface` is the tighter test.
 
 ---
 
@@ -539,8 +547,11 @@ a no-JS visitor receives a fully rendered page.
 8. **Don't** add a fourth font family, and never set body copy in Playfair Display.
 9. **Don't** style `:focus` and `:hover` identically, and never `outline: none` without an
    accompanying `box-shadow` ring.
-10. **Don't** ship the street address or phone number from `resume.tex` to any page. Email,
-    GitHub, and LinkedIn only; the private details stay inside the downloadable PDF.
+10. **Don't** ship the street address or phone number from `resume.tex` to any portfolio page.
+    Home, About, Blog, and Contact carry email, GitHub, and LinkedIn only. `/impressum` is the
+    single, legally mandated exception — § 5 DDG requires a *ladungsfähige Anschrift* there,
+    and an email address alone does not satisfy it. Keep those details in `impressum` in
+    `src/lib/data/site.ts` and nowhere else.
 11. **Don't** let the dot grid tile visibly past the first ~1.4 screens — it must be masked out.
 
 ---
@@ -562,8 +573,12 @@ a no-JS visitor receives a fully rendered page.
 
 **Rules**
 
-- **Touch targets**: every link, button, tag, and nav item is ≥44×44px on coarse pointers,
-  achieved with padding — e.g. `@media (pointer: coarse) { .nav__link { padding: 0.75rem 0.5rem; } }`.
+- **Touch targets**: every link, button, tag, and nav item is ≥44px tall on coarse pointers.
+  Set the floor explicitly (`display: inline-flex; align-items: center; min-height: 44px`) rather
+  than deriving it from padding — several of these elements have `line-height: 1`, where padding
+  alone silently lands short of 44px. Two deliberate exclusions: links inside a sentence (WCAG
+  2.5.8's "Inline" exception — enlarging them would break the line), and `span.tag`, which is a
+  label rather than a control.
 - **No horizontal overflow at any width ≥320px.** Code blocks and tables in blog prose scroll
   inside their own `overflow-x: auto` container; the body never does.
 - **Images**: `max-width: 100%`, `height: auto`, explicit `width`/`height` attributes.
@@ -587,7 +602,7 @@ a no-JS visitor receives a fully rendered page.
 | Article row | text left, 190px thumbnail right, tint on hover | identical |
 | Buttons | white primary + dark secondary, icon left, ~5px radius | identical |
 | Footer | centred link row, avatar, copyright | identical |
-| Pages | Home · About · Blog · Contact (+ 404) | the same five, plus `/blog/[slug]` |
+| Pages | Home · About · Blog · Contact (+ 404) | the same five, plus `/blog/[slug]` and `/impressum` |
 
 **Deviated deliberately**
 
@@ -603,6 +618,12 @@ a no-JS visitor receives a fully rendered page.
    scoped strictly to code.
 4. **The header is sticky.** The reference header is static. Blog posts are long enough that
    losing navigation for several thousand words is a real cost.
-5. **A Projects section is added to About.** The reference has Experiences and Formations only.
+5. **An Impressum page is added, and it is in German.** German law (§ 5 DDG, and § 18 Abs. 2
+   MStV for the blog's editorial content) requires an operator identification page reachable
+   from every page. The reference template has none. It is written in German because the duty
+   arises under German law and the text must be intelligible to the audience it protects —
+   the one deliberate exception to the site's English-only rule. It reuses the rail construct
+   unchanged, so it does not introduce a new layout.
+6. **A Projects section is added to About.** The reference has Experiences and Formations only.
    Both flagship projects here are closed source, so these are prose write-ups with no repo
    links — deliberately not linked cards with GitHub icons.

@@ -21,7 +21,7 @@
 
 <div class="container">
 	<section class="intro">
-		<p class="eyebrow enter" style="--i: 0">{site.eyebrow}</p>
+		<h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1>
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
@@ -128,7 +128,6 @@
 		display: grid;
 		gap: var(--s-5);
 		padding-top: var(--s-9);
-		padding-bottom: var(--gap-hero);
 		max-width: var(--measure);
 	}
 

@@ -165,7 +165,7 @@
 
 	.post__dot {
 		margin-inline: 0.4em;
-		color: var(--line-strong);
+		color: var(--text-muted);
 	}
 
 	.post__tags {

@@ -140,8 +140,13 @@
 	}
 
 	@media (pointer: coarse) {
+		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
+		   alone lands at 36px and misses the 44px target. */
 		.nav__link {
-			padding: 0.75rem 0.5rem;
+			display: inline-flex;
+			align-items: center;
+			min-height: 44px;
+			padding: 0 0.5rem;
 		}
 	}
 </style>

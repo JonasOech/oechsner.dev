@@ -18,7 +18,14 @@
 
 	const fullTitle = $derived(title === site.name ? title : `${title} — ${site.shortName}`);
 	const canonical = $derived(new URL(page.url.pathname, site.url).href);
-	const absoluteImage = $derived(new URL(image, site.url).href);
+
+	/**
+	 * Social platforms reject SVG for og:image / twitter:image — the accepted formats are
+	 * JPEG, PNG, WebP and GIF, so an SVG here means every shared link previews with no
+	 * image at all. `npm run og` rasterises each SVG in static/img to a PNG beside it;
+	 * this swaps the extension so pages keep the crisp SVG while previews get the PNG.
+	 */
+	const absoluteImage = $derived(new URL(image.replace(/\.svg$/, '.png'), site.url).href);
 </script>
 
 <svelte:head>

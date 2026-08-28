@@ -20,6 +20,12 @@
 			{site.name}
 		</p>
 
+		<!-- § 5 DDG requires the Impressum to be "leicht erkennbar, unmittelbar erreichbar
+		     und ständig verfügbar" — the footer puts it one click from every page. -->
+		<nav class="footer__legal" aria-label="Legal">
+			<a class="footer__legal-link" href="/impressum">Impressum</a>
+		</nav>
+
 		<p class="footer__colophon">
 			Built with SvelteKit on Cloudflare Pages. Design derived from the
 			<a
@@ -94,6 +100,44 @@
 		margin: 0;
 	}
 
+	.footer__legal-link {
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: var(--text-muted);
+		text-decoration: underline;
+		text-decoration-color: var(--line-strong);
+		text-underline-offset: 3px;
+		padding: 0.5rem 0.125rem;
+		display: inline-block;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.footer__legal-link:hover {
+			color: var(--text);
+			text-decoration-color: var(--text);
+		}
+	}
+
+	.footer__legal-link:active {
+		color: var(--text-secondary);
+	}
+
+	.footer__legal-link:focus-visible {
+		outline: none;
+		border-radius: 3px;
+		box-shadow: var(--focus-ring);
+	}
+
+	@media (pointer: coarse) {
+		.footer__legal-link {
+			display: inline-flex;
+			align-items: center;
+			min-height: 44px;
+			padding: 0 0.5rem;
+		}
+	}
+
 	.footer__colophon {
 		font-size: 0.75rem;
 		color: var(--text-muted);
@@ -124,7 +168,10 @@
 
 	@media (pointer: coarse) {
 		.footer__link {
-			padding: 0.75rem 0.5rem;
+			display: inline-flex;
+			align-items: center;
+			min-height: 44px;
+			padding: 0 0.5rem;
 		}
 	}
 </style>

@@ -1,8 +1,9 @@
 /**
  * Single source of truth for identity, navigation and contact details.
  *
- * Deliberately excludes the postal address and phone number that appear in
- * `resume.tex` — those stay inside the downloadable PDF and off any crawlable page.
+ * The portfolio pages deliberately show email and profile links only. The postal
+ * address and phone number appear in exactly one place, `impressum` below, because
+ * § 5 DDG requires them there — see src/routes/impressum/+page.svelte.
  */
 
 export const site = {
@@ -73,3 +74,26 @@ export const contacts = [
 
 /** Compiled from `resume.tex` — see `npm run cv`. */
 export const cvPath = '/resume-en.pdf';
+
+/**
+ * Operator details for the Impressum (§ 5 DDG, formerly § 5 TMG) and the
+ * content-responsibility statement under § 18 Abs. 2 MStV.
+ *
+ * The law requires a *ladungsfähige Anschrift* — a real postal address that can
+ * receive service of process. A P.O. box is explicitly not sufficient, and neither
+ * is an email address alone. This is the one place on the site that carries it.
+ */
+export const impressum = {
+	legalName: 'Jonas Christian Öchsner',
+	street: 'Schleifweg 23',
+	postalCode: '97273',
+	city: 'Kürnach',
+	country: 'Deutschland',
+	phone: '+49 1573 5544890',
+	phoneHref: 'tel:+4915735544890',
+	email: 'jonasoechsner06@gmail.com',
+	/** § 18 Abs. 2 MStV — responsible for journalistic-editorial content (the blog). */
+	responsibleForContent: 'Jonas Christian Öchsner',
+	/** Last substantive revision of the Impressum text. */
+	updated: '2026-08-28'
+} as const;

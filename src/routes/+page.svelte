@@ -36,7 +36,10 @@
 			<p>{about[2]}</p>
 		</div>
 		<p class="about__more">
-			<a class="link" href="/about">Read the longer version</a>
+			<a class="inline-cta" href="/about">
+				Read the longer version
+				<Icon name="arrow-right" size={14} />
+			</a>
 		</p>
 	</Rail>
 
@@ -64,11 +67,12 @@
 		text-align: center;
 		gap: var(--s-5);
 		padding-top: var(--s-10);
-		padding-bottom: var(--gap-hero);
+		padding-bottom: var(--s-9);
 	}
 
 	.hero-title {
-		max-width: 18ch;
+		/* Wide enough to keep the headline on one line from ~1200px up. */
+		max-width: 26ch;
 	}
 
 	.hero__actions {
@@ -78,6 +82,45 @@
 
 	.about__more {
 		margin-top: var(--s-5);
+	}
+
+	.inline-cta {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-2);
+		min-height: 44px;
+		color: var(--text);
+		font-weight: 700;
+		font-size: 0.875rem;
+		text-decoration: none;
+		border-bottom: 1px solid var(--line-strong);
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+
+	.inline-cta :global(svg) {
+		transition: transform 220ms var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.inline-cta:hover {
+			color: var(--accent);
+			border-bottom-color: var(--accent);
+		}
+		.inline-cta:hover :global(svg) {
+			transform: translateX(3px);
+		}
+	}
+
+	.inline-cta:active {
+		color: var(--accent-dim);
+	}
+
+	.inline-cta:focus-visible {
+		outline: none;
+		border-radius: 3px;
+		box-shadow: var(--focus-ring);
 	}
 
 	.articles {

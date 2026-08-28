@@ -15,7 +15,7 @@
 />
 
 <div class="container">
-	<Rail label="Get In Touch" id="contact" wide>
+	<Rail label="Get In Touch" id="contact" level={1} wide>
 		<p class="lede enter" style="--i: 0">
 			The fastest way to reach me is email. I read everything, and I answer anything that isn't a
 			recruiter template.
