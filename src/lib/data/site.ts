@@ -11,8 +11,10 @@ export const site = {
 	shortName: 'oechsner.dev',
 	url: 'https://oechsner.dev',
 	intro: "Hi, I'm Jonas. Welcome to my Blog.",
+
+	prebyline: 'About me',
 	byline:
-		'Jonas Öchsner. Applied computer science at Uni Bamberg. Machine learning, Statistics and Distributed Systems. Interested in the Concepts behind the Software.',
+		'Applied computer science at Uni Bamberg. Mostly on Machine learning, Statistics and Distributed Systems. Interested in the Concepts behind the Software.',
 	role: 'B.Sc. Applied Computer Science, Universität Bamberg',
 	description:
 		'Applied computer science student in Bamberg, building machine-learning and data-protection systems. Writing about ML, distributed systems and the software behind them.',

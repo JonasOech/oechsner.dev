@@ -35,6 +35,7 @@
 	
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
+		<p class="intro_prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p>
 	</header>
 
@@ -148,29 +149,47 @@
 		text-align: center;
 	}
 
-	/* Keeps the letterspaced serif of `.eyebrow`, but at full ink instead of
-	   --text-secondary. Contrast, not size, is what lifts it: §11 reserves the
-	   largest type on the page for the writing, never a greeting. */
+	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
+	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
+	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
+	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
+	   lead title. Fluid now, and capped below `.lead__title`
+	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
 	.intro__greeting {
 		font-family: var(--font-display);
-		font-size: 3rem;
+		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
 		font-weight: 400;
 		line-height: 1.4;
-		/* letter-spacing: 0.24em; */
+		/* No tracking. Letterspaced uppercase is what made this overflow narrow
+		   viewports; the base rule had already dropped it, only the mobile override
+		   still put it back. */
 		text-transform: uppercase;
+		text-wrap: balance;
 		color: var(--text);
 		margin: 0 0 var(--s-3);
 		text-align: center;
 	}
+	.intro__prebyline {
+		/* display: block; */
+		width: 60%;
+		max-width: none;
+		margin: 0 auto;
+		color: var(--text-secondary);
+		text-align: center;
+		hyphens: auto;
+	}
 
-	/* Still the single line of 15px body copy §11 specifies for the author. */
+	/* Still the single line of 15px body copy §11 specifies for the author. Set
+	   justified rather than centred — hyphenation is on because a justified column this
+	   narrow opens rivers between words without it. */
 	.intro__byline {
 		display: block;
 		width: 60%;
 		max-width: none;
 		margin: 0 auto;
 		color: var(--text-secondary);
-		text-align: center;
+		text-align: justify;
+		hyphens: auto;
 	}
 
 	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
@@ -384,10 +403,10 @@
 			padding-top: var(--s-6);
 			padding-bottom: var(--s-5);
 		}
-		.intro__greeting {
-			/* The tracking costs a lot of width at 390px; ease it off rather than wrap. */
-			font-size: 2.9375rem;
-			letter-spacing: 0.18em;
+		/* 60% of a 342px container is a 205px column carrying a 190-character line — it
+		   stacks into twenty ragged ones. The gutter is the only margin needed here. */
+		.intro__byline {
+			width: 100%;
 		}
 		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {
