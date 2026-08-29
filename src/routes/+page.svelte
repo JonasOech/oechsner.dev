@@ -403,10 +403,11 @@
 			padding-top: var(--s-6);
 			padding-bottom: var(--s-5);
 		}
-		/* 60% of a 342px container is a 205px column carrying a 190-character line — it
-		   stacks into twenty ragged ones. The gutter is the only margin needed here. */
+		/* Both byline lines are dropped below 767px: 190 characters of secondary copy
+		   under the greeting is a wall on a phone, and the lead post should be the first
+		   thing in view. The author line survives on /about. */
 		.intro__byline {
-			width: 100%;
+			display: none;
 		}
 		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {
