@@ -21,7 +21,7 @@
 
 <div class="container">
 	<section class="intro">
-		<h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1>
+		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
