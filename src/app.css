@@ -49,6 +49,15 @@
 	--glow-warm: rgba(176, 108, 46, 0.16);
 	--glow-cool: rgba(86, 108, 148, 0.13);
 
+	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
+	   even on a dark page. Also backs the SVG panels in the post widgets. — */
+	--plate: #f2f2ef;
+
+	/* — Chart series — two-series figures need a second hue the gold cannot
+	   supply; this is the cool counterpart to --accent. — */
+	--series-cool: #7aa7d9;
+	--series-cool-rgb: 122, 167, 217;
+
 	/* — Feedback — */
 	--danger: #e5484d;
 	--danger-rgb: 229, 72, 77;
@@ -818,6 +827,33 @@ a {
 	overflow-x: auto;
 }
 
+/* Math (KaTeX, rendered at build time — see svelte.config.js).
+   The prose defaults actively fight it: 1.8 line-height pulls fractions and radicals off
+   their baseline, and the secondary text colour leaves equations washed out beside the
+   sentences they sit in. Display math gets the same scroll treatment as wide tables. */
+.prose .katex {
+	line-height: 1.2;
+	color: var(--text);
+}
+
+.prose .katex-display {
+	overflow-x: auto;
+	overflow-y: hidden;
+	/* Room for the scrollbar so it never crowds the equation it belongs to. */
+	padding-bottom: var(--s-1);
+}
+
+/* KaTeX centres the equation inside `.katex-display`, which quietly breaks once it is wider
+   than the column: the left-hand overflow of centred content sits outside the scroll origin
+   and cannot be reached. Shrink-wrapping the equation and centring it with auto margins
+   instead keeps short formulas centred while anchoring long ones at the left edge, where
+   scrolling can actually get to them. */
+.prose .katex-display > .katex {
+	width: fit-content;
+	margin-inline: auto;
+	text-align: initial;
+}
+
 .prose table {
 	width: 100%;
 	border-collapse: collapse;
@@ -897,6 +933,117 @@ a {
 .prose .token.important,
 .prose .token.variable {
 	color: var(--accent-dim);
+}
+
+/* =============================================================================
+   Post figures — interactive widgets, plain diagrams and callouts
+
+   The widget components in `$lib/components/rpm` were written against a
+   different palette. Rather than rewrite every rule inside them, the names they
+   use are re-declared here on `.prose` and pointed at this file's variables, so
+   the components still hardcode no colour of their own.
+   ========================================================================== */
+
+.prose {
+	--page: var(--bg);
+	--surface-1: var(--surface);
+	--text-primary: var(--text);
+	--muted: var(--text-muted);
+	--rule: var(--line);
+	--axis: var(--line-strong);
+	--chip: var(--surface-active);
+	--panel-bg: var(--plate);
+	--series-1: var(--accent);
+	--series-2: var(--series-cool);
+}
+
+/* — The shell every interactive figure sits in — */
+
+.prose .widget {
+	margin-block: var(--s-6);
+	padding: var(--s-5) var(--s-5) var(--s-4);
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: 10px;
+}
+
+.prose .widget > figcaption {
+	margin-top: var(--s-4);
+	padding-top: var(--s-3);
+	border-top: 1px solid var(--line);
+}
+
+.prose .widget h4 {
+	margin-top: 0;
+	font-weight: 600;
+}
+
+.prose .widget input {
+	accent-color: var(--accent);
+}
+
+/* — Widget-local buttons. Deliberately not `.btn`: that is the site's own
+     button system, and these are small controls inside a figure. — */
+
+.prose .rpm-btn {
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	font-weight: 600;
+	line-height: 1.4;
+	padding: 0.4rem 0.85rem;
+	border-radius: 6px;
+	border: 1px solid transparent;
+	background: var(--accent);
+	color: var(--text-inverse);
+	cursor: pointer;
+	transition:
+		background-color var(--dur-fast) var(--ease-out),
+		border-color var(--dur-fast) var(--ease-out);
+}
+
+.prose .rpm-btn.ghost {
+	background: var(--surface-active);
+	border-color: var(--line);
+	color: var(--text);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.prose .rpm-btn:hover {
+		background: var(--accent-dim);
+	}
+	.prose .rpm-btn.ghost:hover {
+		background: var(--surface-hover);
+		border-color: var(--line-strong);
+	}
+}
+
+.prose .rpm-btn:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
+}
+
+/* — Static diagrams. These are dark-ink figures with no background of their
+     own, so they get a light plate instead of floating on the dark page. — */
+
+.prose figure.plain img {
+	width: 100%;
+	background: var(--plate);
+	padding: var(--s-4);
+}
+
+/* — Aside callout — */
+
+.prose .note {
+	padding: var(--s-4) var(--s-5);
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-left: 3px solid var(--series-cool);
+	border-radius: 8px;
+	font-size: 0.9375rem;
+}
+
+.prose .note > * + * {
+	margin-top: var(--s-4);
 }
 
 /* =============================================================================

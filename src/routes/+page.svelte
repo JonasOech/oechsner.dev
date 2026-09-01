@@ -35,7 +35,7 @@
 	
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
-		<p class="intro_prebyline">{site.prebyline}</p>
+		<p class="intro__prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p>
 	</header>
 
@@ -170,7 +170,7 @@
 		text-align: center;
 	}
 	.intro__prebyline {
-		/* display: block; */
+		display: block;
 		width: 60%;
 		max-width: none;
 		margin: 0 auto;
@@ -403,9 +403,10 @@
 			padding-top: var(--s-6);
 			padding-bottom: var(--s-5);
 		}
-		/* Both byline lines are dropped below 767px: 190 characters of secondary copy
-		   under the greeting is a wall on a phone, and the lead post should be the first
-		   thing in view. The author line survives on /about. */
+		/* Both lines under the greeting are dropped below 767px: 190 characters of
+		   secondary copy is a wall on a phone, and the lead post should be the first
+		   thing in view. Both survive on /about. */
+		.intro__prebyline,
 		.intro__byline {
 			display: none;
 		}

@@ -4,6 +4,9 @@
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
+	// Math is rendered to static HTML at build time, so posts only need KaTeX's stylesheet —
+	// scoped to this route so the woff2 faces aren't pulled in on pages without equations.
+	import 'katex/dist/katex.min.css';
 
 	let { data }: PageProps = $props();
 

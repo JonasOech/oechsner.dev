@@ -1,0 +1,258 @@
+---
+title: Rebuilding the best RPM solver in literature
+date: '2026-09-01'
+summary: >-
+  A reconstruction of Zhao et al.'s interpretable neuro-symbolic model for Raven's Progressive
+  Matrices: what reproduced, what did not, and where the missing accuracy went.
+tags: ['machine learning', 'neuro-symbolic', 'reproducibility', 'project']
+cover: /img/cover-rpm.svg
+coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
+---
+
+<script>
+	import RpmToy from '$lib/components/rpm/RpmToy.svelte';
+	import PipelineExplorer from '$lib/components/rpm/PipelineExplorer.svelte';
+	import ShapeLab from '$lib/components/rpm/ShapeLab.svelte';
+	import CognitiveMapLab from '$lib/components/rpm/CognitiveMapLab.svelte';
+	import ResultsChart from '$lib/components/rpm/ResultsChart.svelte';
+	import StageGap from '$lib/components/rpm/StageGap.svelte';
+	import BaselineTable from '$lib/components/rpm/BaselineTable.svelte';
+</script>
+
+*Joint work with Nico Kummeth, for the Cognitive Systems project at Universität Bamberg. Full project report:
+[PDF](/cognitive-maps-for-rpm-report.pdf).*
+
+A Raven's Progressive Matrix is eight panels in a $3 \times 3$ grid with the ninth cut out, and eight
+candidates for what belongs there. No instructions, no labels, no background knowledge. Whatever
+governs the eight panels you can see also determines the one you cannot, and your only job is to
+work out what that is.
+
+It is a good benchmark for abstract visual reasoning because it is almost content-free. It is also, as it turns out, a good example for how easily a benchmark can be gamed.
+
+<RpmToy />
+
+Try that widget twice. Tick **show the context-blind guess** and flip between the two answer-set generators. The cheat is a solver that never looks at the eight context panels at all: for each attribute it takes the most common value among the eight candidates and picks whichever candidate matches most of them. Under the original RAVEN generator it is right almost every time, because every distractor is the correct answer with exactly one attribute changed, making the
+correct answer the attribute-wise majority by construction. [Spratley et al.  (2020)](#references) got over 90 % out of exactly this observation, without the model ever seeing
+the question.
+
+That is the bias [Benny et al. (2021)](#references) built **RAVEN-Fair** to remove. Their generator
+starts from the correct answer and grows the candidate set iteratively, perturbing options it has
+already generated rather than always perturbing the answer panel. The answer stops being the mean of all options, and the bias disappears.
+
+## The claim
+
+[Zhao et al. (2023)](#references) proposed a neuro-symbolic pipeline built on *cognitive maps* — a
+concept borrowed from [Tolman (1948)](#references), who argued that rats navigating a maze build an
+internal spatial model of it rather than a chain of stimulus-response habits. The appeal for RPM is
+direct: if a human solver builds an internal map of how panels relate, maybe a model should too, and
+maybe that map is inspectable in a way a transformer's attention is not.
+
+Their reported number is 98.8 % on RAVEN-Fair. That is the highest in the literature, and it is
+reported for an architecture whose intermediate representation is a list of named attributes rather
+than an opaque embedding. Both halves of that claim are unusual. We set out to reproduce it.
+
+We could not use the authors' code as-is — the repository was not straightforwardly runnable and
+several hyperparameters are not stated in the paper — so we rebuilt the pipeline from the
+description and evaluated it ourselves on both RAVEN and RAVEN-Fair.
+
+## The pipeline, one stage at a time
+
+<PipelineExplorer />
+
+<figure class="plain">
+	<img src="/img/rpm/pipeline.png" alt="The four-stage pipeline: FCNN classification, sVAE feature extraction, CMRB prediction, answer matching" />
+	<figcaption>The pipeline as drawn in the report. The red block in the middle of the sVAE is the 29-dimensional semantic layer.</figcaption>
+</figure>
+
+Everything downstream depends on the first stage getting the *configuration* right. RAVEN problems
+come in seven layouts — a single centred shape, a $2 \times 2$ grid, a $3 \times 3$ grid, left-right and up-down
+splits, and two nested variants where an outer shape contains inner ones. The crop rules that cut a
+panel into individual objects are hand-written per configuration, so a misclassification here
+poisons everything after it.
+
+<figure class="plain">
+	<img src="/img/rpm/classes.png" alt="The seven RAVEN configurations" />
+	<figcaption>The seven configurations. Out-InCenter and Out-InGrid are each split into outer and inner shapes, which is why they get two sVAEs.</figcaption>
+</figure>
+
+## The interpretable bottleneck
+
+The second stage is where the architecture earns the word *interpretable*. The sVAE is a $\beta$-VAE whose
+latent code is forced through a supervised layer of named attributes: 5 shape types, 10 colours,
+6 sizes and 8 angles, one-hot.
+
+Five plus ten plus six plus eight is twenty-nine. That is the entire representation the reasoning
+module ever sees.
+
+<ShapeLab />
+
+This is a strong design commitment, and worth sitting with for a moment. A conventional model would
+hand the reasoner a 256-dimensional vector and hope the relevant structure is in there somewhere.
+Here the reasoner is handed something you can read out loud — *pentagon, colour 4, size 3, 45°* — and
+nothing else. If the reasoning is wrong, you can point at which of the 29 numbers was wrong. If a
+feature is missing, the reasoner genuinely cannot use it.
+
+The price is that those 29 dimensions are exactly the attributes RAVEN's generator varies. The
+interpretability and the specialisation are the same design decision seen from two sides.
+
+## What a cognitive map actually is
+
+The third stage, the Cognitive Map Reasoning Backend, is the part that gives the paper its name and
+the part that is hardest to picture from the text. Strip it down to one semantic dimension and one
+relation and it becomes concrete.
+
+A two-way cognitive map is a $9 \times 9$ matrix over the panels. Cell $(i, j)$ is marked when panels $i$ and $j$
+stand in the relation the map encodes — for the simplest case, when $x_i + x_j$ equals the value of
+the missing panel. A marked cell is therefore a recipe: find one, add those two panels, and you have
+your prediction.
+
+Learning such a map is subtraction, not addition. Start with everything that happens to hold on the
+first problem you see, then keep only the cells that survive every subsequent problem. Coincidences
+die; the generating rule cannot.
+
+<CognitiveMapLab />
+
+Click *observe another problem* a few times. The first map is mostly noise — on a single problem
+plenty of panel pairs add up to the right value by accident. Each new problem intersects the stored
+map with the new one and prunes what did not generalise. What is left after a handful of problems is
+the rule.
+
+The real CMRB does this for all 29 dimensions in parallel, keeps a long-term memory of 30 such maps
+per configuration (the paper's stand-in for a human learning 30 concepts), overwrites the least-used
+entry when memory is full, and carries a $9 \times 9 \times 9$ tensor alongside each matrix for three-way relations
+of the form $a + b - c$.
+
+Hold onto that number: **30 maps × 29 dimensions × (81 + 729 cells) × 7 configurations.** We will
+come back to it.
+
+## What reproduced
+
+We ran a three-fold cross-validation over 15 000 samples on both datasets, and — because Zhao et al.
+report a single point value per configuration rather than a distribution — compared against their
+Table 4 with a one-sample t-test over our three fold accuracies.
+
+<ResultsChart />
+
+<div class="note">
+
+**On those p-values.** They are small, and they mean less than they look like they mean. With
+n = 3 folds, the test is dominated by how tightly our own folds agree with each other, not by how
+far we sit from the reported value. Our folds agree very tightly — 94.0 ± 0.4 % — so almost any gap
+comes out significant. Read them as "this is not fold noise", not as "this is a large effect".
+
+</div>
+
+Two things in that chart are worth pulling out.
+
+**The results are flat.** Every configuration lands within a few tenths of 94 %, on both datasets.
+Configurations differ enormously in difficulty — a single centred shape versus a $3 \times 3$ grid of them —
+so a model whose reasoning was failing would fail unevenly. Ours does not. A constant error across
+wildly different problem structures points at something applied uniformly *after* reasoning, not at
+reasoning itself.
+
+**O-IG breaks the pattern in both directions.** Out-InGrid is the one configuration where Zhao et al.
+report a visible drop (87.6 % on RAVEN), and the one where our reconstruction comes out *ahead* —
+93.98 % against their 87.60 %. On RAVEN-Fair it is also our closest result, 93.88 % against 94.36 %.
+The paper attributes its own O-IG weakness to the inner shapes being too small for the sVAE to
+encode reliably; our reconstruction does not show that weakness, and we were not able to verify the
+explanation.
+
+Across the fourteen configuration/dataset combinations, thirteen come in below the reported value and
+one comes in above.
+
+## Where the five points went
+
+Then we took the pipeline apart and measured the pieces.
+
+<StageGap />
+
+The FCNN hits 100 % on both datasets. That is less impressive than it sounds — the configurations
+are visually unmistakable and it is separating seven obvious layouts — but it does mean stage one
+contributes exactly zero error.
+
+The CMRB was re-run in isolation, fed ground-truth semantic features taken straight from the dataset
+generator (legitimate here, because the sVAE's supervised dimensions are defined to match the
+generator's attributes exactly). Standing alone, it scores between 98.9 % and 100 % across every
+configuration on both datasets. The reasoning backend reproduces essentially without loss.
+
+So: the classifier is perfect, the reasoner is within about a point of the paper, and the assembled
+pipeline drops five. By elimination, the loss is in the one stage we could not test in isolation —
+the sVAE, either in its semantic layer or in the fixed per-class crops feeding it. That is an
+inference, not a measurement, and we flag it as such. Isolating the sVAE properly is the obvious
+next experiment and the one we did not have the hardware budget to run.
+
+The likeliest culprit is mundane: hyperparameters. The paper does not state its training
+configuration, and the accompanying repository contains several config files with no indication of
+which produced the published numbers. We picked the most plausible values and documented them. Five
+points is well within the range that assumption can cost you.
+
+## Does it work?
+
+<BaselineTable />
+
+Yes, and pretty well, as you can see.
+
+Five points behind the paper we reproduced, and still ahead of every published baseline in the comparison. Whatever lost in the sVAE, the cognitive-map approach is doing real work that relation networks and the SCL-style models are not.
+
+The problem is **generality**. Every stage of this pipeline is shaped around RAVEN specifically:
+
+- The FCNN classifies into RAVEN's seven configurations, and the crop rules behind it are written by
+  hand per configuration.
+- The sVAE's 29 dimensions are RAVEN's four attributes at RAVEN's cardinalities.
+- The CMRB's $9 \times 9$ matrices and $9 \times 9 \times 9$ tensors are the shape of a $3 \times 3$ matrix problem, and the relations
+  it searches for — $a + b$ and $a + b - c$ — are the relations RAVEN's generator uses to build the
+  problems in the first place.
+
+That last point deserves to be stated plainly: the reasoning module is looking for the rules the
+dataset was generated with. That is not cheating, and it is not the same thing as exploiting a
+statistical artefact the way the context-blind solver does. But it does mean the model is not
+discovering that RPM problems are built from arithmetic relations — it is told, architecturally,
+that they are.
+
+And the memory does not scale. Every one of the 29 dimensions needs both a $9 \times 9$ matrix and a $9 \times 9 \times 9$
+tensor; long-term memory holds 30 of those sets per configuration. Move from a $3 \times 3$ problem to a $4 \times 4$
+and the tensor alone goes from 729 to 4 096 cells per dimension per map. The cognitive-map analogy
+does not come with the compression that makes actual cognitive maps useful.
+
+## What we would do next
+
+Three things, in order of how much they would tell you:
+
+1. **Isolate the sVAE.** Measure per-attribute accuracy of the semantic layer against the
+   ground-truth labels. Our attribution of the gap rests on elimination; this would settle it
+   directly, and it would say whether the loss is in type, colour, size or angle.
+2. **Sweep the hyperparameters we had to guess.** If five points are recoverable by configuration
+   alone, that is worth knowing — and it is worth knowing about reproducibility in general.
+3. **Point it at a different AVR benchmark.** The generalisation question is answerable, not
+   rhetorical. Something that is not built from $a + b$ relations on a $3 \times 3$ grid would say a great
+   deal about whether cognitive maps are a reasoning mechanism or a very well-fitted decoder for one
+   dataset.
+
+Our honest read: the approach is sound and the result is real, but the paper's headline number
+belongs to a system that has been told a great deal about the problem it is solving. The cognitive
+map is a genuinely nice idea. It has not yet been shown to be a general one.
+
+---
+
+## Notes on the numbers
+
+Everything plotted here comes from the report's own tables: three-fold means over 15 000 samples per
+dataset, and the standalone component results from the same protocol. The comparison values are
+Zhao et al.'s Table 4. The default axis crop on the results chart starts at 85 %, which exaggerates
+the differences — the toggle is there for a reason, and the uncropped view is the honest one.
+
+<h2 id="references">References</h2>
+
+- Barrett, D. G. T., Hill, F., Santoro, A., Morcos, A. S., & Lillicrap, T. (2018). Measuring abstract
+  reasoning in neural networks. *ICML*.
+- Benny, Y., Pekar, N., & Wolf, L. (2021). Scale-localized abstract reasoning. *CVPR*.
+- Chen, L. (2005). The topological approach to perceptual organization. *Visual Cognition*.
+- Higgins, I., et al. (2017). β-VAE: Learning basic visual concepts with a constrained variational
+  framework. *ICLR*.
+- Spratley, S., Ehinger, K., & Miller, T. (2020). A closer look at generalisation in RAVEN. *ECCV*.
+- Tolman, E. C. (1948). Cognitive maps in rats and men. *Psychological Review*, 55(4), 189–208.
+- Whittington, J. C. R., et al. (2020). The Tolman-Eichenbaum machine. *Cell*.
+- Zhang, C., Gao, F., Jia, B., Zhu, Y., & Zhu, S.-C. (2019). RAVEN: A dataset for relational and
+  analogical visual reasoning. *CVPR*.
+- Zhao, W., et al. (2023). An interpretable neuro-symbolic model for Raven's progressive matrices
+  reasoning.
