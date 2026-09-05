@@ -701,6 +701,30 @@ a {
 	margin-top: var(--s-5);
 }
 
+/* Body copy is set justified (Blocksatz) rather than ragged-right. §9's rule is
+   that body content is never *centred* — a justified column still hangs off the
+   rail's left edge, both margins simply land flush — so this sits inside it, and
+   `.intro__byline` on the home page already sets the precedent. Hyphenation is
+   part of the same decision, not an extra: a 68ch column justified without it
+   opens rivers between words.
+
+   Short lines stay ragged, which is all CSS can actually promise. Under
+   `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
+   line — and a one-line paragraph, which is nothing but a final line — is never
+   stretched to the measure. It is spelled out here rather than left to the
+   default because it is the behaviour being relied on. Below that there is no
+   per-line threshold in CSS; the case it cannot express is a column too narrow
+   to fit enough words per line, and that one is handled by viewport width in §9. */
+.prose > p,
+.prose > blockquote p {
+	text-align: justify;
+	text-align-last: left;
+	hyphens: auto;
+	/* A URL or a long identifier cannot break, and one sitting in a justified
+	   line stretches every space around it. Let it break instead. */
+	overflow-wrap: break-word;
+}
+
 .prose h2 {
 	font-size: 1.375rem;
 	line-height: 1.3;
@@ -1089,6 +1113,15 @@ a {
 }
 
 @media (max-width: 479px) {
+	/* Phone measure drops to roughly 40 characters, and justification tears at
+	   that width: too few words per line, so the spaces that absorb the slack
+	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
+	   on, since it still earns its keep on a narrow column. */
+	.prose > p,
+	.prose > blockquote p {
+		text-align: left;
+	}
+
 	.btn-row {
 		flex-direction: column;
 		align-items: stretch;

@@ -368,6 +368,12 @@ larger than they need to be.
 including the lead-post title. Only the header nav and the footer are centred. Body copy is
 never centred. Article rows put text left, thumbnail right at a fixed 190px.
 
+Blog post paragraphs are the one exception to ragged-right: they are **justified**, with
+`hyphens: auto`, because a 68ch column justified without hyphenation opens rivers. The column
+still starts at the rail's left edge, so this is not a break with the rule above. Final lines
+stay ragged (`text-align-last: left`), which also covers one-line paragraphs, and the whole
+thing reverts to left-aligned below 479px, where the measure is too narrow to justify cleanly.
+
 There is no centred hero block. The centred-portrait-and-name composition the reference uses
 was removed deliberately — see §11.
 
