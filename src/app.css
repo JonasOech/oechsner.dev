@@ -899,6 +899,21 @@ a {
 	text-transform: uppercase;
 }
 
+/* A transposed table puts its labels in the first column, where a two-word
+   label would otherwise wrap in a column of one-character data cells. */
+.prose th[scope='row'] {
+	white-space: nowrap;
+}
+
+/* A row of figures inside a table. The six drawings share one viewBox, so the
+   only way they stay at a common scale is to size them by height — the global
+   `img { height: auto }` would instead stretch each to its own cell's width,
+   which the surrounding text lengths, not the drawings, decide. */
+.prose td.cell-fig img {
+	height: 120px;
+	width: auto;
+}
+
 /* — Prism token theme, built from this file's variables — */
 
 .prose .token.comment,

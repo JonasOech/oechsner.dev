@@ -1,0 +1,150 @@
+---
+title: Solving (german) Hangman with Decision Trees
+date: '2026-09-02'
+summary: >-
+  In this article, I walk through how I solved Hangman with some ML techniques.
+  I'll talk about game rules, high level implementation and results.
+tags: ['statistics', 'decision trees']
+cover: /img/cover-hangman.svg
+coverAlt: >-
+  A hangman gallows beside a six-letter word with two letters still blank, above
+  a decision tree whose highlighted branch picks out the matching German word
+---
+
+*This Project is heavily inspired from [this video](https://www.youtube.com/watch?v=ApdLgfgfh5o) by Ballpark Figures.*
+All code used for this project is available on [Github]()
+
+
+## Hangman Rules
+Hangman is a two player game, where one player is the *Game master*, deciding on
+a secret word (in my case a noun in german). The other player tries to guess this 
+word by asking for individual letters. If the secret word contains that letter, the
+gamemaster reveals all positions, where that letter is at. If it doesn't, the player looses a Life.
+Figuratively, one body part is added to a stickfigure hanging from the gallows.
+The guessing player knows the number of Letters in the secret word. 
+In the following, I will assume the guessing player has perfect knowledge of the wordset and the choosing player randomly selects a word from it.
+
+I settled on hangman with 6 lives (Head, Body and 4 limbs) and set umlauts (Ä, Ö, Ü) and the 'sharp S' (ß) as separate characters.
+
+## Taumata­whakatangihanga­koauau­o­tamatea­turi­pukaka­piki­maunga­horo­nuku­pokai­whenua­ki­tana­tahu
+
+<figure class="plain">
+	<img src="/img/hangman/NounDistribution.png" alt="A distribution of noun lenghts in german. It's in form of a bell curve with center 10 and max 84" />
+	<figcaption> The distribution of noun lengths in german</figcaption>
+</figure>
+
+Taumata­whakatangihanga­koauau­o­tamatea­turi­pukaka­piki­maunga­horo­nuku­pokai­whenua­ki­tana­tahu is the longest word in my [Wordlist](https://raw.githubusercontent.com/gambolputty/german-nouns/main/german_nouns/nouns.csv). It has $85$ letters and apparently is the name of a hill in new Zealand. Note that in german, you can infinitely chain nouns together. `German-Nouns` only selects words that were mentioned in german Wikipedia.
+Since the guessing player knows the number of letters at the start of the game, we can train a different decision tree for every word length. 
+
+Each different guess can have a maximum of $2^{n}$ different outcomes, where $n$
+is the number of unknown letters in the word.
+
+## The Frequency tactic
+<figure class="plain">
+	<img src="/img/hangman/letterfreq.png" alt="A distribution of letter frequencies german. It's in form of a bell curve with center 10 and max 84" />
+	<figcaption> The distribution of letter uses in german</figcaption>
+</figure>
+
+The first real tactic that comes to mind is picking the most frequent letters in order. It is flawed, because it completely disregards existing information the guessing player has: Letter count of the word, Existing successful guesses and his knowledge about the german language.
+
+This naive tactic yields a winrate of about $9.0\%$ with an average number of $13.89$ misses per word. We are already significantly better than just choosing letters in *alphabetical order*, where we get a winrate of $0.2\%$ with $10.73$ avg misses per word.
+
+## The perfect Strategy
+At every game step, we can perform a letter frequency analysis on the remaining
+word options and select the most frequent letter and thus make the optimal
+greedy choice. This of course assumes perfect knowledge of the choosing players
+wordset. After running for about 10 minutes on 500 samples per wordlength, this achieved a $97.2\%$ winrate with $1.21$ average misses. We mainly fail on short, unconventional words. Some examples for len 3-8:
+```
+Len 3: 'gäa' in 8 guesses (6 wrong: eoinbd, 6 to finish)
+Len 3: 'sou' in 8 guesses (6 wrong: aebndg, 7 to finish)
+Len 3: 'rtl' in 6 guesses (6 wrong: aeouid, 7 to finish)
+Len 3: 'ivf' in 7 guesses (6 wrong: aeouhl, 8 to finish)
+Len 3: 'ria' in 8 guesses (6 wrong: eocdfm, 7 to finish)
+Len 4: 'tipp' in 8 guesses (6 wrong: aeonkl, 7 to finish)
+Len 4: 'crow' in 8 guesses (6 wrong: aelgbf, 6 to finish)
+Len 4: 'smog' in 8 guesses (6 wrong: aelrnh, 6 to finish)
+Len 4: 'chef' in 7 guesses (6 wrong: aiorln, 6 to finish)
+Len 4: 'zaya' in 7 guesses (6 wrong: mrgnpv, 7 to finish)
+Len 5: 'füdle' in 9 guesses (6 wrong: aiuoth, 6 to finish)
+Len 5: 'wippe' in 8 guesses (6 wrong: anlktr, 8 to finish)
+Len 5: 'ziege' in 9 guesses (6 wrong: smflrw, 6 to finish)
+Len 5: 'haxen' in 10 guesses (6 wrong: rlmgbf, 7 to finish)
+Len 5: 'debüt' in 8 guesses (6 wrong: aiourh, 6 to finish)
+Len 6: 'tauber' in 9 guesses (6 wrong: lnskgp, 6 to finish)
+Len 6: 'medium' in 7 guesses (6 wrong: nrlstg, 6 to finish)
+Len 6: 'fasson' in 9 guesses (6 wrong: eirkmb, 6 to finish)
+Len 6: 'schulz' in 11 guesses (6 wrong: eaiotd, 7 to finish)
+Len 6: 'zörbig' in 7 guesses (6 wrong: eansou, 6 to finish)
+Len 7: 'dämlack' in 7 guesses (6 wrong: eonhru, 7 to finish)
+Len 7: 'curling' in 10 guesses (6 wrong: eathbm, 6 to finish)
+Len 7: 'bexbach' in 7 guesses (6 wrong: nrslti, 6 to finish)
+Len 7: 'fußfall' in 8 guesses (6 wrong: eonhrb, 6 to finish)
+Len 7: 'gezücht' in 11 guesses (6 wrong: nrslim, 6 to finish)
+Len 8: 'luftkuss' in 7 guesses (6 wrong: eaoicn, 6 to finish)
+```
+*Note that the first guess can be different depending on lengths, because each len has a unique letter distribution*
+
+These words are pretty unsurprising. Due to the lower letter count, we have much less
+information that narrows down the candidate count. There also is a lower
+probability the letter appears in the guessed word, just because it is shorter.
+Thus, we can generally expect worse performance on shorter words.
+<figure class="plain">
+	<img src="/img/hangman/letterCounting.png" alt="A chart, showing different strategies" />
+	<figcaption> Average number of wrong guesses for every word length. Errors can be neglected with length > 20.</figcaption>
+</figure>
+
+### Letter distributions
+It's actually pretty interesting, how the letter distribution changes after applying the new strategy:
+
+<figure class="plain">
+	<img src="/img/hangman/newDistrib.png" alt="Letter distribution on all words vs with the new Strategy" />
+	<figcaption> Letter distribution on All words in the dataset vs just the ones Letter Counting lost on.</figcaption>
+</figure>
+
+We see, that unpopular letters such as *j, ß, x* or *q* much more popular in *difficult* words, confirming my theory. By looking at the outliers, we can conclude, that the choosing player should tendentially choose words with *a, u, k and specifically p and z* more, and *n,r and s* less often.
+
+## Conclusion
+<figure class="plain">
+	<img src="/img/hangman/strategies.png" alt="A chart, showing different strategies" />
+	<figcaption> The full distribution of guesses / word length</figcaption>
+</figure>
+
+We can see, that for long words, the game is pretty much trivial. To ensure a fair (and fun) game assuming perfect play, I suggest a system of dynamic lives according to this table:
+
+<div class="table-scroll">
+	<table>
+		<tbody>
+			<tr>
+				<th scope="row">Word Length</th>
+				<td>3</td>
+				<td>4</td>
+				<td>5</td>
+				<td>6</td>
+				<td>7/8</td>
+				<td>9+</td>
+			</tr>
+			<tr>
+				<th scope="row">Lives</th> <td>6</td>
+				<td>5</td>
+				<td>4</td>
+				<td>3</td>
+				<td>2</td>
+				<td>1</td>
+			</tr>
+			<tr>
+				<th scope="row">Hangman</th>
+				<td class="cell-fig"><img src="/img/hangman/hangman-6.svg" alt="" /></td>
+				<td class="cell-fig"><img src="/img/hangman/hangman-5.svg" alt="" /></td>
+				<td class="cell-fig"><img src="/img/hangman/hangman-4.svg" alt="" /></td>
+				<td class="cell-fig"><img src="/img/hangman/hangman-3.svg" alt="" /></td>
+				<td class="cell-fig"><img src="/img/hangman/hangman-2.svg" alt="" /></td>
+				<td class="cell-fig"><img src="/img/hangman/hangman-1.svg" alt="" /></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+Every colour in those hangmen is one life. As the count drops, parts get merged into a single stroke: both legs at once, then both arms, until for 9+ letters we just draw a head. 
+*Hangmen drawn in excalidraw btw*
+
+>Seriously try playing it this way! It actually is really fun. Thanks for reading this post, it took a lot of effort. Have a great day :)
