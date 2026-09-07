@@ -11,8 +11,11 @@ coverAlt: >-
   a decision tree whose highlighted branch picks out the matching German word
 ---
 
-*This Project is heavily inspired from [this video](https://www.youtube.com/watch?v=ApdLgfgfh5o) by Ballpark Figures.*
-All code used for this project is available on [Github]()
+<script>
+	import Icon from '$lib/components/Icon.svelte';
+</script>
+
+*This Project is heavily inspired from [this video](https://www.youtube.com/watch?v=ApdLgfgfh5o) by Ballpark Figures.* **All code used for this project is available on [<span style="display:inline-flex;align-items:center;gap:0.3em"><Icon name="github" size={15} />Github</span>](https://github.com/JonasOech/analysing_Hangman)**
 
 
 ## Hangman Rules
@@ -147,4 +150,13 @@ We can see, that for long words, the game is pretty much trivial. To ensure a fa
 Every colour in those hangmen is one life. As the count drops, parts get merged into a single stroke: both legs at once, then both arms, until for 9+ letters we just draw a head. 
 *Hangmen drawn in excalidraw btw*
 
->Seriously try playing it this way! It actually is really fun. Thanks for reading this post, it took a lot of effort. Have a great day :)
+## What now?
+A list of possible research questions for the future:
+<ul>
+<li>You could further investigate the frequency differences to english (or other languages) and do a frequency analysis on specific wordlengths. </li>
+<li>You could also develop a system for humans to implement the perfect strategy as best as they can.</li>
+<li> The dataset doesn't consider arbitrary composite nouns</li>
+<li> What would happen if the guessing player <em> didn't </em> know the letter count?
+</ul>
+
+> Seriously try playing it this way! It actually is really fun. Thanks for reading this post, it took a lot of effort. :) 
