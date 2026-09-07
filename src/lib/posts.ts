@@ -8,6 +8,8 @@ export type PostMeta = {
 	cover?: string;
 	coverAlt?: string;
 	draft?: boolean;
+	/** How deep the post goes, 1–3. Shown as 🤓 beside the read time; omit to hide it. */
+	nerdyness?: 1 | 2 | 3;
 	/** Injected at build time by the `readingTime` remark plugin in svelte.config.js. */
 	readingMinutes?: number;
 };
@@ -62,6 +64,7 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			cover: meta.cover,
 			coverAlt: meta.coverAlt,
 			draft: meta.draft ?? false,
+			nerdyness: meta.nerdyness,
 			readingMinutes: meta.readingMinutes ?? 1
 		};
 

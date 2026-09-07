@@ -5,6 +5,7 @@ summary: >-
   How the site you are reading works: mdsvex posts in a folder, a glob, and a full prerender
   onto Cloudflare's edge. No database, no CMS, no admin login.
 tags: ['sveltekit', 'cloudflare', 'meta']
+nerdyness: 1
 cover: /img/cover-files.svg
 coverAlt: A stack of markdown source files fanned out beside a rendered page
 ---

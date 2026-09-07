@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Rail from '$lib/components/Rail.svelte';
 	import ArticleRow from '$lib/components/ArticleRow.svelte';
+	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
 	import { site } from '$lib/data/site';
@@ -55,6 +56,10 @@
 				<time datetime={lead.date}>{formatDate(lead.date)}</time>
 				<span class="lead__dot" aria-hidden="true">·</span>
 				{lead.readingMinutes} min read
+				{#if lead.nerdyness}
+					<span class="lead__dot" aria-hidden="true">·</span>
+					<Nerdyness level={lead.nerdyness} />
+				{/if}
 			</p>
 
 			<!-- The visible affordance. Not a tab stop: the title above is the accessible

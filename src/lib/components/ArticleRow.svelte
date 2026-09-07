@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { formatDate, type Post } from '$lib/posts';
+	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
@@ -28,6 +29,12 @@
 			<time datetime={post.date}>{formatDate(post.date)}</time>
 			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
+			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
+			     leave a dangling dot at the end of the line. -->
+			{#if post.nerdyness}
+				<span class="card__dot" aria-hidden="true">·</span>
+				<Nerdyness level={post.nerdyness} />
+			{/if}
 		</p>
 	</div>
 

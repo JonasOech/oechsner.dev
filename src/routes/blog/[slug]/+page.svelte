@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -53,6 +54,10 @@
 				<time datetime={post.date}>{formatDate(post.date)}</time>
 				<span class="post__dot" aria-hidden="true">·</span>
 				{post.readingMinutes} min read
+				{#if post.nerdyness}
+					<span class="post__dot" aria-hidden="true">·</span>
+					<Nerdyness level={post.nerdyness} />
+				{/if}
 			</p>
 
 			{#if post.tags.length}
