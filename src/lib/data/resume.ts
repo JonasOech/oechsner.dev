@@ -18,13 +18,14 @@ export type Entry = {
 export const about = [
 	`I'm a third-semester Applied Computer Science student at Universität Bamberg, currently
 	 building an AI-powered data-protection classifier at the Leibniz Institute for Educational
-	 Trajectories — a project I run end to end, from requirements through to maintenance.`,
-	`Most of my work sits where machine learning meets systems that have to be defensible:
-	 models that produce an answer, and an architecture that can explain where the answer came
-	 from. I spent this year reproducing a neuro-symbolic reasoning pipeline from the literature,
+	 Trajectories. I'm interested in ML, Operating Systems (Linux), and IT in general, this is why this blog exists.`,
+
+	`Most of my work sits where machine learning meets needs to be intergrated into resillient software systems.
+	 The goal is to build models that produce a safe answer, and an architecture that can explain where the answer came
+	 from (XAI). I spent last semester reproducing a neuro-symbolic reasoning pipeline from the literature,
 	 and the rest of it making LLM inference run entirely on-premise so sensitive research data
-	 never leaves the building.`,
-	`From September 2026 I'll be in Dublin on an ERASMUS exchange at TU Dublin.`
+	 never leaves our servers.`,
+	`Currently on an ERASMUS exchange year at TU Dublin, where I want to do deep learning research in the context of cloud computing.`
 ];
 
 export const experience: Entry[] = [

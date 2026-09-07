@@ -35,8 +35,8 @@
 	
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
-		<p class="intro__prebyline">{site.prebyline}</p>
-		<p class="intro__byline">{site.byline}</p>
+		<!-- <p class="intro__prebyline">{site.prebyline}</p>
+		<p class="intro__byline">{site.byline}</p> -->
 	</header>
 
 	{#if lead}
