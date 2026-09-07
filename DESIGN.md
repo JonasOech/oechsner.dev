@@ -252,6 +252,43 @@ never a solid color block standing in for a photo.
 }
 ```
 
+**The "More" disclosure (<35em).** Four uppercase labels at `0.11em` tracking measure roughly
+340px, and the coarse-pointer touch padding pushes that past 420px — enough to break the bar onto
+two rows on a phone. Rather than let it wrap, everything after "Writing" folds into a `More`
+button that opens a small translucent panel beneath it.
+
+The breakpoint is `35em` (≈560px at a default root size), not one of the `--bp-*` values. `em`
+rather than `px` is the point: the labels are `rem`-sized, so under text-only zoom or a raised
+browser default font they outgrow a fixed pixel threshold and the bar would overflow instead of
+collapsing. An `em` query scales with them. The number is the measured label run plus headroom
+for the wider fallback face that renders during the webfont swap — re-derive it if the labels
+change. **It is written twice** — the media query and `COLLAPSE_QUERY` in `Header.svelte`, which
+closes the menu when the layout widens — and the two must move together.
+
+One set of links serves both layouts. Above the breakpoint the wrapper and its panel are
+`display: contents`, so the anchors sit directly in the nav's flex row and the button is
+`display: none`; below it the wrapper becomes `position: relative` and the panel an absolutely
+positioned dropdown. Nothing is duplicated, so there is one tab order and one set of
+`aria-current` markers. Note that both the hide and show rules use two-class selectors
+(`.nav .more__button`) — the `@media (pointer: coarse)` block later in the sheet re-declares
+`display` on `.nav__link`, and would otherwise resurrect the button on a wide touch screen.
+
+The panel is translucent on the same terms as the scrolled bar: `rgba(var(--surface-rgb), 0.82)`
+over `blur(12px)`, at the same cap. The tint is a little heavier than the bar's `0.78` because the
+panel sits over running prose rather than over the page's top edge. An `@supports` fallback swaps
+in the opaque `--surface` where `backdrop-filter` is unavailable, since the tint alone would let
+text read through. Where the panel overlaps the scrolled header the two backdrop filters nest, and
+the blur may not resolve — the tint still holds, so it degrades to plain translucency.
+
+`flex-wrap: nowrap` on the bar is scoped to this breakpoint, where the two remaining items leave
+ample slack. The wide bar keeps the default `wrap`, so a future fifth entry or a long label
+degrades to a second row rather than to horizontal overflow, which §9 forbids outright.
+
+The button carries `aria-expanded` / `aria-controls`, and `data-current="true"` when the active
+page is one of the hidden entries, so the bar still shows where you are. It closes on Escape,
+outside pointerdown, focus leaving the wrapper, `afterNavigate`, and on widening past the
+breakpoint. The footer repeats the full nav, which is the fallback when scripting is off.
+
 ### Links (in prose)
 
 ```css
@@ -582,7 +619,8 @@ a no-JS visitor receives a fully rendered page.
 | **≥1024px** | Full layout. Rail label in its own 200px column, left of content. Article rows are `1fr 190px`. Container 1080px, centred. |
 | **768–1023px** | Rail collapses: the label moves *above* its content block, gains `margin-bottom: var(--s-4)`, keeps its tracking. Container fluid with `--s-6` padding. Article rows go `1fr 150px`. |
 | **480–767px** | Article thumbnail drops below the text at full width, `aspect-ratio: 16 / 9`. Hero type scales via `clamp()` toward 2.5rem. Section gaps step down: `--s-11 → --s-8`, `--s-10 → --s-7`. |
-| **<480px** | Nav wraps to two centred rows with `--s-3` gap and stays sticky. Buttons go full-width stacked with `--s-3` gap. Gutter `--gutter` (1.5rem). |
+| **<35em** (≈560px) | Nav collapses: "Writing" stays on the bar, About / Skills / Contact move behind a "More" disclosure (see *Navigation* in §4). `flex-wrap: nowrap` applies here only, so the bar never runs to a second line. |
+| **<480px** | Nav stays sticky and single-row. Buttons go full-width stacked with `--s-3` gap. Gutter `--gutter` (1.5rem). |
 
 **Rules**
 
