@@ -4,7 +4,7 @@ date: '2026-09-01'
 summary: >-
   A reconstruction of Zhao et al.'s interpretable neuro-symbolic model for Raven's Progressive
   Matrices: what reproduced, what did not, and where the missing accuracy went.
-tags: ['machine learning', 'neuro-symbolic', 'reproducibility', 'project']
+tags: ['machine learning', 'project']
 cover: /img/cover-rpm.svg
 coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
 ---
