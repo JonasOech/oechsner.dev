@@ -6,6 +6,7 @@ summary: >-
   Matrices: what reproduced, what did not, and where the missing accuracy went.
 tags: ['machine learning', 'project']
 nerdyness: 3
+draft: true
 cover: /img/cover-rpm.svg
 coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
 ai: true
