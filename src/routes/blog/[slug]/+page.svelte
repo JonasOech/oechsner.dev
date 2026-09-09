@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
+	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -50,23 +51,34 @@
 				<p class="post__summary">{post.summary}</p>
 			{/if}
 
-			<p class="meta">
-				<time datetime={post.date}>{formatDate(post.date)}</time>
-				<span class="post__dot" aria-hidden="true">·</span>
-				{post.readingMinutes} min read
-				{#if post.nerdyness}
-					<span class="post__dot" aria-hidden="true">·</span>
-					<Nerdyness level={post.nerdyness} />
-				{/if}
-			</p>
+			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
+			     the measure, and the badge claims the slack the two of them leave behind. -->
+			<div class="post__facts">
+				<div class="post__facts-main">
+					<p class="meta">
+						<time datetime={post.date}>{formatDate(post.date)}</time>
+						<span class="post__dot" aria-hidden="true">·</span>
+						{post.readingMinutes} min read
+						{#if post.nerdyness}
+							<span class="post__dot" aria-hidden="true">·</span>
+							<Nerdyness level={post.nerdyness} />
+						{/if}
+					</p>
 
-			{#if post.tags.length}
-				<div class="tag-row post__tags">
-					{#each post.tags as tag (tag)}
-						<span class="tag">{tag}</span>
-					{/each}
+					{#if post.tags.length}
+						<div class="tag-row post__tags">
+							{#each post.tags as tag (tag)}
+								<span class="tag">{tag}</span>
+							{/each}
+						</div>
+					{/if}
 				</div>
-			{/if}
+
+				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
+				{#if post.ai === false}
+					<HumanWritten />
+				{/if}
+			</div>
 		</header>
 
 		{#if post.cover}
@@ -174,6 +186,25 @@
 	.post__dot {
 		margin-inline: 0.4em;
 		color: var(--text-muted);
+	}
+
+	.post__facts {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-5);
+		flex-wrap: wrap;
+	}
+
+	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
+	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
+	.post__facts-main {
+		display: grid;
+		gap: var(--s-4);
+		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
+		   drops below the facts rather than crushing the wreath when it does not. */
+		min-width: min(100%, 22rem);
+		flex: 1 1 22rem;
 	}
 
 	.post__tags {

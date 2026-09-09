@@ -10,6 +10,11 @@ export type PostMeta = {
 	draft?: boolean;
 	/** How deep the post goes, 1–3. Shown as 🤓 beside the read time; omit to hide it. */
 	nerdyness?: 1 | 2 | 3;
+	/**
+	 * Whether the prose was written with an LLM. Only an explicit `false` earns the
+	 * human-written laurel on the post page — an omitted field claims nothing either way.
+	 */
+	ai?: boolean;
 	/** Injected at build time by the `readingTime` remark plugin in svelte.config.js. */
 	readingMinutes?: number;
 };
@@ -65,6 +70,8 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			coverAlt: meta.coverAlt,
 			draft: meta.draft ?? false,
 			nerdyness: meta.nerdyness,
+			// Deliberately not defaulted: `undefined` and `false` mean different things here.
+			ai: meta.ai,
 			readingMinutes: meta.readingMinutes ?? 1
 		};
 

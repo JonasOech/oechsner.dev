@@ -8,6 +8,7 @@ tags: ['machine learning', 'project']
 nerdyness: 3
 cover: /img/cover-rpm.svg
 coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
+ai: true
 ---
 
 <script>

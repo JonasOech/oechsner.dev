@@ -8,6 +8,7 @@ tags: ['gdpr', 'llm', 'docker']
 nerdyness: 2
 cover: /img/cover-onprem.svg
 coverAlt: Three stacked containers inside a closed network boundary, with the route to the internet blocked
+ai: true
 ---
 
 > **This is starter content.** Replace it with your own write-up.

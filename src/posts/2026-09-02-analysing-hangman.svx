@@ -10,6 +10,7 @@ cover: /img/cover-hangman.svg
 coverAlt: >-
   A hangman gallows beside a six-letter word with two letters still blank, above
   a decision tree whose highlighted branch picks out the matching German word
+ai: false
 ---
 
 <script>
