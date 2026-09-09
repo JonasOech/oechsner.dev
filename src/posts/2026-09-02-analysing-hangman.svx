@@ -1,6 +1,6 @@
 ---
-title: Solving (german) Hangman with Decision Trees
-date: '2026-09-02'
+title: Solving (german) Hangman with Letter Frequencies
+date: '2026-09-06'
 summary: >-
   In this article, I walk through how I analysed and solved Hangman with some Stat.
   I'll talk about game rules, high level implementation of a winning strategy and letter frequencies. 
