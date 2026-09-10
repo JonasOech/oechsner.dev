@@ -1,6 +1,6 @@
 ﻿---
 title: Obsidian for school and Uni
-date: '2026-09-07'
+date: '2026-09-10'
 summary: >-
   In this blogpost I will cover my full 4-Year daily obsidian workflow, explain the rationale behind the plugins I chose and why links didn't work for me.
 tags: ['obsidian', 'workflow']
