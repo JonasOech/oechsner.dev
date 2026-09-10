@@ -12,14 +12,18 @@
 	let activeTag = $state<string | null>(null);
 
 	/**
-	 * The home page *is* the writing index. The newest post takes the display face that
+	 * The home page *is* the writing index, and the lead post takes the display face that
 	 * used to carry the author's name, so the content occupies the loudest slot on the
-	 * site. Filtering by tag drops the lead treatment — a filtered view is a list, not a
+	 * site. `hero` in the front-matter is what grants a post that slot: `posts` is sorted
+	 * newest-first, so the newest one that opted in wins it and everything else stays a
+	 * row. Filtering by tag drops the lead treatment — a filtered view is a list, not a
 	 * front page.
 	 */
-	const lead = $derived(activeTag ? undefined : posts[0]);
+	const lead = $derived(activeTag ? undefined : posts.find((p) => p.hero));
+	// Not `slice(1)`: the lead is no longer necessarily the first post, so it has to be
+	// removed by identity or it both duplicates itself and swallows the newest post.
 	const listed = $derived(
-		activeTag ? posts.filter((p) => p.tags.includes(activeTag!)) : posts.slice(1)
+		activeTag ? posts.filter((p) => p.tags.includes(activeTag!)) : posts.filter((p) => p !== lead)
 	);
 
 	function toggleTag(tag: string) {
@@ -42,7 +46,9 @@
 
 	{#if lead}
 		<article class="lead">
-			<p class="lead__eyebrow enter" style="--i: 1">Latest Blog Post</p>
+			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
+			     newest post on the site. -->
+			<p class="lead__eyebrow enter" style="--i: 1">Featured Blog Post</p>
 
 			<h2 class="hero-title lead__title enter" style="--i: 2">
 				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>

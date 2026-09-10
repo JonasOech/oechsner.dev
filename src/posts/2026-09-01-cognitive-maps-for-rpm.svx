@@ -7,6 +7,7 @@ summary: >-
 tags: ['machine learning', 'project']
 nerdyness: 3
 draft: true
+hero: false
 cover: /img/rpm/cover.svg
 coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
 ai: true
@@ -24,6 +25,13 @@ ai: true
 
 *Joint work with Nico Kummeth, for the Cognitive Systems project at Universität Bamberg. Full project report:
 [PDF](/cognitive-maps-for-rpm-report.pdf).*
+
+<div class="note">
+
+**This post is an AI-written summary**, condensed from the project report to make it more digestible.
+If you are actually interested in the work, read the [full report](/cognitive-maps-for-rpm-report.pdf).
+
+</div>
 
 A Raven's Progressive Matrix is eight panels in a $3 \times 3$ grid with the ninth cut out, and eight
 candidates for what belongs there. No instructions, no labels, no background knowledge. Whatever

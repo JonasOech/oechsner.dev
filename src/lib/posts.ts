@@ -15,6 +15,12 @@ export type PostMeta = {
 	 * human-written laurel on the post page — an omitted field claims nothing either way.
 	 */
 	ai?: boolean;
+	/**
+	 * Whether the post may take the lead slot on the home page. The newest post with
+	 * `hero: true` wins it; an omitted field means "not eligible", so a new post has to
+	 * opt in rather than displace the current lead the moment it lands.
+	 */
+	hero?: boolean;
 	/** Injected at build time by the `readingTime` remark plugin in svelte.config.js. */
 	readingMinutes?: number;
 };
@@ -72,6 +78,7 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			nerdyness: meta.nerdyness,
 			// Deliberately not defaulted: `undefined` and `false` mean different things here.
 			ai: meta.ai,
+			hero: meta.hero ?? false,
 			readingMinutes: meta.readingMinutes ?? 1
 		};
 
