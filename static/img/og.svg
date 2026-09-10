@@ -18,15 +18,15 @@
   <rect width="1200" height="630" fill="url(#ogB)"/>
 
   <text x="110" y="250" font-family="ui-sans-serif, system-ui, sans-serif"
-        font-size="17" font-weight="700" letter-spacing="4" fill="#80818a">WRITING</text>
+        font-size="17" font-weight="700" letter-spacing="4" fill="#80818a">OECHSNER.DEV</text>
 
   <text x="110" y="345" font-family="Georgia, 'Times New Roman', serif"
-        font-size="70" fill="#f4f4f6">Machine learning,</text>
+        font-size="70" fill="#f4f4f6">Hi, I'm Jonas.</text>
   <text x="110" y="425" font-family="Georgia, 'Times New Roman', serif"
-        font-size="70" fill="#f4f4f6">and what holds it up.</text>
+        font-size="70" fill="#f4f4f6">Welcome to my Blog.</text>
 
   <line x1="110" y1="480" x2="330" y2="480" stroke="#34353d" stroke-width="1"/>
 
   <text x="110" y="524" font-family="ui-sans-serif, system-ui, sans-serif"
-        font-size="19" fill="#a3a4ac">oechsner.dev  ·  Jonas Öchsner</text>
+        font-size="19" fill="#a3a4ac">Jonas  Öchsner</text>
 </svg>
