@@ -6,7 +6,7 @@ summary: >-
   onto Cloudflare's edge. No database, no CMS, no admin login.
 tags: ['sveltekit', 'cloudflare', 'meta']
 nerdyness: 1
-cover: /img/cover-files.svg
+cover: /img/files/cover.svg
 coverAlt: A stack of markdown source files fanned out beside a rendered page
 ai: true
 ---
@@ -41,7 +41,7 @@ title: Something I learned
 date: '2026-09-01'
 summary: One or two sentences. This is what shows on the index and in link previews.
 tags: ['sveltekit']
-cover: /img/cover-something.svg   # optional
+cover: /img/something/cover.svg   # optional
 coverAlt: Describe the image for screen readers
 draft: true                        # optional — hidden in production, visible in dev
 ---

@@ -6,7 +6,7 @@ summary: >-
   data you are not allowed to send anywhere. Notes on building the whole thing on-premise.
 tags: ['gdpr', 'llm', 'docker']
 nerdyness: 2
-cover: /img/cover-onprem.svg
+cover: /img/onprem/cover.svg
 coverAlt: Three stacked containers inside a closed network boundary, with the route to the internet blocked
 ai: true
 ---

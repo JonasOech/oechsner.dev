@@ -1,5 +1,6 @@
 /**
- * Rasterises every SVG in `static/img/` to a PNG beside it.
+ * Rasterises each post cover in `static/img/<postname>/` — plus the site-wide `og.svg`
+ * fallback — to a PNG beside it.
  *
  * Why: social platforms (Facebook, X, LinkedIn, WhatsApp, Slack) all reject SVG for
  * `og:image` / `twitter:image` — the accepted formats are JPEG, PNG, WebP and GIF. The
@@ -25,7 +26,16 @@ try {
 	process.exit(0);
 }
 
-const svgs = readdirSync(DIR).filter((f) => f.endsWith('.svg'));
+// Only the images Seo.svelte can actually point at: the site-wide `og.svg` fallback and
+// each post's `<postname>/cover.svg`. Deliberately not a blanket recursive walk — that
+// would also rasterise in-post figures like `hangman/hangman-1.svg` into junk PNGs.
+const svgs = [
+	...readdirSync(DIR).filter((f) => f === 'og.svg'),
+	...readdirSync(DIR, { withFileTypes: true })
+		.filter((e) => e.isDirectory())
+		.map((e) => join(e.name, 'cover.svg'))
+		.filter((f) => existsSync(join(DIR, f)))
+];
 if (svgs.length === 0) {
 	console.log('No SVGs in static/img — nothing to do.');
 	process.exit(0);

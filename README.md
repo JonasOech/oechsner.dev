@@ -30,7 +30,7 @@ it — read it before moving anything above the fold.
 | `src/lib/actions/reveal.ts` | The one-shot scroll-reveal action. No animation library. |
 | `resume.tex` | Source of the downloadable CV. Bilingual via the `\bi{}` macro. |
 | `scripts/build-cv.mjs` | Compiles `resume.tex` → `static/resume-en.pdf`. Run locally. |
-| `scripts/build-og-images.mjs` | Rasterises `static/img/*.svg` → `*.png` for social previews. |
+| `scripts/build-og-images.mjs` | Rasterises each `static/img/<postname>/cover.svg` (plus `og.svg`) → `.png` for social previews. |
 | `src/routes/impressum/` | Impressum under § 5 DDG / § 18 Abs. 2 MStV. In German, deliberately. |
 | `svelte.config.js` | Adapter, runes mode, mdsvex, and the reading-time remark plugin. |
 | `wrangler.jsonc` | Cloudflare config: project name, compatibility date, `vars`, `pages_build_output_dir`. |
@@ -47,7 +47,7 @@ title: A thing I learned          # required — the build fails without it
 date: '2026-09-01'                # required
 summary: One or two sentences. Shown on the index and in link previews.
 tags: ['pytorch', 'systems']
-cover: /img/cover-a-thing.svg     # optional; omit and the row runs full width
+cover: /img/a-thing/cover.svg     # optional; omit and the row runs full width
 coverAlt: Description for screen readers
 draft: true                       # optional — hidden in production, visible in dev
 ---
@@ -72,7 +72,7 @@ npm run build     # type-checks Worker bindings, then builds
 npm run preview   # serves the real Pages output via `wrangler pages dev`
 npm run check     # svelte-check — what CI runs
 npm run cv        # recompiles static/resume-en.pdf from resume.tex
-npm run og        # rasterises static/img/*.svg to *.png for link previews
+npm run og        # rasterises each static/img/<postname>/cover.svg to .png for link previews
 ```
 
 `npm run og` matters more than it looks: social platforms reject SVG for `og:image`, so a

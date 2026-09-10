@@ -6,7 +6,8 @@ summary: >-
   I'll talk about game rules, high level implementation of a winning strategy and letter frequencies. 
 tags: ['statistics', 'sidequest']
 nerdyness: 2
-cover: /img/cover-hangman.svg
+hero: true
+cover: /img/hangman/cover.svg
 coverAlt: >-
   A hangman gallows beside a six-letter word with two letters still blank, above
   a decision tree whose highlighted branch picks out the matching German word
