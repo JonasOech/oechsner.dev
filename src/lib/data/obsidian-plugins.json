@@ -1,0 +1,329 @@
+{
+	"editor-feel": {
+		"section": "Note-Taking",
+		"title": "Editor feel",
+		"plugins": [
+			{
+				"name": "Vimrc Support",
+				"use": "Loads a startup vimrc, so my Vim mappings are identical in Obsidian and in my editor.",
+				"enabled": true
+			},
+			{
+				"name": "Vim Yank Highlight",
+				"use": "Flashes the yanked region, must-have",
+				"enabled": true
+			},
+			{
+				"name": "Code Editor Shortcuts",
+				"use": "VS Code key bindings (line move, duplicate, multi-cursor) inside the editor",
+				"enabled": true
+			},
+			{
+				"name": "Spacekeys",
+				"use": "Leader-key style command sequences, so vault actions are reachable from the keyboard without hotkeys.",
+				"enabled": true
+			},
+			{
+				"name": "Typewriter Mode",
+				"use": "Buffer lines below the cursor, so you don't have to work at the edge of your screen.",
+				"enabled": true
+			}
+		]
+	},
+	"math-and-code": {
+		"section": "Note-Taking",
+		"title": "Math and code",
+		"plugins": [
+			{
+				"name": "Quick Latex",
+				"use": "Auto-fractions, matrix and align shortcuts, custom shorthands, use immediately",
+				"enabled": true
+			},
+			{
+				"name": "Completr",
+				"use": "Autocompletion for LaTeX commands (I disabled it for everything else)",
+				"enabled": true
+			},
+			{
+				"name": "Solve",
+				"use": "Inline calculations in plain text: arithmetic, percentages, unit conversion and date math right where I am writing.",
+				"enabled": true
+			},
+			{
+				"name": "Code Emitter",
+				"use": "Executes code blocks directly in Document. I use it mainly for syntax verification",
+				"enabled": true
+			},
+			{
+				"name": "VSCode Editor",
+				"use": "Convenience plugin. Open arbitrary code files in Vault in a handy editor, not for fullon coding, good for a quick look",
+				"enabled": true
+			},
+			{
+				"name": "Code Language Completer",
+				"use": "Autocompletes the language tag on fenced code blocks, so syntax highlighting is never missing because I typed the fence too fast.",
+				"enabled": false
+			}
+		]
+	},
+	"sketches-and-diagrams": {
+		"section": "Note-Taking",
+		"title": "Sketches and diagrams",
+		"plugins": [
+			{
+				"name": "Excalidraw",
+				"use": "One of the most important elements in My workflow. Quickly draw and Embed handdrawn sketches",
+				"enabled": true
+			},
+			{
+				"name": "Mermaid Tools",
+				"use": "Toolbar with common Mermaid elements, making it a smoother experience the few times I use Mermaind.",
+				"enabled": true
+			},
+			{
+				"name": "Obsidian Functionplot",
+				"use": "Plots mathematical functions inline. ",
+				"enabled": true
+			},
+			{
+				"name": "Mehrmaid",
+				"use": "Lets me put real Markdown inside Mermaid nodes, so diagram boxes can hold formatted text and links rather than bare labels.",
+				"enabled": false
+			},
+			{
+				"name": "Diagram Popup",
+				"use": "Opens Mermaid / PlantUML / Graphviz diagrams in a zoomable, draggable popup — necessary for wide architecture or pipeline diagrams that do not fit the note width.",
+				"enabled": false
+			},
+			{
+				"name": "Charts View",
+				"use": "Renders Ant-Design charts from note data — good for plotting benchmark results or grade and progress data next to the text that explains them.",
+				"enabled": false
+			}
+		]
+	},
+	"getting-sources-in": {
+		"section": "Note-Taking",
+		"title": "Getting sources in",
+		"plugins": [
+			{
+				"name": "PDF++",
+				"use": "Annotates lecture slides and papers inside Obsidian and links notes back to the exact highlighted passage in the PDF. I usually split-screen the PDF and note.",
+				"enabled": true
+			},
+			{
+				"name": "Media Extended",
+				"use": "Built in media player for lecture recordings. Supports timestamped embeds and Screenshots.",
+				"enabled": true
+			},
+			{
+				"name": "Auto Link Title",
+				"use": "Pasting a paper, docs page or lecture URL fetches a readable title instead of a naked link.",
+				"enabled": true
+			},
+			{
+				"name": "Paste URL into selection",
+				"use": "Select text, paste a URL, get a Markdown link. Just Intuitive behaviour, should be built in.",
+				"enabled": true
+			}
+		]
+	},
+	"keeping-the-text-clean": {
+		"section": "Note-Taking",
+		"title": "Keeping the text clean",
+		"plugins": [
+			{
+				"name": "Linter",
+				"use": "Normalises YAML, headings, spacing and math blocks on save, making the vault a bit more normalized.",
+				"enabled": true
+			},
+			{
+				"name": "Smart Typography",
+				"use": "Converts quotes, dashes and ellipses to their typographic forms so exported PDFs look properly typeset.",
+				"enabled": true
+			},
+			{
+				"name": "Header Adjuster",
+				"use": "Bulk-shifts heading levels up or down",
+				"enabled": true
+			}
+		]
+	},
+	"how-a-note-looks": {
+		"section": "Visuals",
+		"title": "How a note looks",
+		"plugins": [
+			{
+				"name": "Style Settings",
+				"use": "Exposes theme, snippet and plugin CSS variables as real settings, which is how I tune the look of callouts and tables without editing CSS by hand.",
+				"enabled": true
+			},
+			{
+				"name": "List Callouts",
+				"use": "Lightweight inline callouts inside lists. See Better Export PDF, only exporter that supports them.",
+				"enabled": true
+			},
+			{
+				"name": "Iconize",
+				"use": "Icons on course folders and key notes so I can navigate the vault by shape instead of reading every folder name.",
+				"enabled": true
+			},
+			{
+				"name": "Callout Manager",
+				"use": "Lets me define my own callout types (definition, theorem, proof, pitfall) so course notes have a consistent visual grammar.",
+				"enabled": false
+			}
+		]
+	},
+	"a-quiet-window": {
+		"section": "Visuals",
+		"title": "A quiet window",
+		"plugins": [
+			{
+				"name": "Hider",
+				"use": "Hides specific visual elements. Important for a distraction-free Workspace.",
+				"enabled": true
+			},
+			{
+				"name": "Status Bar Organizer",
+				"use": "Reorders and hides status bar items, keeping only the counters I actually watch (edit time, word count) visible.",
+				"enabled": true
+			},
+			{
+				"name": "Hide Sidebars on Window Resize",
+				"use": "Collapses sidebars automatically when I shrink the window. This means that notes are always readable, even if I have obsidian only on one side of the screen",
+				"enabled": true
+			}
+		]
+	},
+	"numbers-in-view": {
+		"section": "Visuals",
+		"title": "Numbers in view",
+		"plugins": [
+			{
+				"name": "Time Things",
+				"use": "Clock in the status bar plus tracked editing time per note, giving me real numbers on how long a topic actually took.",
+				"enabled": true
+			},
+			{
+				"name": "Heatmap Calendar",
+				"use": "GitHub-style year view fed by Dataview: makes study streaks and gaps in a semester visible at a glance.",
+				"enabled": true
+			}
+		]
+	},
+	"finding-my-way-around": {
+		"section": "Finding my way around",
+		"title": "Finding my way around",
+		"plugins": [
+			{
+				"name": "Workspaces Plus",
+				"use": "Fast switching between saved layouts: One for each Course and usecase",
+				"enabled": true
+			},
+			{
+				"name": "Multiple Notes Outline",
+				"use": "Shows the outlines of several notes side by side, which is how I get an overview of a whole course before an exam.",
+				"enabled": true
+			},
+			{
+				"name": "Settings Search",
+				"use": "Global search across all settings tabs",
+				"enabled": true
+			},
+			{
+				"name": "Dataview",
+				"use": "Queries frontmatter across courses to build dashboards: open exercise sheets, exam dates, which topics I still have not summarised.",
+				"enabled": false
+			},
+			{
+				"name": "Automatic Table Of Contents",
+				"use": "Long lecture summaries get a TOC that stays in sync as I keep adding sections during the semester.",
+				"enabled": false
+			},
+			{
+				"name": "Search in Course",
+				"use": "My own plugin: scopes float-search to the top-level course folder of the current file, so searching from a Software Engineering note does not return hits from every other module.",
+				"enabled": false
+			}
+		]
+	},
+	"getting-things-out": {
+		"section": "Getting things out of the vault",
+		"title": "Getting things out of the vault",
+		"plugins": [
+			{
+				"name": "Advanced Slides",
+				"use": "Turns a course note into a slide deck without leaving the vault: Used mainly for tutoring",
+				"enabled": true
+			},
+			{
+				"name": "Better Export PDF",
+				"use": "Exports notes as PDFs, produce printable summary sheets for friends. Replaces Obsidian export, because it supports List callouts",
+				"enabled": true
+			},
+			{
+				"name": "Obsidian_to_Anki",
+				"use": "Bulk-exports marked passages from my notes into Anki decks, so exam cards are generated from the notes instead of written twice.",
+				"enabled": false
+			}
+		]
+	},
+	"wired-to-the-outside": {
+		"section": "Wired to the outside",
+		"title": "Wired to the outside",
+		"plugins": [
+			{
+				"name": "Claudian",
+				"use": "Embeds Claude Code and other coding agents with the vault as working directory, so an agent can read my notes and PDFs, run shell commands and edit files for me.",
+				"enabled": true
+			},
+			{
+				"name": "Google Calendar",
+				"use": "Pulls lecture, lab and deadline events into the vault so planning notes sit next to the actual schedule.",
+				"enabled": true
+			},
+			{
+				"name": "Local REST API with MCP",
+				"use": "Exposes the vault over a local REST / MCP endpoint, the bridge that lets external agents and scripts read and write my notes programmatically.",
+				"enabled": false
+			},
+			{
+				"name": "Terminal",
+				"use": "A shell inside Obsidian — run a script, a git command or a training job without leaving the note describing it.",
+				"enabled": false
+			}
+		]
+	},
+	"under-the-hood": {
+		"section": "Under the hood",
+		"title": "Under the hood",
+		"plugins": [
+			{
+				"name": "Plugin Groups",
+				"use": "Enables and disables sets of plugins with one command and delays startup of heavy ones, which keeps this long list from slowing down launch.",
+				"enabled": true
+			},
+			{
+				"name": "Custom Attachment Location",
+				"use": "Store embeds near the actual note, not in one big photo wasteland",
+				"enabled": true
+			},
+			{
+				"name": "Update time on edit",
+				"use": "Keeps the frontmatter timestamps current automatically, Which is what my Dataview \"recently touched\" queries depend on.",
+				"enabled": true
+			},
+			{
+				"name": "NLP",
+				"use": "Provides NLP primitives (tokenisation, similarity, keyword extraction) that other plugins and my own queries can build on for text analysis over the vault.",
+				"enabled": true
+			},
+			{
+				"name": "BRAT",
+				"use": "Installs and updates beta plugins straight from GitHub, which is how the not-yet-released tools in this list get into the vault.",
+				"enabled": false
+			}
+		]
+	}
+}

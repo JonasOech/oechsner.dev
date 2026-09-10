@@ -1,0 +1,210 @@
+﻿---
+title: Obsidian for school and Uni
+date: '2026-09-07'
+summary: >-
+  In this blogpost I will cover my full 4-Year daily obsidian workflow, explain the rationale behind the plugins I chose and why links didn't work for me.
+tags: ['obsidian', 'workflow']
+nerdyness: 1
+draft: true
+hero: false
+cover: /img/obsidian/cover.svg
+coverAlt: >-
+  The Obsidian logo at the centre of a note graph, with links radiating outwards to connected notes
+ai: false
+---
+
+<script>
+  import Icon from '$lib/components/Icon.svelte';
+  import PluginRack from '$lib/components/PluginRack.svelte';
+</script>
+
+<!--
+  Scaffold. Delete the comments as you fill each section in.
+
+  Markup available in a post (see the hangman post for live examples):
+
+    <figure class="plain">
+      <img src="/img/obsidian/thing.png" alt="…" />
+      <figcaption>What the reader should notice.</figcaption>
+    </figure>
+
+    <div class="table-scroll"><table>…</table></div>
+
+    Fenced code blocks are highlighted. $math$ works via KaTeX.
+    To use an icon, add to the top of the file:
+
+  Screenshots go in static/img/obsidian/ and are referenced as /img/obsidian/…
+-->
+
+## Introduction
+Most developers should know the benefits of writing docs in `.md`. Markdown not only gives you full ownership of all of your files, but also enables integration of arbitrary tools. Especially in the AI age, this is an essential strength. 
+Integrating AI into your notes becomes as easy as just spawning an agent in your vault root and formulating some behaviour rules.
+You aren't dependent on any toolset given to you by a firm with the same audience as scam callers.
+
+*Choosing Obsidian means configurability, stability and (generally) a feeling of superiority.*
+
+But like every highly configurable tool, it needs some setup to be nice to use. I've seen many bad tutorials and tips, and want to work my own experience into a small guide.
+I built my vault to meet specifically my needs as a MINT student.
+
+## The vault
+I've used the software for 4 years now. I've installed (and uninstalled) hundreds of community plugins and was in configuration hell, a minimalism trip and everything in between. I think I found a nice middle ground that works for me.
+
+Believe it or not, but I found the builtin link system (and thus the infamous obsidian [graph network](https://forum.obsidian.md/uploads/default/original/3X/6/0/604d3693c38722b0c4b29628df1d45ffa473dd0a.png)) as completely useless. That goes against the whole "second brain" crowd and I'm proud of it.
+When I study, am completely organized into semesters, courses and lectures. Seeing the hierarchy?
+Specific lecture notes correspond to specific lecture slides and embedded assets correspond to specific files.
+
+*Connections in my vault aren't made via links, they are made with locations and the hierarchy that this creates, so why would I need any more links?*
+
+```
+.
+├── Archive/
+│   ├── SS25/
+│   │   └── Course1
+│   └── ...
+├── Course2/
+│   ├── assets/
+│   │   └── Lecture01.md/
+│   │       └── image.png
+│   ├── Assignments/
+│   ├── Exam-prep/
+│   ├── ...
+│   ├── LecturePDF/
+│   │   ├── Lecture01.pdf
+│   │   └── Lecture02.pdf
+│   ├── Lecture01.md
+│   └── Lecture02.md
+└── Course3/
+    └── ...
+```
+
+What follows is a list of all the plugins I use, sorted into specific usecases and a short explaination.
+
+
+## Note-Taking
+### Editor feel
+<PluginRack group="editor-feel" />
+
+All to meet my needs of navigating quickly. I grew dependent the Vim keybindings. 
+
+My `.obsidian.vimrc`:
+``` .obsidian.vimrc
+" Have j and k navigate visual lines
+nnoremap j gj
+nnoremap k gk
+nnoremap gj j
+nnoremap gk k
+
+" Quickly remove search highlights with ESC
+nmap <ESC> :nohl<CR>
+
+"" Smarter o and O (inserting prefix for markdown lists). 
+nmap o A<CR>
+nmap O kA<CR>
+
+" Yank to system clipboard
+set clipboard=unnamed
+```
+
+### Math and code
+<PluginRack group="math-and-code" />
+Quick Latex is probably the most important plugin of them all. $\LaTeX$ equations get rapid fast and my custom shorthand list grew to almost $90$. 
+VSCode Editor is nice if you need to look something not .md up quick.
+
+### Sketches and diagrams
+<PluginRack group="sketches-and-diagrams" />
+Excalidraw should be self-explaining, as one of the worlds most popular whiteboards.
+
+I'm a bit unhappy with the drawing & config speed though, Diagrams are clunky. This is where Mermaid comes into play. Obsidian has a builtin mermaid renderer, just label a block code with `mermaid`. I still struggle with the syntax though, thus I use the sidebar.
+
+A small regret I have is Obsidian Functionplot.  Have used it a few times and am now stuck with the plugin for backwards compatibility. *Don't be like me, actually think about what you'll use*.
+
+### Sources
+<PluginRack group="getting-sources-in" />
+Both PDF++ and Media Extended are in my daily workflow. I usually splitscreen the source and my notes.
+
+PDF++ is especially good, because it supports dynamic embeds. It just specifies a rectangle in the source file and renders on-demand, no additional images sitting in assets.
+Media Extended sadly just takes screenshots. I'm not even sure if dynamic loading would be resourceful though, no idea if the .mp4 file structure would support this.
+
+### Consistency
+<PluginRack group="keeping-the-text-clean" />
+
+Linter is great for solving a very specific problem of mine, because I often use this note structure:
+
+```
+**Technical term**
+- Aspect 1
+- Aspect 2
+**Broken term (gets wrapped upwards)**
+- Aspect 1
+``` 
+
+Sadly, lines directly after lists in markdown gets merged into the previous line. 
+I forced an empty line after every list with this custom regex:
+
+`^((?:[ \t]*[-*+] .*\n)+)(?=[ \t]*(?![-*+] )\S)` - `gm` - `$1\n`
+
+I won't explain it though, go figure it out yourself at [Regex101](https://regex101.com/?regex=%5E%28%28%3F%3A%5B+%5Ct%5D*%5B-*%2B%5D+.*%5Cn%29%2B%29%28%3F%3D%5B+%5Ct%5D*%28%3F%21%5B-*%2B%5D+%29%5CS%29&testString=&flags=gm&flavor=pcre2&delimiter=%2F).
+
+## Visuals
+
+### Styling
+<PluginRack group="how-a-note-looks" />
+
+I'm currently using the [Soft Paper](https://github.com/nickmilo/soft-paper) Theme, mainly for its customisability with style settings. I also like the pastel background.
+
+### How the screen looks
+<PluginRack group="a-quiet-window" />
+
+I found the standard view to be much to cluttered and distracting, thus I hid most of it. I hid:
+- The ribbon
+- the tab title bar
+- Many Statusbar items, including Vim mode
+- backlink, canvas, footnotes, page-preview, daily-notes, slash-command, bookmarks, markdown-importer, zk-prefixer, random-note, audio-recorder, publish, bases
+
+I also have keyboard shortcuts to directly hide sidebars and tabbar. This means in fullscreen I only see my note, perfect focus.
+
+
+<!-- #### Numbers in view
+<PluginRack group="numbers-in-view" /> -->
+
+## Navigation & Search
+<PluginRack group="finding-my-way-around" />
+
+Multiple Notes outline is a gem I found relatively recently.
+I configured it to display the outline of every note in a course folder, superb for navigation and getting a overview on how far your notes are done.
+
+## Getting things out of the vault
+<PluginRack group="getting-things-out" />
+
+## Service callers
+<PluginRack group="wired-to-the-outside" />
+Even though claude integration is very easy (see above), I like to have a custom view for the LLM. Also renders $\LaTeX$, important for math questions. I've tried many agent plugins, this was the best.
+
+Custom system prompt:
+> You are mainly used as a university tutor for students with solid CS experience (especially ML). Act accordingly, highlight connections and explain with related concepts.
+> If you create a file, mark it with the "LLM: Claude" property.
+> If you modify a file, insert "--- (Claude)" as header and footer to your modification.
+
+## Under the hood
+<PluginRack group="under-the-hood" />
+
+Custom Attachment Location is very important to me, since my hierarchical filestructure needs me to have embeds near the actual note. This is where I store my embeds:
+
+```
+.
+├── assets/
+│   ├── Note1/
+│   │   └── img1.png
+│   └── Note2/
+│       └── img2.png
+├── Note1.md (embeds img1.png)
+└── Note2.md (embeds drawing.excalidraw)
+```
+
+
+## Sync and backup
+
+I actually don't have a dedicated backup system for obsidian. I put all of my documents in a partition **BEFORE** my OS. This is backed up to Google drive using [this](https://support.google.com/a/users/answer/13022292?hl=en).
+
+## Disclaimer
+Keep in mind that nothing good comes from optimising your note-taking system to the brim, it's just wasted time. If another system works for you, honestly keep it. But if you're already deep in the obsidian rabbithole, I suggest giving my method a try :). Thanks for reading my second blogpost!
