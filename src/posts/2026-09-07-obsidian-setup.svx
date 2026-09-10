@@ -14,27 +14,8 @@ ai: false
 ---
 
 <script>
-  import Icon from '$lib/components/Icon.svelte';
   import PluginRack from '$lib/components/PluginRack.svelte';
 </script>
-
-<!--
-  Scaffold. Delete the comments as you fill each section in.
-
-  Markup available in a post (see the hangman post for live examples):
-
-    <figure class="plain">
-      <img src="/img/obsidian/thing.png" alt="…" />
-      <figcaption>What the reader should notice.</figcaption>
-    </figure>
-
-    <div class="table-scroll"><table>…</table></div>
-
-    Fenced code blocks are highlighted. $math$ works via KaTeX.
-    To use an icon, add to the top of the file:
-
-  Screenshots go in static/img/obsidian/ and are referenced as /img/obsidian/…
--->
 
 ## Introduction
 Most developers should know the benefits of writing docs in `.md`. Markdown not only gives you full ownership of all of your files, but also enables integration of arbitrary tools. Especially in the AI age, this is an essential strength. 
@@ -63,7 +44,7 @@ Specific lecture notes correspond to specific lecture slides and embedded assets
 │   └── ...
 ├── Course2/
 │   ├── assets/
-│   │   └── Lecture01.md/
+│   │   └── Lecture01/
 │   │       └── image.png
 │   ├── Assignments/
 │   ├── Exam-prep/
@@ -77,6 +58,11 @@ Specific lecture notes correspond to specific lecture slides and embedded assets
     └── ...
 ```
 
+<figure class="plain">
+	<img src="/img/obsidian/screenshot.png" alt="The Obsidian window: a file explorer of semester folders on the left, a lecture note with LaTeX and a hand-drawn sketch in the middle, and a chat pane on the right" />
+	<figcaption> That same hierarchy, live: semesters inside Archive, courses inside those. Note what is missing: no ribbon, no tab title bar.</figcaption>
+</figure>
+
 What follows is a list of all the plugins I use, sorted into specific usecases and a short explaination.
 
 
@@ -87,7 +73,7 @@ What follows is a list of all the plugins I use, sorted into specific usecases a
 All to meet my needs of navigating quickly. I grew dependent the Vim keybindings. 
 
 My `.obsidian.vimrc`:
-``` .obsidian.vimrc
+```
 " Have j and k navigate visual lines
 nnoremap j gj
 nnoremap k gk
@@ -114,7 +100,7 @@ VSCode Editor is nice if you need to look something not .md up quick.
 <PluginRack group="sketches-and-diagrams" />
 Excalidraw should be self-explaining, as one of the worlds most popular whiteboards.
 
-I'm a bit unhappy with the drawing & config speed though, Diagrams are clunky. This is where Mermaid comes into play. Obsidian has a builtin mermaid renderer, just label a block code with `mermaid`. I still struggle with the syntax though, thus I use the sidebar.
+I'm a bit unhappy with the drawing & config speed though, Diagrams are clunky. This is where Mermaid comes into play. Obsidian has a builtin mermaid renderer, just label a block code with `mermaid`. I still struggle with the syntax though, thus I use the toolbar.
 
 A small regret I have is Obsidian Functionplot.  Have used it a few times and am now stuck with the plugin for backwards compatibility. *Don't be like me, actually think about what you'll use*.
 
@@ -139,11 +125,11 @@ Linter is great for solving a very specific problem of mine, because I often use
 ``` 
 
 Sadly, lines directly after lists in markdown gets merged into the previous line. 
-I forced an empty line after every list with this custom regex:
+I forced an empty line after every bullet list with this custom regex:
 
 `^((?:[ \t]*[-*+] .*\n)+)(?=[ \t]*(?![-*+] )\S)` - `gm` - `$1\n`
 
-I won't explain it though, go figure it out yourself at [Regex101](https://regex101.com/?regex=%5E%28%28%3F%3A%5B+%5Ct%5D*%5B-*%2B%5D+.*%5Cn%29%2B%29%28%3F%3D%5B+%5Ct%5D*%28%3F%21%5B-*%2B%5D+%29%5CS%29&testString=&flags=gm&flavor=pcre2&delimiter=%2F).
+I won't explain it though, go figure it out yourself at [Regex101](https://regex101.com/?regex=%5E((%3F%3A%5B%20%5Ct%5D*%5B-*%2B%5D%20.*%5Cn)%2B)(%3F%3D%5B%20%5Ct%5D*(%3F!%5B-*%2B%5D%20)%5CS)&testString=**Technical%20term**%0A-%20Aspect%201%0A-%20Aspect%202%0A**Broken%20term%20(gets%20wrapped%20upwards)**%0A-%20Aspect%201%0A&flags=gm&flavor=javascript&delimiter=%2F) — the example above is already loaded as the test string.
 
 ## Visuals
 
@@ -178,7 +164,7 @@ I configured it to display the outline of every note in a course folder, superb 
 
 ## Service callers
 <PluginRack group="wired-to-the-outside" />
-Even though claude integration is very easy (see above), I like to have a custom view for the LLM. Also renders $\LaTeX$, important for math questions. I've tried many agent plugins, this was the best.
+Even though claude integration is very easy (see above), I like to have a custom view for the LLM. Claudian gives me that: it embeds the agent in a sidebar pane with the vault as its working directory, and it renders $\LaTeX$, important for math questions. I've tried many agent plugins, Claudian was the best.
 
 Custom system prompt:
 > You are mainly used as a university tutor for students with solid CS experience (especially ML). Act accordingly, highlight connections and explain with related concepts.
@@ -196,7 +182,7 @@ Custom Attachment Location is very important to me, since my hierarchical filest
 │   ├── Note1/
 │   │   └── img1.png
 │   └── Note2/
-│       └── img2.png
+│       └── drawing.excalidraw
 ├── Note1.md (embeds img1.png)
 └── Note2.md (embeds drawing.excalidraw)
 ```
