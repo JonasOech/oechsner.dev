@@ -123,6 +123,7 @@ export const projectsNote = 'Both projects are closed source.';
 export const grades = {
 	summary: 'Some highlights from my transcript, sorted by grade. Full transcript available on request.',
 	items: [
+		['Distributed Systems', '1.0'],
 		['Discrete Modelling', '1.3'],
 		['Java Programming', '1.3'],
 		['Linear Algebra', '1.3'],
