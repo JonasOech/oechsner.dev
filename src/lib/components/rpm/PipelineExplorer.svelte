@@ -48,7 +48,7 @@
 	];
 
 	let openId = $state('fcnn');
-	let open = $derived(stages.find((s) => s.id === openId));
+	let open = $derived(stages.find((s) => s.id === openId) ?? stages[0]);
 </script>
 
 <figure class="widget">

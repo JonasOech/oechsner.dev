@@ -55,18 +55,6 @@
 </div>
 
 <style>
-	.intro {
-		display: grid;
-		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
-	}
-
-	.entry__org {
-		color: var(--text-secondary);
-		margin-bottom: var(--s-3);
-	}
-
 	.entry__stack {
 		margin: 0 0 var(--s-3);
 	}
@@ -75,43 +63,6 @@
 		margin-top: var(--s-4);
 		font-weight: 400;
 		font-style: italic;
-	}
-
-	.note--top {
-		margin-top: 0;
-		margin-bottom: var(--s-5);
-		font-style: normal;
-	}
-
-	.grades {
-		margin: 0;
-		display: grid;
-		gap: 0;
-	}
-
-	.grades__row {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		gap: var(--s-4);
-		align-items: baseline;
-		padding: var(--s-3) 0;
-		border-bottom: 1px solid var(--line);
-	}
-
-	.grades__row:last-child {
-		border-bottom: 0;
-	}
-
-	.grades dt {
-		color: var(--text-secondary);
-		font-size: 0.9375rem;
-	}
-
-	.grades dd {
-		margin: 0;
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
-		color: var(--text);
 	}
 
 	.skills {
@@ -130,11 +81,5 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--s-2);
-	}
-
-	@media (max-width: 767px) {
-		.intro {
-			padding-top: var(--s-6);
-		}
 	}
 </style>

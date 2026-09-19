@@ -1,10 +1,10 @@
 <script>
 	import { pipeline, standalone, CLASS_LABELS } from './data.js';
 
-	let dataset = $state('ravenF');
+	let dataset = $state(/** @type {import('./types').Dataset} */ ('ravenF'));
 	let cropped = $state(true);
 	let asTable = $state(false);
-	let hovered = $state(null);
+	let hovered = $state(/** @type {number | null} */ (null));
 
 	let rows = $derived(pipeline[dataset]);
 	let comps = $derived(standalone[dataset]);
@@ -19,11 +19,13 @@
 	let x0 = $derived(cropped ? 85 : 0);
 	let plotW = W - PAD_L - PAD_R;
 
+	/** @param {number} v */
 	function x(v) {
 		return PAD_L + ((v - x0) / (100 - x0)) * plotW;
 	}
 	let ticks = $derived(cropped ? [85, 90, 95, 100] : [0, 25, 50, 75, 100]);
 
+	/** @param {'ours' | 'zhao'} key */
 	function meanOf(key) {
 		return rows.reduce((s, r) => s + r[key], 0) / rows.length;
 	}
@@ -99,6 +101,8 @@
 				<g
 					class="grp"
 					class:dim={hovered !== null && hovered !== i}
+					role="graphics-symbol"
+					aria-label={CLASS_LABELS[r.id]}
 					onmouseenter={() => (hovered = i)}
 					onmouseleave={() => (hovered = null)}
 				>

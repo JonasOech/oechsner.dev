@@ -103,10 +103,6 @@
 		margin-bottom: var(--s-3);
 	}
 
-	.entry__stack {
-		margin: 0 0 var(--s-3);
-	}
-
 	.note {
 		margin-top: var(--s-4);
 		font-weight: 400;
@@ -148,24 +144,6 @@
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
 		color: var(--text);
-	}
-
-	.skills {
-		margin: 0;
-		display: grid;
-		gap: var(--s-5);
-	}
-
-	.skills__group {
-		display: grid;
-		gap: var(--s-3);
-	}
-
-	.skills__items {
-		margin: 0;
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--s-2);
 	}
 
 	@media (max-width: 767px) {

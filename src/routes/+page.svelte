@@ -232,29 +232,6 @@
 		}
 	}
 
-	.intro__prebyline {
-		display: block;
-		width: 60%;
-		max-width: none;
-		margin: 0 auto;
-		color: var(--text-secondary);
-		text-align: center;
-		hyphens: auto;
-	}
-
-	/* Still the single line of 15px body copy §11 specifies for the author. Set
-	   justified rather than centred — hyphenation is on because a justified column this
-	   narrow opens rivers between words without it. */
-	.intro__byline {
-		display: block;
-		width: 60%;
-		max-width: none;
-		margin: 0 auto;
-		color: var(--text-secondary);
-		text-align: justify;
-		hyphens: auto;
-	}
-
 	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
 	   than source order, so the mobile stack can put the image between the meta line
 	   and the call to action without reordering the markup. */
@@ -465,13 +442,6 @@
 		.intro {
 			padding-top: var(--s-6);
 			padding-bottom: var(--s-5);
-		}
-		/* Both lines under the greeting are dropped below 767px: 190 characters of
-		   secondary copy is a wall on a phone, and the lead post should be the first
-		   thing in view. Both survive on /about. */
-		.intro__prebyline,
-		.intro__byline {
-			display: none;
 		}
 		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {

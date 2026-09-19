@@ -26,10 +26,13 @@
 		return x;
 	}
 
+	/** @param {number[]} x */
 	function mapOf(x) {
 		const target = x[8];
+		/** @type {boolean[][]} */
 		const m = [];
 		for (let i = 0; i < N; i++) {
+			/** @type {boolean[]} */
 			const row = [];
 			for (let j = 0; j < N; j++) row.push(x[i] + x[j] === target);
 			m.push(row);
@@ -37,12 +40,17 @@
 		return m;
 	}
 
+	/**
+	 * @param {boolean[][]} a
+	 * @param {boolean[][]} b
+	 */
 	function intersect(a, b) {
 		return a.map((row, i) => row.map((v, j) => v && b[i][j]));
 	}
 
-	let problem = $state(randomProblem());
-	let ltm = $state(mapOf(problem));
+	const initialProblem = randomProblem();
+	let problem = $state(initialProblem);
+	let ltm = $state(mapOf(initialProblem));
 	let seen = $state(1);
 	let lastPruned = $state(0);
 

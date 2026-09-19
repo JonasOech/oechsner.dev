@@ -6,13 +6,21 @@
 	// generators. What it does reproduce faithfully is the *difference between
 	// the two answer-set generators*, which is the whole reason RAVEN-F exists.
 
+	/** @typedef {import('./types').PanelObj} PanelObj */
+	/** @typedef {import('./types').Attr} Attr */
+
 	const RANGES = { type: 5, color: 10, size: 6, angle: 8 };
+	/** @type {Attr[]} */
 	const ATTRS = ['type', 'color', 'size', 'angle'];
 
+	/** @param {number} n */
 	const ri = (n) => Math.floor(Math.random() * n);
+	/** @param {PanelObj} a @param {PanelObj} b */
 	const eq = (a, b) => ATTRS.every((k) => a[k] === b[k]);
+	/** @param {PanelObj} o */
 	const key = (o) => ATTRS.map((k) => o[k]).join('-');
 
+	/** @param {PanelObj} obj */
 	function perturb(obj) {
 		const k = ATTRS[ri(ATTRS.length)];
 		let v = obj[k];
@@ -35,7 +43,10 @@
 		return grid;
 	}
 
-	/** RAVEN: every distractor is the answer with exactly one attribute changed. */
+	/**
+	 * RAVEN: every distractor is the answer with exactly one attribute changed.
+	 * @param {PanelObj} answer
+	 */
 	function ravenChoices(answer) {
 		const out = [answer];
 		const seen = new Set([key(answer)]);
@@ -49,7 +60,10 @@
 		return out;
 	}
 
-	/** RAVEN-F: grow the set iteratively, perturbing whatever is already in it. */
+	/**
+	 * RAVEN-F: grow the set iteratively, perturbing whatever is already in it.
+	 * @param {PanelObj} answer
+	 */
 	function fairChoices(answer) {
 		const out = [answer];
 		const seen = new Set([key(answer)]);
@@ -64,6 +78,7 @@
 		return out;
 	}
 
+	/** @param {PanelObj[]} a */
 	function shuffle(a) {
 		const c = [...a];
 		for (let i = c.length - 1; i > 0; i--) {
@@ -75,8 +90,10 @@
 
 	/** The context-blind cheat: per attribute, take the modal value across all
 	 *  eight candidates; score each candidate by how many modes it matches. */
+	/** @param {PanelObj[]} choices */
 	function contextBlindPick(choices) {
-		const modes = {};
+		/** @type {Record<Attr, number>} */
+		const modes = /** @type {Record<Attr, number>} */ ({});
 		for (const k of ATTRS) {
 			const tally = new Map();
 			for (const c of choices) tally.set(c[k], (tally.get(c[k]) ?? 0) + 1);
@@ -95,10 +112,10 @@
 	}
 
 	let mode = $state('raven');
-	let grid = $state([]);
-	let choices = $state([]);
+	let grid = $state(/** @type {PanelObj[]} */ ([]));
+	let choices = $state(/** @type {PanelObj[]} */ ([]));
 	let answerIdx = $state(0);
-	let picked = $state(null);
+	let picked = $state(/** @type {number | null} */ (null));
 	let showCheat = $state(false);
 
 	function newProblem() {
@@ -112,6 +129,7 @@
 		picked = null;
 	}
 
+	/** @param {string} m */
 	function setMode(m) {
 		mode = m;
 		newProblem();
