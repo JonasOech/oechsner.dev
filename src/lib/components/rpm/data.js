@@ -1,6 +1,7 @@
 // All numbers below are transcribed from the report's result tables.
 // sec-res.tex: T-Test / T-Test-2 (full pipeline) and standalone / standalone-F.
 
+/** @type {Record<string, string>} */
 export const CLASS_LABELS = {
 	center: 'Center',
 	'2x2': '2x2 Grid',
@@ -66,7 +67,10 @@ export const baselines = [
 	{ name: 'SRAN', acc: 71.3, kind: 'baseline' }
 ];
 
-/** The 29 supervised dimensions of the sVAE's semantic layer: 5 + 10 + 6 + 8. */
+/**
+ * The 29 supervised dimensions of the sVAE's semantic layer: 5 + 10 + 6 + 8.
+ * @type {{ key: import('./types').Attr; label: string; values: string[] }[]}
+ */
 export const SEMANTIC_GROUPS = [
 	{
 		key: 'type',

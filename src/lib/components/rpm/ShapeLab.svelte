@@ -16,6 +16,7 @@
 		SEMANTIC_GROUPS.flatMap((g) => g.values.map((_, i) => (active[g.key] === i ? 1 : 0)))
 	);
 
+	/** @param {import('./types').Attr} key @param {string} v */
 	function setAttr(key, v) {
 		const n = +v;
 		if (key === 'type') type = n;

@@ -1,9 +1,14 @@
 <script>
 	import { standalone, pipeline } from './data.js';
 
-	let dataset = $state('ravenF');
+	let dataset = $state(/** @type {import('./types').Dataset} */ ('ravenF'));
 
-	const mean = (arr, k) => arr.reduce((s, r) => s + r[k], 0) / arr.length;
+	/**
+	 * @template T
+	 * @param {T[]} arr
+	 * @param {keyof T} k
+	 */
+	const mean = (arr, k) => arr.reduce((s, r) => s + Number(r[k]), 0) / arr.length;
 
 	let bars = $derived([
 		{
