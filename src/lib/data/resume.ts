@@ -20,7 +20,7 @@ export const about = [
 	 building an AI-powered data-protection classifier at the Leibniz Institute for Educational
 	 Trajectories. I'm interested in ML, Operating Systems (Linux), and IT in general, this is why this blog exists.`,
 
-	`Most of my work sits where machine learning meets needs to be intergrated into resillient software systems.
+	`Most of my work sits where machine learning needs to be integrated into resilient software systems.
 	 The goal is to build models that produce a safe answer, and an architecture that can explain where the answer came
 	 from (XAI). I spent last semester reproducing a neuro-symbolic reasoning pipeline from the literature,
 	 and the rest of it making LLM inference run entirely on-premise so sensitive research data
