@@ -5,7 +5,7 @@
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
-	import { site } from '$lib/data/site';
+	import { site, cvPath } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
 
@@ -40,6 +40,16 @@
 	
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
+		<p class="intro__tagline">
+			Applied CS at Uni Bamberg, currently TU Dublin<br />
+			Software engineer &amp; AI tutor
+		</p>
+		<p class="intro__actions">
+			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
+				Download CV
+				<Icon name="arrow-right" size={14} />
+			</a>
+		</p>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p> -->
 	</header>
@@ -180,6 +190,23 @@
 		margin: 0 0 var(--s-3);
 		text-align: center;
 	}
+	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
+	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
+	.intro__tagline {
+		margin: 0 auto;
+		max-width: 46ch;
+		color: var(--text-secondary);
+		line-height: 1.6;
+		text-align: center;
+		text-wrap: balance;
+	}
+
+	/* Centres the inline CV link under the tagline. */
+	.intro__actions {
+		margin: var(--s-4) 0 0;
+		text-align: center;
+	}
+
 	.intro__prebyline {
 		display: block;
 		width: 60%;
