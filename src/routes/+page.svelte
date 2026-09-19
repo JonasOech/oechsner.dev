@@ -5,7 +5,7 @@
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
-	import { site } from '$lib/data/site';
+	import { site, cvPath } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
 
@@ -40,6 +40,11 @@
 	
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
+		<p class="intro__status">
+			Currently looking for an internship in Dublin
+			<span class="intro__sep" aria-hidden="true">|</span>
+			<a class="intro__cv" href={cvPath} download>Download CV</a>
+		</p>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p> -->
 	</header>
@@ -180,6 +185,40 @@
 		margin: 0 0 var(--s-3);
 		text-align: center;
 	}
+	/* Availability line under the greeting: a single quiet row, centred to match the
+	   intro block, with the CV as an inline accent link — deliberately not a button, so
+	   it reads as a status note rather than a call to action competing with the lead. */
+	.intro__status {
+		margin: 0;
+		color: var(--text-secondary);
+		text-align: center;
+		font-size: 0.9375rem;
+	}
+	.intro__sep {
+		margin-inline: 0.5em;
+		color: var(--text-muted);
+	}
+	.intro__cv {
+		color: var(--accent);
+		font-weight: 600;
+		text-decoration: none;
+		border-bottom: 1px solid var(--accent-dim);
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.intro__cv:hover {
+			color: var(--accent);
+			border-bottom-color: var(--accent);
+		}
+	}
+	.intro__cv:focus-visible {
+		outline: none;
+		border-radius: 3px;
+		box-shadow: var(--focus-ring);
+	}
+
 	.intro__prebyline {
 		display: block;
 		width: 60%;
