@@ -77,7 +77,14 @@
 	--measure: 62ch;
 	--measure-prose: 68ch;
 	--rail-width: 200px;
+	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
+	   and the post column has to keep its measure with two of these beside it. */
+	--outline-width: 180px;
 	--gutter: 1.5rem;
+	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
+	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
+	   clear the header, or sit just under it, measures from here. */
+	--header-h: 4.75rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -126,6 +133,10 @@
 
 html {
 	scroll-behavior: smooth;
+	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
+	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
+	   each target, so every in-page link on the site gets it — including the outline's. */
+	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
 }
 
