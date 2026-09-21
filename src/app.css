@@ -826,6 +826,38 @@ a {
 	color: var(--text-muted);
 }
 
+/* Citations come from the `citations` plugin in svelte.config.js. A paragraph can
+   carry several, so they trade the accent underline every other link wears for a
+   faint dotted one: present, but quieter than a link the reader should follow. */
+.prose a.cite {
+	background-image: none;
+	text-decoration: underline dotted var(--text-muted);
+	text-underline-offset: 0.2em;
+}
+
+/* The bibliography the plugin appends. APA sets it with a hanging indent and no
+   numbering, and it is reference material, so a step down from the body copy. */
+.prose .references {
+	list-style: none;
+	padding-left: 0;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.prose .references li {
+	padding-left: 1.5em;
+	text-indent: -1.5em;
+	/* DOIs and URLs are single unbreakable words otherwise. */
+	overflow-wrap: anywhere;
+	border-radius: 3px;
+	transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+/* Following a citation lands here; mark the entry so the eye finds it. */
+.prose .references li:target {
+	background: var(--surface);
+}
+
 .prose :not(pre) > code {
 	font-family: var(--font-mono);
 	font-size: 0.8125em;

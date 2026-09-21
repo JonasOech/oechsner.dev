@@ -11,6 +11,7 @@ hero: false
 cover: /img/rpm/cover.svg
 coverAlt: A three-by-three matrix of abstract glyphs with the final cell left empty
 ai: true
+nocite: [barrett2018, chen2005, higgins2017, whittington2020, zhang2019]
 ---
 
 <script>
@@ -43,17 +44,17 @@ It is a good benchmark for abstract visual reasoning because it is almost conten
 <RpmToy />
 
 Try that widget twice. Tick **show the context-blind guess** and flip between the two answer-set generators. The cheat is a solver that never looks at the eight context panels at all: for each attribute it takes the most common value among the eight candidates and picks whichever candidate matches most of them. Under the original RAVEN generator it is right almost every time, because every distractor is the correct answer with exactly one attribute changed, making the
-correct answer the attribute-wise majority by construction. [Spratley et al.  (2020)](#references) got over 90 % out of exactly this observation, without the model ever seeing
+correct answer the attribute-wise majority by construction. @spratley2020 got over 90 % out of exactly this observation, without the model ever seeing
 the question.
 
-That is the bias [Benny et al. (2021)](#references) built **RAVEN-Fair** to remove. Their generator
+That is the bias @benny2021 built **RAVEN-Fair** to remove. Their generator
 starts from the correct answer and grows the candidate set iteratively, perturbing options it has
 already generated rather than always perturbing the answer panel. The answer stops being the mean of all options, and the bias disappears.
 
 ## The claim
 
-[Zhao et al. (2023)](#references) proposed a neuro-symbolic pipeline built on *cognitive maps* — a
-concept borrowed from [Tolman (1948)](#references), who argued that rats navigating a maze build an
+@zhao2023 proposed a neuro-symbolic pipeline built on *cognitive maps* — a
+concept borrowed from @tolman1948, who argued that rats navigating a maze build an
 internal spatial model of it rather than a chain of stimulus-response habits. The appeal for RPM is
 direct: if a human solver builds an internal map of how panels relate, maybe a model should too, and
 maybe that map is inspectable in a way a transformer's attention is not.
@@ -251,19 +252,3 @@ Everything plotted here comes from the report's own tables: three-fold means ove
 dataset, and the standalone component results from the same protocol. The comparison values are
 Zhao et al.'s Table 4. The default axis crop on the results chart starts at 85 %, which exaggerates
 the differences — the toggle is there for a reason, and the uncropped view is the honest one.
-
-<h2 id="references">References</h2>
-
-- Barrett, D. G. T., Hill, F., Santoro, A., Morcos, A. S., & Lillicrap, T. (2018). Measuring abstract
-  reasoning in neural networks. *ICML*.
-- Benny, Y., Pekar, N., & Wolf, L. (2021). Scale-localized abstract reasoning. *CVPR*.
-- Chen, L. (2005). The topological approach to perceptual organization. *Visual Cognition*.
-- Higgins, I., et al. (2017). β-VAE: Learning basic visual concepts with a constrained variational
-  framework. *ICLR*.
-- Spratley, S., Ehinger, K., & Miller, T. (2020). A closer look at generalisation in RAVEN. *ECCV*.
-- Tolman, E. C. (1948). Cognitive maps in rats and men. *Psychological Review*, 55(4), 189–208.
-- Whittington, J. C. R., et al. (2020). The Tolman-Eichenbaum machine. *Cell*.
-- Zhang, C., Gao, F., Jia, B., Zhu, Y., & Zhu, S.-C. (2019). RAVEN: A dataset for relational and
-  analogical visual reasoning. *CVPR*.
-- Zhao, W., et al. (2023). An interpretable neuro-symbolic model for Raven's progressive matrices
-  reasoning.
