@@ -23,11 +23,17 @@ export type PostMeta = {
 	hero?: boolean;
 	/** Injected at build time by the `readingTime` remark plugin in svelte.config.js. */
 	readingMinutes?: number;
+	/** Injected at build time by the `headingOutline` remark plugin in svelte.config.js. */
+	headings?: Heading[];
 };
+
+/** One `##`/`###` in a post body, as the post route's outline renders it. */
+export type Heading = { depth: 2 | 3; id: string; text: string };
 
 export type Post = PostMeta & {
 	slug: string;
 	readingMinutes: number;
+	headings: Heading[];
 };
 
 type PostModule = {
@@ -79,7 +85,12 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			// Deliberately not defaulted: `undefined` and `false` mean different things here.
 			ai: meta.ai,
 			hero: meta.hero ?? false,
-			readingMinutes: meta.readingMinutes ?? 1
+			readingMinutes: meta.readingMinutes ?? 1,
+			// Only the post route reads this, but the eager glob means every page carries
+			// every post's outline. It is a few dozen short strings per post — the same
+			// bargain the glob already makes for titles and summaries, and it stays cheap
+			// under the ~50-post ceiling noted above.
+			headings: meta.headings ?? []
 		};
 
 		return { post, component: mod.default };

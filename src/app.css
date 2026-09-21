@@ -77,7 +77,14 @@
 	--measure: 62ch;
 	--measure-prose: 68ch;
 	--rail-width: 200px;
+	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
+	   and the post column has to keep its measure with two of these beside it. */
+	--outline-width: 180px;
 	--gutter: 1.5rem;
+	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
+	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
+	   clear the header, or sit just under it, measures from here. */
+	--header-h: 4.75rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -126,6 +133,10 @@
 
 html {
 	scroll-behavior: smooth;
+	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
+	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
+	   each target, so every in-page link on the site gets it — including the outline's. */
+	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
 }
 
@@ -701,12 +712,13 @@ a {
 	margin-top: var(--s-5);
 }
 
-/* Body copy is set justified (Blocksatz) rather than ragged-right. §9's rule is
-   that body content is never *centred* — a justified column still hangs off the
-   rail's left edge, both margins simply land flush — so this sits inside it, and
-   `.intro__byline` on the home page already sets the precedent. Hyphenation is
-   part of the same decision, not an extra: a 68ch column justified without it
-   opens rivers between words.
+/* Body copy is set justified (Blocksatz) rather than ragged-right. Justification
+   is about where the two margins land, not about where the column sits: the post
+   column is centred in its page (see the post route), but the text inside it is
+   still flush to both of its own edges rather than centred line by line, which is
+   what §9 actually forbids. `.intro__byline` on the home page sets the precedent.
+   Hyphenation is part of the same decision, not an extra: a 68ch column justified
+   without it opens rivers between words.
 
    Short lines stay ragged, which is all CSS can actually promise. Under
    `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
@@ -812,6 +824,38 @@ a {
 	margin-top: var(--s-3);
 	font-size: 0.8125rem;
 	color: var(--text-muted);
+}
+
+/* Citations come from the `citations` plugin in svelte.config.js. A paragraph can
+   carry several, so they trade the accent underline every other link wears for a
+   faint dotted one: present, but quieter than a link the reader should follow. */
+.prose a.cite {
+	background-image: none;
+	text-decoration: underline dotted var(--text-muted);
+	text-underline-offset: 0.2em;
+}
+
+/* The bibliography the plugin appends. APA sets it with a hanging indent and no
+   numbering, and it is reference material, so a step down from the body copy. */
+.prose .references {
+	list-style: none;
+	padding-left: 0;
+	font-size: 0.875rem;
+	line-height: 1.6;
+}
+
+.prose .references li {
+	padding-left: 1.5em;
+	text-indent: -1.5em;
+	/* DOIs and URLs are single unbreakable words otherwise. */
+	overflow-wrap: anywhere;
+	border-radius: 3px;
+	transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+/* Following a citation lands here; mark the entry so the eye finds it. */
+.prose .references li:target {
+	background: var(--surface);
 }
 
 .prose :not(pre) > code {

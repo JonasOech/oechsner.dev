@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
+	import PostOutline from '$lib/components/PostOutline.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -15,6 +16,40 @@
 	const post = $derived(data.post);
 	const Content = $derived(getPostComponent(post.slug)!);
 	const neighbours = $derived(getNeighbours(post.slug));
+
+	// A single heading is not an outline, it is a label — nothing to navigate between.
+	const outline = $derived(post.headings.length > 1 ? post.headings : []);
+
+	/** The heading the reader is under, so the outline says where they are, not just where they can go. */
+	let activeId = $state('');
+
+	$effect(() => {
+		// Re-run on navigation between posts: a new outline means new elements to watch.
+		if (!outline.length) return;
+
+		const targets = outline
+			.map((h) => document.getElementById(h.id))
+			.filter((el): el is HTMLElement => el !== null);
+
+		// The band is the top of the reading area down to a third of the viewport. A heading
+		// inside it is the one being read; of several, the last, since that is the one the
+		// reader has most recently passed.
+		const observer = new IntersectionObserver(
+			() => {
+				const top = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+				const passed = targets.filter((el) => el.getBoundingClientRect().top <= top + 8);
+				// Above the first heading nothing is marked, rather than the outline claiming
+				// the reader is in a section they have not reached.
+				activeId = passed.at(-1)?.id ?? '';
+			},
+			// A threshold at every step keeps the callback firing through a long section,
+			// rather than only when a heading crosses the edge of the viewport.
+			{ rootMargin: '0px 0px -66% 0px', threshold: [0, 0.5, 1] }
+		);
+
+		targets.forEach((el) => observer.observe(el));
+		return () => observer.disconnect();
+	});
 </script>
 
 <Seo
@@ -37,7 +72,14 @@
 	})}<\/script>`}
 </svelte:head>
 
-<div class="container">
+<!-- Three tracks, the outer two the same width: the post keeps the centred position it has
+     without an outline, and the left track is simply filled when there is one to show. The
+     right track stays empty on purpose — it is the counterweight that does the centring. -->
+<div class="container post-layout">
+	{#if outline.length}
+		<PostOutline headings={outline} {activeId} />
+	{/if}
+
 	<article class="post">
 		<header class="post__header enter" style="--i: 0">
 			<a class="post__back" href="/">
@@ -120,9 +162,36 @@
 </div>
 
 <style>
+	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
+	   children does the centring; above it, the explicit tracks take over. Written as a
+	   min-width query so the narrow case is the default rather than an override. */
+	.post-layout {
+		display: grid;
+	}
+
+	@media (min-width: 1100px) {
+		.post-layout {
+			/* The two flanking tracks are equal, so the middle one lands on the page's centre
+			   line whether or not an outline was rendered into the left. Both may shrink, so
+			   the layout meets its breakpoint instead of overflowing just past it. */
+			grid-template-columns:
+				minmax(0, var(--outline-width))
+				minmax(0, var(--measure-prose))
+				minmax(0, var(--outline-width));
+			justify-content: center;
+			column-gap: var(--s-5);
+		}
+	}
+
+	/* The one page that breaks §5's left-aligned rule: a post is a single column with
+	   nothing beside it, so hanging it off the container's left edge left a wide empty
+	   band on the right at desktop widths. Centred, the measure sits in the optical
+	   middle of the page instead. */
 	.post {
+		grid-column: 2;
 		padding-top: var(--s-9);
 		max-width: var(--measure-prose);
+		margin-inline: auto;
 	}
 
 	.post__header {
@@ -221,6 +290,7 @@
 	}
 
 	.post__nav {
+		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: var(--s-4);
@@ -228,6 +298,7 @@
 		padding-top: var(--s-6);
 		border-top: 1px solid var(--line);
 		max-width: var(--measure-prose);
+		margin-inline: auto;
 	}
 
 	.post__nav-link {
