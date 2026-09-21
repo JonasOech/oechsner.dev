@@ -902,6 +902,9 @@ a {
 .prose .katex {
 	line-height: 1.2;
 	color: var(--text);
+	/* The justified paragraph's `text-align-last: left` is inherited, and on KaTeX's one-line
+	   rows it overrides the `text-align: center` KaTeX uses for fractions, limits and accents. */
+	text-align-last: auto;
 }
 
 .prose .katex-display {
