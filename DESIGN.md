@@ -402,12 +402,17 @@ larger than they need to be.
 | Last section to footer | `--s-11` (11rem) | |
 
 **Alignment** — *everything on a content page is left-aligned* against the rail column,
-including the lead-post title. Only the header nav and the footer are centred. Body copy is
-never centred. Article rows put text left, thumbnail right at a fixed 190px.
+including the lead-post title. Only the header nav, the footer, and the blog post column are
+centred. No line of body copy is ever centred *as text*. Article rows put text left, thumbnail
+right at a fixed 190px.
+
+The blog post page is the one layout exception: it has no rail beside it, so a left-hung column
+left a wide empty band on the right at desktop widths. The post measure is centred in the
+container instead.
 
 Blog post paragraphs are the one exception to ragged-right: they are **justified**, with
-`hyphens: auto`, because a 68ch column justified without hyphenation opens rivers. The column
-still starts at the rail's left edge, so this is not a break with the rule above. Final lines
+`hyphens: auto`, because a 68ch column justified without hyphenation opens rivers. Both margins
+land flush, so the text itself is still not centred. Final lines
 stay ragged (`text-align-last: left`), which also covers one-line paragraphs, and the whole
 thing reverts to left-aligned below 479px, where the measure is too narrow to justify cleanly.
 
@@ -589,8 +594,8 @@ a no-JS visitor receives a fully rendered page.
    header's `backdrop-filter`. Both are the fastest ways to drop frames on this layout.
 4. **Don't** introduce a smooth-scroll library, scroll-jacking, pinning, or parallax. The
    reference has none, the chosen tier forbids it, and it fights the reading experience of a blog.
-5. **Don't** centre anything except the hero block, the header nav, and the footer. Body content
-   is left-aligned against the rail, always.
+5. **Don't** centre anything except the hero block, the header nav, the footer, and the blog
+   post column. Everywhere a rail exists, body content is left-aligned against it.
 6. **Don't** use emoji as icons. Inline SVG only, 15–16px, `stroke-width: 1.5`, `currentColor`.
 7. **Don't** put a solid color block where an image belongs. If a post has no cover, omit the
    media column and let the row run the full measure.

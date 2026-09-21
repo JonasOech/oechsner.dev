@@ -120,9 +120,14 @@
 </div>
 
 <style>
+	/* The one page that breaks §5's left-aligned rule: a post is a single column with
+	   nothing beside it, so hanging it off the container's left edge left a wide empty
+	   band on the right at desktop widths. Centred, the measure sits in the optical
+	   middle of the page instead. */
 	.post {
 		padding-top: var(--s-9);
 		max-width: var(--measure-prose);
+		margin-inline: auto;
 	}
 
 	.post__header {
@@ -228,6 +233,7 @@
 		padding-top: var(--s-6);
 		border-top: 1px solid var(--line);
 		max-width: var(--measure-prose);
+		margin-inline: auto;
 	}
 
 	.post__nav-link {

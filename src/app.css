@@ -701,12 +701,13 @@ a {
 	margin-top: var(--s-5);
 }
 
-/* Body copy is set justified (Blocksatz) rather than ragged-right. §9's rule is
-   that body content is never *centred* — a justified column still hangs off the
-   rail's left edge, both margins simply land flush — so this sits inside it, and
-   `.intro__byline` on the home page already sets the precedent. Hyphenation is
-   part of the same decision, not an extra: a 68ch column justified without it
-   opens rivers between words.
+/* Body copy is set justified (Blocksatz) rather than ragged-right. Justification
+   is about where the two margins land, not about where the column sits: the post
+   column is centred in its page (see the post route), but the text inside it is
+   still flush to both of its own edges rather than centred line by line, which is
+   what §9 actually forbids. `.intro__byline` on the home page sets the precedent.
+   Hyphenation is part of the same decision, not an extra: a 68ch column justified
+   without it opens rivers between words.
 
    Short lines stay ragged, which is all CSS can actually promise. Under
    `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
