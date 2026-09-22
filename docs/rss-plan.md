@@ -82,7 +82,7 @@ These are observations, not all of them in scope to fix now:
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
-| Item content | **Summary only** | Keeps the feed a teaser; drives traffic to the site; avoids rendering `.svx`→HTML at build and re-hosting interactive post components (RPM labs, KaTeX) that won't survive in a reader anyway. |
+| Item content | ~~Summary only~~ → **Full content** (revised 2026-09-22) | Now ships the whole post (`content:encoded` / Atom `<content>`), rendered at build by `src/lib/server/feed-content.ts`: inline styles, MathML-only KaTeX, absolute URLs, PluginRacks as lists, other widgets as a link back to the post. `<description>`/`<summary>` stay the summary. |
 | Formats | **RSS 2.0 + Atom 1.0** | RSS stays as-is; Atom added for broader reader/tool compatibility. |
 | Discovery | **Add autodiscovery `<link>`** | The one piece of "make it findable" that's currently missing. |
 | Archive posts | **Stay excluded** | The archive is intentionally off the main index; the feed mirrors the index. |
