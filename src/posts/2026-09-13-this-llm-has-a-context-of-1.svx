@@ -1,0 +1,66 @@
+---
+title: This LLM has a Context window of 1
+date: '2026-09-13'
+summary: >-
+  Exploring the basics of LLMs by building a N-Gram model on my lecture notes
+tags: ['project report']
+nerdyness: 3
+draft: true
+hero: true
+ai: false
+cover: /img/markov/cover.svg
+coverAlt: >-
+  A generated sentence where only the last word is lit, above a word graph whose
+  weighted arrows give the probabilities of the next word
+---
+
+## Introduction
+An *n-gram model* analyzes training data to determine how frequently specific word sequences occur. For example, given the phrase “my house is,” the model examines all words that follow “my” in the dataset. If “house” is the most common continuation, the model predicts “house.”
+
+In this Post, I will cover the mathematical basics of modern LMs and train my own N-Gram Model based on my lecture notes. 
+I'll go into markov chains.
+
+
+## Conceptually
+> This section is largely based on @NLP2026
+
+Most language models use context consisting of $n-1$ tokens $C:= w_1w_2\cdots w_{n-1}$ to predict the *nth* token $w_n$ and describe the probability for every
+next token with $P(w_n|w_{1:n-1}) = P(w_n|C)$. N-Gram models limit this context
+by assuming $\approx P(w_n| w_{n-N+1} \cdots w_{n-1})$. In the extreme case of a *bigram model*
+($N=2$) this assumption simplifies to $P(w_n|C)\approx P(w_n|w_{n-1})$, we call
+this the *markov assumption*. The probability of outputting a sentence $s=w_{1}w_{2}\dots w_{m}$ with token-length $m$ based on context token $c$ is $P(s)=\prod_{w\in s}P(w)$. I define $S_{N}$ as the set of all sentences with length N. And $s_{w_n}$
+We define $T(a | B)$ as the number of occurrences of $a$ with the sentence $B$ preceeding. The next token selection is decided by $Sel: C \longrightarrow w_n$.
+
+In our case, we define $P(w_{n}|C)=\frac{ T(w_{n}| w_{n-N+1 \cdots w_{n-1}})}{ T(w_{n})}$, simplifying to $P(w_{n}|C) = \frac{T(w_n|w_{n-1})}{T(w_n)}$ with bigrams.
+
+### Bigram ≈ Markov
+Let's take the *overly simplified* assumption of picking with $Sel(C) := \max_{w_{i}} (P(w_{i}|C))$. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
+
+We can also model higher-order N-Grams as markov chains, where the number of nodes increases exponentially with $N-1$.
+
+
+
+
+<!-- Since we know that $\sum_wP(w|C)=1$, we can choose tokens easily by selecting based on $P$.  -->
+
+### The better selection Function
+
+## Dataset preparation
+Dataset preparation consisted of filtering out unnecessary Information from the vault by applying the following regex:
+```python
+# Filtering out files
+r"*/.claude/*",
+r"*/.obsidian/*",
+r"*.excalidraw.md",
+r"*/node_modules/*",
+
+# Substitutes in files:
+
+
+
+```
+
+
+## Model training & Evaluation
+
+## Improvement opportunities
