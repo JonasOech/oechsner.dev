@@ -1,0 +1,67 @@
+---
+title: Finetuning a model on four years of lecture notes
+date: '2026-09-10'
+summary: >-
+  The vault was always the point of taking notes in Markdown. So I fed all of it to a small
+  open model and asked whether a finetune actually beats just retrieving the notes.
+tags: ['llm', 'machine learning', 'project']
+nerdyness: 3
+draft: true
+hero: false
+cover: /img/finetune/cover.svg
+coverAlt: >-
+  A stack of ruled lecture notes feeding into a grid of model weights where only a
+  scattered few cells are lit
+---
+
+<!--
+  Scaffold. Delete the comments as you fill each section in.
+
+  Markup available in a post (see the hangman post for live examples):
+
+    <figure class="plain">
+      <img src="/img/finetune/thing.png" alt="…" />
+      <figcaption>What the reader should notice.</figcaption>
+    </figure>
+
+    <div class="table-scroll"><table>…</table></div>
+
+    Fenced code blocks are highlighted. $math$ works via KaTeX.
+    To use an icon, add to the top of the file:
+
+      <script>
+        import Icon from '$lib/components/Icon.svelte';
+      </script>
+
+  Screenshots go in static/img/finetune/ and are referenced as /img/finetune/…
+-->
+
+## Introduction
+
+## Why finetune when RAG exists
+
+## The dataset
+
+### Four years of a vault, and what is actually in it
+
+### Turning notes into training pairs
+
+### What I had to throw away
+
+## Picking a base model
+
+## The training run
+
+### LoRA, rank, and the hyperparameters I did not tune
+
+### What it cost
+
+## Evaluation
+
+### Asking it exam questions
+
+### The baseline that is hard to beat
+
+## What it learned, and what it confidently invented
+
+## Was it worth it

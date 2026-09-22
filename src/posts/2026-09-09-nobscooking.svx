@@ -1,0 +1,57 @@
+---
+title: 'NoBScooking: a recipe is a dependency graph, not a story'
+date: '2026-09-09'
+summary: >-
+  Cooking for Engineers solved the recipe layout problem twenty years ago and nobody followed.
+  This is what happens when you hand that table to an LLM and let it build one for any dish.
+tags: ['llm', 'sidequest']
+nerdyness: 1
+draft: true
+hero: false
+cover: /img/nobscooking/cover.svg
+coverAlt: >-
+  A geometric bull's head above a recipe drawn as a nested table, where columns of
+  ingredients merge step by step into a single final cell
+---
+
+<!--
+  Scaffold. Delete the comments as you fill each section in.
+
+  Markup available in a post (see the hangman post for live examples):
+
+    <figure class="plain">
+      <img src="/img/nobscooking/thing.png" alt="…" />
+      <figcaption>What the reader should notice.</figcaption>
+    </figure>
+
+    <div class="table-scroll"><table>…</table></div>
+
+    Fenced code blocks are highlighted. $math$ works via KaTeX.
+    To use an icon, add to the top of the file:
+
+      <script>
+        import Icon from '$lib/components/Icon.svelte';
+      </script>
+
+  Screenshots go in static/img/nobscooking/ and are referenced as /img/nobscooking/…
+-->
+
+## Introduction
+
+## Why every recipe online is 900 words of childhood memory
+
+## Cooking for Engineers and the table nobody copied
+
+## Where the table breaks down
+
+## What NoBScooking adds
+
+### Parsing an arbitrary recipe into a graph
+
+### Laying the graph back out as a table
+
+## The prompt, and the three things it kept getting wrong
+
+## Cooking from it
+
+## Where this goes next
