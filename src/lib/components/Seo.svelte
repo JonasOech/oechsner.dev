@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { site } from '$lib/data/site';
+	import { feeds, site } from '$lib/data/site';
 
 	let {
 		title,
@@ -36,13 +36,13 @@
 		rel="alternate"
 		type="application/rss+xml"
 		title="{site.shortName} — RSS"
-		href="{site.url}/rss.xml"
+		href="{site.url}{feeds.rss}"
 	/>
 	<link
 		rel="alternate"
 		type="application/atom+xml"
 		title="{site.shortName} — Atom"
-		href="{site.url}/atom.xml"
+		href="{site.url}{feeds.atom}"
 	/>
 
 	<meta property="og:type" content={type} />

@@ -22,6 +22,12 @@ export const site = {
 	startYear: 2026
 } as const;
 
+/** The feeds, prerendered by src/routes/rss.xml and src/routes/atom.xml. RSS is the one offered first. */
+export const feeds = {
+	rss: '/rss.xml',
+	atom: '/atom.xml'
+} as const;
+
 export type NavItem = { href: string; label: string };
 
 // `/` is the writing index, so there is no separate Blog entry — a "Home" link and a

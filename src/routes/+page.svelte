@@ -5,7 +5,7 @@
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
-	import { site, cvPath } from '$lib/data/site';
+	import { site, cvPath, feeds } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
 
@@ -48,6 +48,15 @@
 			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
 				Download CV
 				<Icon name="arrow-right" size={14} />
+			</a>
+			<a
+				class="inline-cta inline-cta--feed"
+				href={feeds.rss}
+				type="application/rss+xml"
+				data-sveltekit-reload
+			>
+				<Icon name="rss" size={14} />
+				Subscribe
 			</a>
 		</p>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
@@ -201,10 +210,26 @@
 		text-wrap: balance;
 	}
 
-	/* Centres the inline CV link under the tagline. */
+	/* Centres the inline CV and feed links under the tagline. */
 	.intro__actions {
 		margin: var(--s-4) 0 0;
-		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: var(--s-2) var(--s-6);
+	}
+
+	/* The feed icon leads its label rather than trailing it, so it should not take the
+	   arrow's nudge to the right on hover. */
+	.inline-cta--feed :global(svg) {
+		color: var(--accent-dim);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.inline-cta--feed:hover :global(svg) {
+			transform: none;
+			color: var(--accent);
+		}
 	}
 
 	.intro__prebyline {

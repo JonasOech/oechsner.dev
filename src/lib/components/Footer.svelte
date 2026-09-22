@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { footerNav, site } from '$lib/data/site';
+	import Icon from '$lib/components/Icon.svelte';
+	import { feeds, footerNav, site } from '$lib/data/site';
 
 	const year = new Date().getFullYear();
 </script>
@@ -10,6 +11,15 @@
 			{#each footerNav as item (item.href)}
 				<a class="footer__link" href={item.href}>{item.label}</a>
 			{/each}
+			<a
+				class="footer__link footer__feed"
+				href={feeds.rss}
+				type="application/rss+xml"
+				data-sveltekit-reload
+			>
+				<Icon name="rss" size={13} />
+				RSS
+			</a>
 		</nav>
 
 		<p class="footer__copy">
@@ -61,9 +71,25 @@
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
+	/* The icon takes the accent so the feed is findable at a glance; the label stays in
+	   step with the other footer links. */
+	.footer__feed {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+	}
+
+	.footer__feed :global(svg) {
+		color: var(--accent-dim);
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
 	@media (hover: hover) and (pointer: fine) {
 		.footer__link:hover {
 			color: var(--text);
+		}
+		.footer__feed:hover :global(svg) {
+			color: var(--accent);
 		}
 	}
 

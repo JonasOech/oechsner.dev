@@ -12,7 +12,10 @@
 		| 'linkedin'
 		| 'external'
 		| 'nerd'
-		| 'circle';
+		| 'circle'
+		| 'rss'
+		| 'copy'
+		| 'check';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -32,7 +35,10 @@
 		// the whole signal and anything smaller reads as a blank circle at this size.
 		nerd: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M8.3 7.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4M15.7 7.8a3.2 3.2 0 1 0 0 6.4 3.2 3.2 0 0 0 0-6.4M11.5 11h1M9 16.8c1.8 1.3 4.2 1.3 6 0',
 		// The empty slot of that scale: the same head circle with nothing inside it.
-		circle: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18'
+		circle: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18',
+		rss: 'M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16M5 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
+		copy: 'M10 8h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2zM16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3',
+		check: 'M20 6 9 17l-5-5'
 	};
 </script>
 

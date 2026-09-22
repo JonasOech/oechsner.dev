@@ -4,6 +4,7 @@
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
+	import Subscribe from '$lib/components/Subscribe.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -139,6 +140,10 @@
 			<Content />
 		</div>
 	</article>
+
+	<div class="post__subscribe">
+		<Subscribe />
+	</div>
 
 	{#if neighbours.prev || neighbours.next}
 		<nav class="post__nav" aria-label="More articles">
@@ -287,6 +292,14 @@
 		border-radius: 6px;
 		border: 1px solid var(--line);
 		margin-bottom: var(--s-8);
+	}
+
+	.post__subscribe {
+		grid-column: 2;
+		width: 100%;
+		max-width: var(--measure-prose);
+		margin-inline: auto;
+		margin-top: var(--s-8);
 	}
 
 	.post__nav {
