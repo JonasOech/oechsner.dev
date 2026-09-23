@@ -879,6 +879,11 @@ a {
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
+	/* Scrolling alone does not hold that promise: a scroll box still reports its content's
+	   width as an intrinsic minimum, and the article around it is sized shrink-to-fit, so a
+	   long line used to stretch the whole column — header and body copy with it — past the
+	   viewport of a phone. Containment keeps the width the column's business. */
+	contain: inline-size;
 	color: var(--text-secondary);
 }
 
@@ -890,9 +895,11 @@ a {
 	color: inherit;
 }
 
-/* Tables scroll in their own container too. */
+/* Tables scroll in their own container too, and for the same reason as `pre` they are
+   contained: the scrolling is the box's business, the width is the column's. */
 .prose .table-scroll {
 	overflow-x: auto;
+	contain: inline-size;
 }
 
 /* Math (KaTeX, rendered at build time — see svelte.config.js).
