@@ -12,6 +12,7 @@
 	 * adds only what markup alone cannot: a formula scaled down to the width it has, a
 	 * scroll box for whatever is still too wide at the smallest size worth reading, and a
 	 * maximise button for when a phone-sized plate was never going to be enough.
+<<<<<<< HEAD
 	 *
 	 * Maximising moves no DOM and renders nothing twice — the same figure is promoted to a
 	 * fixed overlay — so the equation keeps its one copy of MathML and the button keeps
@@ -289,6 +290,8 @@
 	 * and, when the author wrote one, the note's `<figcaption>` after it. The component
 	 * adds only what markup alone cannot: a scroll box that keeps a wide equation off the
 	 * page's own scrollbar, and a maximise button for the ones that are wide *and* dense.
+=======
+>>>>>>> d76241b (Mobile Fix)
 	 *
 	 * Maximising moves no DOM and renders nothing twice — the same figure is promoted to a
 	 * fixed overlay — so the equation keeps its one copy of MathML and the button keeps
@@ -299,6 +302,58 @@
 
 	let expanded = $state(false);
 	let figure: HTMLElement;
+
+	/**
+	 * How far the formula is scaled down to fit the plate, 1 being as KaTeX set it. Below
+	 * this floor the type is too small to read, so what is left over goes to the scroll box
+	 * — and to the maximise button, where the formula gets a whole screen to fit in.
+	 */
+	const MIN_SCALE = 0.55;
+	let scale = $state(1);
+
+	$effect(() => {
+		const box = figure.querySelector<HTMLElement>('.katex-display');
+		const formula = box?.firstElementChild;
+		if (!box || !formula) return;
+
+		// KaTeX measures everything in em, so the formula shrinks with the font size it is set
+		// in — sharp at any scale, and no transform, so the plate stays honest about its own
+		// height. What it is measured against is taken once, here, while the formula is still
+		// at its own size: deriving it from the scaled width on every pass lets rounding creep
+		// in, and a scale that moves a little on every measurement never settles.
+		// Kept in em rather than pixels, because the plate is set larger once it is maximised
+		// and the same formula is then a different number of pixels wide.
+		const em = () => parseFloat(getComputedStyle(figure).fontSize);
+		let naturalEm = formula.getBoundingClientRect().width / (scale * em());
+
+		// The width to fit into is the plate's, not the scroll box's — a formula tall enough
+		// for that box's own scrollbar makes the box narrower, which would scale the formula
+		// down, which would take the scrollbar away again.
+		const refit = () => {
+			const plate = getComputedStyle(figure);
+			const available =
+				figure.clientWidth - parseFloat(plate.paddingLeft) - parseFloat(plate.paddingRight);
+			const natural = naturalEm * parseFloat(plate.fontSize);
+			if (!(available > 0) || !(natural > 0)) return;
+
+			const next = Math.max(Math.min(1, available / natural), MIN_SCALE);
+			if (Math.abs(next - scale) > 0.005) scale = next;
+		};
+
+		// Until KaTeX's own faces arrive the formula is laid out in a fallback and measures
+		// nothing like its final width.
+		document.fonts?.ready.then(() => {
+			naturalEm = formula.getBoundingClientRect().width / (scale * em());
+			refit();
+		});
+
+		// The plate is remeasured when the window changes, when the column does (a phone
+		// turning sideways), and when maximising hands the formula a screen instead of a
+		// column.
+		const observer = new ResizeObserver(refit);
+		observer.observe(figure);
+		return () => observer.disconnect();
+	});
 
 	$effect(() => {
 		if (!expanded) return;
@@ -341,7 +396,12 @@
 	></button>
 {/if}
 
-<figure class="latex" class:latex--max={expanded} bind:this={figure}>
+<figure
+	class="latex"
+	class:latex--max={expanded}
+	style="--latex-scale: {scale}"
+	bind:this={figure}
+>
 	<!-- First child, so the `figcaption` the plugin appends is still the figure's last. -->
 	<button
 		class="latex__zoom"
@@ -364,6 +424,10 @@
 		position: relative;
 		margin: var(--s-6) 0;
 		padding: var(--s-5);
+		/* The corner the button sits in is kept clear rather than floated over: a formula is
+		   scaled to the width it is given, so it would otherwise end up set right under the
+		   control. Formula and note share the narrower box, so both stay on one centre line. */
+		padding-right: var(--s-7);
 		background: var(--surface);
 		border: 1px solid var(--line);
 		border-radius: 10px;
@@ -371,13 +435,22 @@
 
 	/* KaTeX's display block already scrolls sideways under app.css (`.prose .katex-display`).
 	   On a plate it owns both axes, so a tall `aligned` environment is capped as well and the
-	   page never grows a screen-high formula. */
+	   page never grows a screen-high formula. Most formulas never reach that: they are set at
+	   the size that fits the plate first, and only scroll once shrinking them further would
+	   make them unreadable. */
 	.latex :global(.katex-display) {
+		font-size: calc(1em * var(--latex-scale, 1));
 		overflow: auto;
 		overscroll-behavior: contain;
 		max-height: min(60vh, 24rem);
 		/* Its 1em block margins are the plate's padding's job. */
 		margin: 0;
+		/* A scroll box still reports its content's width as an intrinsic minimum, and the
+		   article around it is sized shrink-to-fit (it has auto inline margins), so a formula
+		   wider than the measure would otherwise drag the whole column — header and body copy
+		   with it — past the viewport of a phone. Containment makes the width the column's
+		   business and the overflow this box's. */
+		contain: inline-size;
 	}
 
 	/* A note that fits on one line is a caption and sits under the middle of the formula; one
@@ -444,6 +517,10 @@
 		flex-direction: column;
 		justify-content: center;
 		overflow: auto;
+		/* Full screen is the one place this plate can scroll itself, and the gutter is held
+		   open so the formula is measured against a width that does not come and go with the
+		   scrollbar. */
+		scrollbar-gutter: stable;
 		box-shadow: var(--shadow-4);
 		/* The whole point of maximising: KaTeX measures in em, so the formula grows with
 		   the plate instead of merely gaining white space around it. */
@@ -469,11 +546,13 @@
 	@media (max-width: 767px) {
 		.latex {
 			padding: var(--s-4);
+			padding-right: var(--s-7);
 		}
 
 		.latex--max {
 			inset: var(--s-2);
 			padding: var(--s-4);
+			padding-right: var(--s-7);
 		}
 	}
 </style>
