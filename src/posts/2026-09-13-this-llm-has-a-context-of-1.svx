@@ -85,7 +85,8 @@ To prevent this, we sample from $P(\cdot|C)$. Thus, $f$ is no longer a *function
 The maximum likelihood assumption fails in the real world. No matter how big the training set, some sentences will never be able to be generated. That leaves the model locked on a subset $\subset$ of real language.
 
 We use Laplace Smoothing:
-$$P_\text{Laplace}(w_{i})=\frac{ T(w_{i} + 1}{ T(w_{n})}$$
+
+$$P_\text{Laplace}(w_{i})=\frac{ T(w_{i} + 1}{ T(w_{n})}$$ **Laplace smoothing**: Just adding 1 for every token
 
 
 ## Dataset preparation

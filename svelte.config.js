@@ -457,19 +457,20 @@ function noteFrom(children) {
  */
 function latexBlocks() {
 	return (tree) => {
+		// The note is handed over as a snippet rather than as finished markup, so the
+		// `<figcaption>` it ends up in is written inside the component, where it is the
+		// immediate child of the `<figure>` that both HTML and Svelte's a11y check want.
 		/** @param {any} math @param {any[] | undefined} note */
 		const block = (math, note) => [
 			{ type: 'html', value: '<LatexBlock>' },
-			math,
 			...(note
 				? [
-						{
-							type: 'paragraph',
-							children: note,
-							data: { hName: 'figcaption', hProperties: { className: ['latex-note'] } }
-						}
+						{ type: 'html', value: '{#snippet note()}' },
+						{ type: 'paragraph', children: note, data: { hName: 'span' } },
+						{ type: 'html', value: '{/snippet}' }
 					]
 				: []),
+			math,
 			{ type: 'html', value: '</LatexBlock>' }
 		];
 

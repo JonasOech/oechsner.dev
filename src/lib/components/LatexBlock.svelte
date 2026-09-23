@@ -7,8 +7,8 @@
 	 * `latexBlocks` remark plugin in svelte.config.js wraps every `$$…$$` in one and
 	 * injects the import, so a post stays plain markdown that Obsidian still renders.
 	 *
-	 * The children are the KaTeX output (already rendered to static HTML at build time)
-	 * and, when the author wrote one, the note's `<figcaption>` after it. The component
+	 * The children are the KaTeX output, already rendered to static HTML at build time, and
+	 * `note` is the caption the author wrote beside the formula, if any. The component
 	 * adds only what markup alone cannot: a formula scaled down to the width it has, a
 	 * scroll box for whatever is still too wide at the smallest size worth reading, and a
 	 * maximise button for when a phone-sized plate was never going to be enough.
@@ -298,7 +298,7 @@
 	 * focus across the toggle, which is what lets Escape hand the reader back where they
 	 * were.
 	 */
-	let { children }: { children: Snippet } = $props();
+	let { children, note }: { children: Snippet; note?: Snippet } = $props();
 
 	let expanded = $state(false);
 	let figure: HTMLElement;
@@ -402,7 +402,7 @@
 	style="--latex-scale: {scale}"
 	bind:this={figure}
 >
-	<!-- First child, so the `figcaption` the plugin appends is still the figure's last. -->
+	<!-- First child, so the caption below is still the figure's last. -->
 	<button
 		class="latex__zoom"
 		type="button"
@@ -415,6 +415,10 @@
 	</button>
 
 	{@render children()}
+
+	{#if note}
+		<figcaption class="latex__note">{@render note()}</figcaption>
+	{/if}
 </figure>
 
 <style>
@@ -457,7 +461,7 @@
 	   that does not is a paragraph and reads as one. Shrink-wrapping does both: the box is as
 	   wide as the text until the text is wider than the plate, and auto margins only have
 	   slack to centre in the first case. The same trick app.css plays on `.katex-display`. */
-	.latex :global(.latex-note) {
+	.latex__note {
 		width: fit-content;
 		max-width: 100%;
 		margin-inline: auto;
