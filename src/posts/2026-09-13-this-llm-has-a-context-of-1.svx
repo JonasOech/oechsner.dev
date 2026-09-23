@@ -1,11 +1,11 @@
 ---
-title: This LLM has a Context window of 1
+title: PREVIEW This LLM has a Context window of 1
 date: '2026-09-13'
 summary: >-
   Exploring the basics of LLMs by training a N-Gram model on my lecture notes
 tags: ['project report']
 nerdyness: 3
-draft: true
+draft: false
 hero: true
 ai: false
 cover: /img/markov/cover.svg
@@ -21,7 +21,7 @@ In this Post, I will cover the mathematical basics of modern LMs and train my ow
 
 
 ## Mathematical Basics
-> This section is largely based on @NLP2026
+> This section is largely based on the book Speech and Language Processing by Jurafsky & Martin  [-@NLP2026, ch. I.3]
 
 Most language models use context consisting of $n-1$ tokens $C:= w_1w_2\cdots w_{n-1}$ to predict the *nth* token $w_n$ and describe the probability for every
 next token with $P(w_n|w_{1:n-1}) = P(w_n|C)$. N-Gram models limit this context
@@ -40,6 +40,8 @@ Let's take the *maximum likelihood assumption* of picking with $Sel(C) := \max_{
 
 Before we improve $Sel$, let's prove *why* choosing greedily will fail.
 #### Proof
+> Adapted from @knuth1997
+
 We define a greedy $Sel$ as:
 
 $$f: V \longrightarrow V, \quad f(w) := \operatorname*{arg\,max}_{w' \in V} P(w' \mid w),$$ Token selection function under the maximum likelihood assumption
@@ -68,18 +70,51 @@ So the sequence is periodic with period $p = j - i$ from index $i$ on. $\blacksq
 To prevent this, we sample from $P(\cdot|C)$. Thus, $f$ is no longer a *function*, but a *stochastic kernel* of a markov chain. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
 
 We can also model higher-order N-Grams as markov chains, where the number of nodes increases exponentially with $V^N$.
-### The better selection Function
+### The better selection Funct
 > This section is based on @NLP2026 too
 
 The maximum likelihood assumption fails in the real world. No matter how big the training set, some sentences will never be able to be generated. That leaves the model locked on a subset $\subset$ of real language.
 
-We use Laplace Smoothing:
+One option is Laplace Smoothing:
 
 $$P_\text{Laplace}(w_{i})=\frac{ T(w_{i} + 1}{ T(w_{n})}$$ **Laplace smoothing**: Just adding 1 for every token
 
 This leads to this Prediction function in bigram models:
 
 $$P_\text{Laplace} (w_{n}|w_{n-1})=\frac{T(w_{n-1}w_n)+1}{\sum\limits_{w}(T(w_{n-1}w)+1)}\overset{\sum1=V}{=}\frac{T(w_{n-1}w_{n})+1}{T(w_{n-1})+V}$$
+@NLP2026, eq. 3.26
+
+#### Laplace charges a proportional tax on evidence
+*What count would
+have produced this probability without smoothing?* Solving
+$P_\text{Laplace}=\frac{T^{*}}{T(w_{n-1})}$ for $T^{*}$ gives the **effective count**
+
+$$T^{*}(w_{n-1}w_{n}) = \bigl(T(w_{n-1}w_{n})+1\bigr)\cdot\underbrace{\frac{T(w_{n-1})}{T(w_{n-1})+V}}_{=:d(w_{n-1})}$$
+The discount factor $d$ does not depend on the bigram at all, only on the context. So Laplace is a
+*proportional* tax: every continuation of $w_{n-1}$ is scaled by the same $d$, no matter whether we
+saw it 500 times or never.
+
+That factor is brutal at the vocabulary sizes we are dealing with. My vault has $V\approx 2\cdot10^{4}$ types, and a decently frequent context like `Gradient` might have $T(w_{n-1})=200$. Then
+$d \approx \frac{200}{20200}\approx 0.0099$, and the bigram `Gradient Descent`, observed 50 times, ends up with an effective count of roughly $0.5$. We spent a whole corpus collecting that evidence and then threw away $99\%$ of it to fund $V$ continuations that never happened.
+
+#### Lets add more!
+Add-$k$ smoothing, $P_{\text{add-}k}(w_{n}|w_{n-1})=\frac{T(w_{n-1}w_{n})+k}{T(w_{n-1})+kV}$, only
+changes the tax *rate*. The structural problem survives: the amount of mass taken from observed
+events scales with $V$ and with nothing about the context except its total count. A single $k$ tuned
+on held-out data is always a compromise between contexts we know a lot about and contexts we saw
+three times.
+
+#### Discount, don't rescale
+Both scale *multiplicatively*. But held-out counts show the MLE error is **additive**: bigrams seen $r$ times recur about $r-0.75$ times [-@NLP2026]. So subtract a fixed $\delta$ instead. Normalization then forces the freed mass to be
+
+$$\lambda_{w_{n-1}}=\frac{\delta\,N_{1+}(w_{n-1}\bullet)}{T(w_{n-1})},\qquad N_{1+}(w_{n-1}\bullet)=\bigl|\{w: T(w_{n-1}w)>0\}\bigr|$$
+
+so diverse contexts leak more. It is only consulted in *unseen* contexts, so count how many distinct contexts $w$ appears in, not how often. `Descent` is frequent, yet almost always follows `Gradient`.
+### Knesner-Ney
+$$P_{\text{KneserNey}}(w_{i}|w_{i-1})=\underbrace{\frac{\max (T(w_{i-1}w_{i})-\delta,0)}{\sum_{w}T(w_{i-1}w)}}_{\text{measured evidence, deficient by}\ 1-\lambda_{w_{i-1}}} +\lambda_{w_{i-1}}P_{KN}(w_{i})$$ Bigram KneserNey-Smoothing. Adapted from @NEY1994
+
+We arrive at Knesner-Ney. 
+The **right term** spends exactly the deficit the **left one creates**. $\lambda$ is normalized, so $P_{KN}$ is freely chosen.
 
 ## Dataset preparation
 Dataset preparation consisted of filtering out unnecessary Information from the vault by applying the following regex:

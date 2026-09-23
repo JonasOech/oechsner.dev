@@ -75,3 +75,43 @@
   note = "Online manuscript released August 19, 2026",
   edition =         "3rd",
   }
+}
+
+@article{NEY1994,
+title = {On structuring probabilistic dependences in stochastic language modelling},
+journal = {Computer Speech & Language},
+volume = {8},
+number = {1},
+pages = {1-38},
+year = {1994},
+issn = {0885-2308},
+doi = {https://doi.org/10.1006/csla.1994.1001},
+url = {https://www.sciencedirect.com/science/article/pii/S0885230884710011},
+author = {Hermann Ney and Ute Essen and Reinhard Kneser},
+abstract = {In this paper, we study the problem of stochastic language modelling from the viewpoint of introducing suitable structures into the conditional probability distributions. The task of these distributions is to predict the probability of a new word by looking at M or even all predecessor words. The conventional approach is to limit M to 1 or 2 and to interpolate the resulting bigram and trigram models with a unigram model in a linear fashion. However, there are many other structures that can be used to model the probabilistic dependences between the predecessor word and the word to be predicted. The structures considered in this paper are: nonlinear interpolation as an alternative to linear interpolation; equivalence classes for word histories and single words; cache memory and word associations. For the optimal estimation of nonlinear and linear interpolation parameters, the leaving-one-out method is systematically used. For the determination of word equivalence classes in a bigram model, an automatic clustering procedure has been adapted. To capture long-distance dependences, we consider various models for word-by-word dependences; the cache model may be viewed as a special type of self-association. Experimental results are presented for two text databases, a Germany database and an English database.}
+}
+
+
+@misc{KneserNeySmoothing2025,
+	title = {Kneser–{Ney} smoothing},
+	copyright = {Creative Commons Attribution-ShareAlike License},
+	url = {https://en.wikipedia.org/w/index.php?title=Kneser%E2%80%93Ney_smoothing&oldid=1310556932},
+	abstract = {Kneser–Ney smoothing, also known as Kneser–Essen–Ney smoothing, is a method primarily used to calculate the probability distribution of n-grams in a document based on their histories. It is widely considered the most effective method of smoothing due to its use of absolute discounting by subtracting a fixed value from the probability's lower order terms to omit n-grams with lower frequencies. This approach has been considered equally effective for both higher and lower order n-grams. The method was proposed in a 1994 paper by Reinhard Kneser, Ute Essen and Hermann Ney.
+A common example that illustrates the concept behind this method is the frequency of the bigram "San Francisco". If it appears several times in a training corpus, the frequency of the unigram "Francisco" will also be high. Relying on only the unigram frequency to predict the frequencies of n-grams leads to skewed results; however, Kneser–Ney smoothing corrects this by considering the frequency of the unigram in relation to possible words preceding it.},
+	language = {en},
+	urldate = {2026-09-23},
+	journal = {Wikipedia},
+	month = sep,
+	year = {2025},
+	note = {Page Version ID: 1310556932},
+	file = {Snapshot:/home/jonas/Zotero/storage/NHZUWHP2/index.html:text/html},
+}
+
+@book{knuth1997,
+  author    = {Donald E. Knuth},
+  title     = {The Art of Computer Programming, Volume 2: Seminumerical Algorithms},
+  edition   = {3rd},
+  publisher = {Addison-Wesley},
+  year      = {1997},
+  note      = {Section 3.1, exercises 6--7}
+}
