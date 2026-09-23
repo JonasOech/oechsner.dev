@@ -2,7 +2,7 @@
 title: This LLM has a Context window of 1
 date: '2026-09-13'
 summary: >-
-  Exploring the basics of LLMs by building a N-Gram model on my lecture notes
+  Exploring the basics of LLMs by training a N-Gram model on my lecture notes
 tags: ['project report']
 nerdyness: 3
 draft: true
@@ -17,11 +17,10 @@ coverAlt: >-
 ## Introduction
 An *n-gram model* analyzes training data to determine how frequently specific word sequences occur. For example, given the phrase “my house is,” the model examines all words that follow “my” in the dataset. If “house” is the most common continuation, the model predicts “house.”
 
-In this Post, I will cover the mathematical basics of modern LMs and train my own N-Gram Model based on my lecture notes. 
-I'll go into markov chains.
+In this Post, I will cover the mathematical basics of modern LMs and train my own N-Gram Model based on my lecture notes. I'll take a mathematical dive into different token selection functions and prove why the maximum likelihood assumption leads to periodic repetition.
 
 
-## Conceptually
+## Mathematical Basics
 > This section is largely based on @NLP2026
 
 Most language models use context consisting of $n-1$ tokens $C:= w_1w_2\cdots w_{n-1}$ to predict the *nth* token $w_n$ and describe the probability for every
@@ -33,18 +32,18 @@ We define $T(a | B)$ as the number of occurrences of $a$ with the sentence $B$ p
 
 In our case, we define $P(w_{n}|C)=\frac{ T(w_{n}| w_{n-N+1 \cdots w_{n-1}})}{ T(w_{n})}$, simplifying to $P(w_{n}|C) = \frac{T(w_n|w_{n-1})}{T(w_n)}$ with bigrams.
 
-### Bigram ≈ Markov
-Let's take the *maximum likelihood assumption* of picking with $Sel(C) := \max_{w_{i}} (P(w_{i}|C))$. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
-
-We can also model higher-order N-Grams as markov chains, where the number of nodes increases exponentially with $N-1$.
 
 
 <!-- Since we know that $\sum_wP(w|C)=1$, we can choose tokens easily by selecting based on $P$.  -->
 ### Greedy decoding always ends in a loop
+Let's take the *maximum likelihood assumption* of picking with $Sel(C) := \max_{w_{i}} (P(w_{i}|C))$. 
+
 Before we improve $Sel$, let's prove *why* choosing greedily will fail.
 #### Proof
 We define a greedy $Sel$ as:
-$$f: V \longrightarrow V, \qquad f(w) := \operatorname*{arg\,max}_{w' \in V} P(w' \mid w),$$
+
+$$f: V \longrightarrow V, \quad f(w) := \operatorname*{arg\,max}_{w' \in V} P(w' \mid w),$$ Token selection function under the maximum likelihood assumption
+
 Given vocabulary $V$ with $|V| = v < \infty$:
 Generation from a seed $w_{0}$ is then nothing but iterating:
 $$w_{t} = f(w_{t-1}) = f^{t}(w_{0}).$$
@@ -56,38 +55,31 @@ $$w_{t} = f(w_{t-1}) = f^{t}(w_{0}).$$
 elements drawn from a set of only $v$ tokens, so by the pigeonhole principle two of them must
 coincide: $w_{i} = w_{j}$ for some $0 \le i < j \le v$. Because $f$ is a *function*:
 
-$$w_{i+k} = f^{k}(w_{i}) = f^{k}(w_{j}) = w_{j+k} \quad \text{for all } k \ge 0.$$
+$$\forall k \ge 0:\quad w_{i+k} = f^{k}(w_{i}) = f^{k}(w_{j}) = w_{j+k}$$
 
 So the sequence is periodic with period $p = j - i$ from index $i$ on. $\blacksquare$
 
 #### What do we learn from that?
-The generated text therefore has the shape of a $\rho$: a *tail* of at most $v$ tokens,
-followed by a *cycle* the model can never escape. Three consequences matter for us:
+1. **Repetition is structural, not a bug of the dataset.** Any finitely large dataset doesn't fix the underlying problem.
+2. **The model can produce at most $|V|$ distinct texts** 
+3. **Termination is luck.** We can't guarantee the loop contains a EOS.
 
-1. **Repetition is structural, not a bug of the dataset.** The infamous "the the the the" of a
-   greedily decoded LLM is the same phenomenon: a deterministic map on a finite state space
-   has no other option.
-2. **The reachable language is tiny.** Greedy output is fully determined by its seed, so the
-   model can produce at most $|V|$ distinct texts — a finite set, out of infinitely many
-   grammatical sentences. This is exactly the "locked on a subset" problem of the next
-   section, and note that *no amount of training data fixes it*, because the argument never
-   touched the counts $T$.
-3. **Termination is luck.** A sentence only ends if the tail happens to hit the absorbing stop
-   token $\langle/s\rangle$ before the cycle closes; otherwise generation runs forever.
+### Markov
+To prevent this, we sample from $P(\cdot|C)$. Thus, $f$ is no longer a *function*, but a *stochastic kernel* of a markov chain. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
 
-The bound is sharp in the order of the model rather than in the vocabulary: for a general
-$N$-gram the state is the whole context $(w_{n-N+1}, \dots, w_{n-1}) \in V^{N-1}$, so the same
-proof gives cycles of length at most $|V|^{N-1}$. Larger $N$ buys a longer leash, not freedom.
-
-To prevent this, we sample from $P(\cdot|C)$. Thus, $f$ is no longer a *function*, but a *stochastic kernel* of a markov chain.
-
+We can also model higher-order N-Grams as markov chains, where the number of nodes increases exponentially with $V^N$.
 ### The better selection Function
+> This section is based on @NLP2026 too
+
 The maximum likelihood assumption fails in the real world. No matter how big the training set, some sentences will never be able to be generated. That leaves the model locked on a subset $\subset$ of real language.
 
 We use Laplace Smoothing:
 
 $$P_\text{Laplace}(w_{i})=\frac{ T(w_{i} + 1}{ T(w_{n})}$$ **Laplace smoothing**: Just adding 1 for every token
 
+This leads to this Prediction function in bigram models:
+
+$$P_\text{Laplace} (w_{n}|w_{n-1})=\frac{T(w_{n-1}w_n)+1}{\sum\limits_{w}(T(w_{n-1}w)+1)}\overset{\sum1=V}{=}\frac{T(w_{n-1}w_{n})+1}{T(w_{n-1})+V}$$
 
 ## Dataset preparation
 Dataset preparation consisted of filtering out unnecessary Information from the vault by applying the following regex:
