@@ -34,16 +34,59 @@ We define $T(a | B)$ as the number of occurrences of $a$ with the sentence $B$ p
 In our case, we define $P(w_{n}|C)=\frac{ T(w_{n}| w_{n-N+1 \cdots w_{n-1}})}{ T(w_{n})}$, simplifying to $P(w_{n}|C) = \frac{T(w_n|w_{n-1})}{T(w_n)}$ with bigrams.
 
 ### Bigram ≈ Markov
-Let's take the *overly simplified* assumption of picking with $Sel(C) := \max_{w_{i}} (P(w_{i}|C))$. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
+Let's take the *maximum likelihood assumption* of picking with $Sel(C) := \max_{w_{i}} (P(w_{i}|C))$. This leads to the key insight that a *bigram model* with this $Sel$ is equivalent to a markov chain, where nodes are tokens and edge weights are $P(w_n|w_{n-1})$. 
 
 We can also model higher-order N-Grams as markov chains, where the number of nodes increases exponentially with $N-1$.
 
 
-
-
 <!-- Since we know that $\sum_wP(w|C)=1$, we can choose tokens easily by selecting based on $P$.  -->
+### Greedy decoding always ends in a loop
+Before we improve $Sel$, let's prove *why* choosing greedily will fail.
+#### Proof
+We define a greedy $Sel$ as:
+$$f: V \longrightarrow V, \qquad f(w) := \operatorname*{arg\,max}_{w' \in V} P(w' \mid w),$$
+Given vocabulary $V$ with $|V| = v < \infty$:
+Generation from a seed $w_{0}$ is then nothing but iterating:
+$$w_{t} = f(w_{t-1}) = f^{t}(w_{0}).$$
+
+> **Theorem.** For every $w_{0} \in V$ the greedy sequence $(w_{t})_{t \ge 0}$ is
+> *eventually periodic*: there are $i,j \in \mathbb{R}$ where $i < j \le v$ such that $w_{i} = w_{j}$, and the sequence repeats with an arbitrary period $p$: $f^{p+1}(w_{i})=w_j$
+
+**Proof.** Look at the first $v+1$ tokens $w_{0}, w_{1}, \dots, w_{v}$. They are $v+1$
+elements drawn from a set of only $v$ tokens, so by the pigeonhole principle two of them must
+coincide: $w_{i} = w_{j}$ for some $0 \le i < j \le v$. Because $f$ is a *function*:
+
+$$w_{i+k} = f^{k}(w_{i}) = f^{k}(w_{j}) = w_{j+k} \quad \text{for all } k \ge 0.$$
+
+So the sequence is periodic with period $p = j - i$ from index $i$ on. $\blacksquare$
+
+#### What do we learn from that?
+The generated text therefore has the shape of a $\rho$: a *tail* of at most $v$ tokens,
+followed by a *cycle* the model can never escape. Three consequences matter for us:
+
+1. **Repetition is structural, not a bug of the dataset.** The infamous "the the the the" of a
+   greedily decoded LLM is the same phenomenon: a deterministic map on a finite state space
+   has no other option.
+2. **The reachable language is tiny.** Greedy output is fully determined by its seed, so the
+   model can produce at most $|V|$ distinct texts — a finite set, out of infinitely many
+   grammatical sentences. This is exactly the "locked on a subset" problem of the next
+   section, and note that *no amount of training data fixes it*, because the argument never
+   touched the counts $T$.
+3. **Termination is luck.** A sentence only ends if the tail happens to hit the absorbing stop
+   token $\langle/s\rangle$ before the cycle closes; otherwise generation runs forever.
+
+The bound is sharp in the order of the model rather than in the vocabulary: for a general
+$N$-gram the state is the whole context $(w_{n-N+1}, \dots, w_{n-1}) \in V^{N-1}$, so the same
+proof gives cycles of length at most $|V|^{N-1}$. Larger $N$ buys a longer leash, not freedom.
+
+To prevent this, we sample from $P(\cdot|C)$. Thus, $f$ is no longer a *function*, but a *stochastic kernel* of a markov chain.
 
 ### The better selection Function
+The maximum likelihood assumption fails in the real world. No matter how big the training set, some sentences will never be able to be generated. That leaves the model locked on a subset $\subset$ of real language.
+
+We use Laplace Smoothing:
+$$P_\text{Laplace}(w_{i})=\frac{ T(w_{i} + 1}{ T(w_{n})}$$
+
 
 ## Dataset preparation
 Dataset preparation consisted of filtering out unnecessary Information from the vault by applying the following regex:
