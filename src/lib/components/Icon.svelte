@@ -15,7 +15,9 @@
 		| 'circle'
 		| 'rss'
 		| 'copy'
-		| 'check';
+		| 'check'
+		| 'maximize'
+		| 'minimize';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -38,7 +40,11 @@
 		circle: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18',
 		rss: 'M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16M5 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
 		copy: 'M10 8h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2zM16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3',
-		check: 'M20 6 9 17l-5-5'
+		check: 'M20 6 9 17l-5-5',
+		// Two corners pushed apart, and the same two pulled back together — the maximise
+		// toggle on a formula plate.
+		maximize: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
+		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'
 	};
 </script>
 

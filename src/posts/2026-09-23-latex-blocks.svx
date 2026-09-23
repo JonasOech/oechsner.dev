@@ -1,0 +1,88 @@
+---
+title: Equations on a plate
+date: '2026-09-23'
+summary: >-
+  Display math on this blog now sits in its own figure: it scrolls instead of stretching the
+  page, it maximises when it gets dense, and it can carry a note underneath.
+tags: ['site', 'latex']
+nerdyness: 2
+draft: false
+hero: false
+ai: true
+---
+
+Long formulas were the one thing this blog handled badly. KaTeX renders them beautifully, but a
+matrix product that is wider than 68 characters used to push the whole article sideways, and
+there was nowhere to say what the symbols meant except in the paragraph after it.
+
+So display math now gets its own figure — a plate with a scroll box, a maximise button and an
+optional note. Nothing about the way I write it changed.
+
+## The syntax
+
+A formula on one line, with the note after the closing `$$`:
+
+```markdown
+$$a^2 + b^2 = c^2$$ Pythagoras' theorem.
+```
+
+$$a^2 + b^2 = c^2$$ Pythagoras' theorem.
+
+The note is optional. Left off, the plate is just the formula:
+
+$$e^{i\pi} + 1 = 0$$
+
+It is ordinary markdown in there, so *emphasis*, [links](https://katex.org/docs/supported) and
+the blog's own citation syntax all work:
+
+$$H(X) = -\sum_{x \in \mathcal{X}} p(x) \log_2 p(x)$$ Shannon entropy, in bits — the average
+surprise of a draw from $X$. See [@chen2005, p. 3] for the estimator I keep coming back to.
+
+## Formulas with more than one line
+
+The fenced form takes a note too. It goes on the line straight after the closing fence — a blank
+line there means you wanted a new paragraph, and you get one:
+
+```markdown
+$$
+E = m c^2
+$$
+The note, on the line straight after the closing fence.
+```
+
+$$
+\begin{aligned}
+\mathcal{L}(\theta) &= -\frac{1}{N} \sum_{i=1}^{N} \log p_\theta(y_i \mid x_i) \\
+\nabla_\theta \mathcal{L}(\theta) &= -\frac{1}{N} \sum_{i=1}^{N} \nabla_\theta \log p_\theta(y_i \mid x_i) \\
+&= -\frac{1}{N} \sum_{i=1}^{N} \frac{\nabla_\theta\, p_\theta(y_i \mid x_i)}{p_\theta(y_i \mid x_i)}
+\end{aligned}
+$$
+The gradient of the negative log-likelihood, written out once so I never have to derive it again.
+
+Inline math is untouched by all of this: $\nabla_\theta$ in a sentence is still a symbol in a
+sentence, not a figure.
+
+## Wide, and dense
+
+This is where the plate earns its keep. The formula below is far wider than the column, so it
+scrolls inside its own box — drag it, or shift-scroll over it — while the page itself stays put:
+
+$$
+\underbrace{\Big[ \sum_{k=1}^{n} \alpha_k \, \phi_k(x) \Big]}_{\text{basis expansion}} \cdot \underbrace{\Big[ \prod_{j=1}^{m} \big(1 - \gamma_j e^{-\lambda_j t}\big) \Big]}_{\text{decay}} + \underbrace{\int_{0}^{T} \! \kappa(t, s) \, u(s) \, \mathrm{d}s}_{\text{memory term}} == \underbrace{\varepsilon \sim \mathcal{N}(0, \sigma^2)}_{\text{what is left}}= \underbrace{\varepsilon \sim \mathcal{N}(0, \sigma^2)}_{\text{what is left}}= \underbrace{\varepsilon \sim \mathcal{N}(0, \sigma^2)}_{\text{what is left}} \underbrace{\varepsilon \sim \mathcal{N}(0, \sigma^2)}_{\text{what is left}}
+$$
+Nothing here means anything. It is wide on purpose.
+
+And when scrolling a strip of it is not enough, the button in the top right corner lifts the
+plate out of the article and over the page, at a size that scales with the viewport. Escape
+closes it again, or a click anywhere outside.
+
+## How it works
+
+`$$…$$` never reaches the browser as LaTeX. A remark plugin in `svelte.config.js` finds the
+display math, hands the formula to KaTeX at build time and wraps the result in a small Svelte
+figure, which is also where the note ends up as a `figcaption`. The import for that figure is
+injected into the post automatically, so a post stays a plain markdown file — one that my
+Obsidian vault, where all of these are written, renders exactly the same way.
+
+What ships to you is static HTML plus KaTeX's stylesheet. The only JavaScript on the page is the
+maximise toggle.

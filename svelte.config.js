@@ -372,6 +372,155 @@ function citations() {
 }
 
 /**
+ * The import `latexBlocks` injects into a post that uses a formula block. It goes in as a
+ * module script because the post's own `<script>` is the instance one, and because that is
+ * where mdsvex puts the front-matter — `context="module"`, spelled the old way, is what its
+ * regex looks for when it merges `export const metadata` into an existing module script.
+ */
+const LATEX_BLOCK_IMPORT = [
+	'<script context="module">',
+	"\timport LatexBlock from '$lib/components/LatexBlock.svelte';",
+	'</script>'
+].join('\n');
+
+/** An `inlineMath` node that was written with `$$`, not `$` — see `inlineMathDouble`. */
+function isDoubleInline(/** @type {any} */ node) {
+	const classes = node?.data?.hProperties?.className;
+	return (
+		node?.type === 'inlineMath' && Array.isArray(classes) && classes.includes('math-display')
+	);
+}
+
+/** A block math node shaped exactly like the one remark-math's fenced form produces. */
+function displayMath(/** @type {string} */ value) {
+	return {
+		type: 'math',
+		value,
+		data: {
+			hName: 'div',
+			hProperties: { className: ['math', 'math-display'] },
+			hChildren: [{ type: 'text', value }]
+		}
+	};
+}
+
+/**
+ * The inline nodes left over beside a formula, as a note — or nothing, if all that is left
+ * is the space that separated them.
+ *
+ * @param {any[]} children
+ */
+function noteFrom(children) {
+	const note = children.map((child) => ({ ...child }));
+
+	while (note.length && note[0].type === 'text') {
+		note[0].value = note[0].value.replace(/^\s+/, '');
+		if (note[0].value) break;
+		note.shift();
+	}
+	while (note.length && note[note.length - 1].type === 'text') {
+		const last = note[note.length - 1];
+		last.value = last.value.replace(/\s+$/, '');
+		if (last.value) break;
+		note.pop();
+	}
+
+	return note.length ? note : undefined;
+}
+
+/**
+ * Turns display math into a `<LatexBlock>`: the figure in `$lib/components/LatexBlock.svelte`,
+ * which scrolls a wide formula inside its own box, maximises it on demand, and prints the
+ * note under it.
+ *
+ * Two shapes, both of which Obsidian renders as display math as well, so a post is still
+ * plain markdown in the vault:
+ *
+ *     $$a^2 + b^2 = c^2$$ the note, on the same line
+ *
+ *     $$
+ *     \begin{aligned} … \end{aligned}
+ *     $$
+ *     the note, on the line straight after the closing fence
+ *
+ * The note is optional in both, and stays mdast rather than becoming an attribute string, so
+ * emphasis, links and `[@citations]` in it are processed like any other prose — which is why
+ * this plugin runs before `citations`.
+ *
+ * The one-line shape does not reach remark-math's block tokenizer at all: that one bails on a
+ * second `$` before the line ends, so what arrives is a paragraph opening with an `inlineMath`
+ * node. `inlineMathDouble` is what marks those as having been written with `$$`; the ones this
+ * plugin does not claim (a `$$…$$` in the middle of a sentence) have the mark taken back off,
+ * so they keep rendering inline as they always have.
+ *
+ * @returns {(tree: any) => void}
+ */
+function latexBlocks() {
+	return (tree) => {
+		/** @param {any} math @param {any[] | undefined} note */
+		const block = (math, note) => [
+			{ type: 'html', value: '<LatexBlock>' },
+			math,
+			...(note
+				? [
+						{
+							type: 'paragraph',
+							children: note,
+							data: { hName: 'figcaption', hProperties: { className: ['latex-note'] } }
+						}
+					]
+				: []),
+			{ type: 'html', value: '</LatexBlock>' }
+		];
+
+		/** @type {any[]} */
+		const children = [];
+		let used = false;
+
+		for (let i = 0; i < tree.children.length; i++) {
+			const node = tree.children[i];
+
+			// The fenced form. Its note is the paragraph on the very next line — a blank line
+			// between the two means the author wrote a new paragraph, and it stays one.
+			if (node.type === 'math') {
+				const next = tree.children[i + 1];
+				const adjacent =
+					next?.type === 'paragraph' &&
+					next.position?.start?.line === node.position?.end?.line + 1;
+				if (adjacent) i++;
+				children.push(...block(node, adjacent ? noteFrom(next.children) : undefined));
+				used = true;
+				continue;
+			}
+
+			// The one-line form: `$$…$$` opening a paragraph, the rest of it the note.
+			if (node.type === 'paragraph' && isDoubleInline(node.children[0])) {
+				const [math, ...rest] = node.children;
+				children.push(...block(displayMath(math.value), noteFrom(rest)));
+				used = true;
+				continue;
+			}
+
+			children.push(node);
+		}
+
+		// Whatever `$$…$$` is left is inside a sentence, where a display-mode formula would
+		// tower over the line it sits on.
+		const unclaim = (/** @type {any} */ node) => {
+			if (isDoubleInline(node)) {
+				node.data.hProperties.className = node.data.hProperties.className.filter(
+					(/** @type {string} */ name) => name !== 'math-display'
+				);
+			}
+			if (Array.isArray(node.children)) node.children.forEach(unclaim);
+		};
+		children.forEach(unclaim);
+
+		tree.children = used ? [{ type: 'html', value: LATEX_BLOCK_IMPORT }, ...children] : children;
+	};
+}
+
+/**
  * Svelte reads `{` in markup as the start of an expression, and KaTeX's output is full of
  * literal braces: every formula carries a `<annotation encoding="application/x-tex">` holding
  * the original TeX, and set notation like `\{x\}` puts braces in the visible spans too. mdsvex
@@ -438,9 +587,20 @@ const config = {
 			// `$…$` as plain text. rehype-katex still matches on the `math-inline`/`math-display`
 			// classes v3 emits, so only the remark half needs the old version.
 			//
+			// `latexBlocks` runs first of the local plugins: it rewrites display math into the
+			// `<LatexBlock>` figure while the note beside it is still ordinary mdast, so
+			// `citations` then treats that note like any other prose. `inlineMathDouble` is
+			// only there to tell it which `$…$` were really written `$$…$$`.
+			//
 			// `citations` runs before `headingOutline` so the References heading it appends is
 			// in the outline, and before `readingTime` so it sees the post as written.
-			remarkPlugins: [remarkMath, citations, readingTime, headingOutline],
+			remarkPlugins: [
+				[remarkMath, { inlineMathDouble: true }],
+				latexBlocks,
+				citations,
+				readingTime,
+				headingOutline
+			],
 			rehypePlugins: [rehypeKatex, escapeKatexBraces],
 			smartypants: { dashes: 'oldschool' }
 		})

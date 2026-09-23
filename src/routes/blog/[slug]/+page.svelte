@@ -172,6 +172,12 @@
 	   min-width query so the narrow case is the default rather than an override. */
 	.post-layout {
 		display: grid;
+		/* A scroll box — a wide formula's plate, a table, a long line of code — still reports
+		   its content's width as its minimum, and an `auto` grid track honours that: on a
+		   phone the whole column would stretch past the viewport and take the header and the
+		   body copy with it. Capping the track hands the overflow back to the boxes that were
+		   built to scroll it. */
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	@media (min-width: 1100px) {
