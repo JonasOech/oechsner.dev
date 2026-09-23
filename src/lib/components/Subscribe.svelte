@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import { feeds, site } from '$lib/data/site';
+	import { trackFeed } from '$lib/track';
 
 	/**
 	 * The end-of-post invitation to follow the blog by feed. Copying the URL is the primary
@@ -21,6 +22,9 @@
 			// in the links below, so there is still a way to get it.
 			return;
 		}
+		// Counted only once the clipboard actually took it — a refused permission is not
+		// somebody subscribing.
+		trackFeed('copy-url', 'post-footer');
 		copied = true;
 		clearTimeout(timer);
 		timer = setTimeout(() => (copied = false), 2000);
@@ -49,9 +53,19 @@
 		</button>
 
 		<p class="meta subscribe__links">
-			<a href={feeds.rss} type="application/rss+xml" data-sveltekit-reload>RSS</a>
+			<a
+				href={feeds.rss}
+				type="application/rss+xml"
+				data-sveltekit-reload
+				onclick={() => trackFeed('open-rss', 'post-footer')}>RSS</a
+			>
 			<span aria-hidden="true">·</span>
-			<a href={feeds.atom} type="application/atom+xml" data-sveltekit-reload>Atom</a>
+			<a
+				href={feeds.atom}
+				type="application/atom+xml"
+				data-sveltekit-reload
+				onclick={() => trackFeed('open-atom', 'post-footer')}>Atom</a
+			>
 		</p>
 	</div>
 </aside>

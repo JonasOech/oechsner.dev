@@ -12,5 +12,14 @@
 	"vars": {
 		"SITE_NAME": "oechsner.dev",
 		"BUILD_CHANNEL": "production"
-	}
+	},
+
+	// Feed-button presses, written by src/routes/api/event/+server.ts. The dataset is
+	// created on first write, so there is nothing to provision; it holds three months.
+	"analytics_engine_datasets": [
+		{
+			"binding": "ANALYTICS",
+			"dataset": "oechsner_feed_events"
+		}
+	]
 }

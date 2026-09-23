@@ -8,6 +8,7 @@
 	import { site, cvPath, feeds } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
+	import { trackFeed } from '$lib/track';
 
 	let activeTag = $state<string | null>(null);
 
@@ -54,6 +55,7 @@
 				href={feeds.rss}
 				type="application/rss+xml"
 				data-sveltekit-reload
+				onclick={() => trackFeed('open-rss', 'home-intro')}
 			>
 				<Icon name="rss" size={14} />
 				Subscribe

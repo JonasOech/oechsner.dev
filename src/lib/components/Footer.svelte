@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import { feeds, footerNav, site } from '$lib/data/site';
+	import { trackFeed } from '$lib/track';
 
 	const year = new Date().getFullYear();
 </script>
@@ -16,6 +17,7 @@
 				href={feeds.rss}
 				type="application/rss+xml"
 				data-sveltekit-reload
+				onclick={() => trackFeed('open-rss', 'site-footer')}
 			>
 				<Icon name="rss" size={13} />
 				RSS
