@@ -1,6 +1,6 @@
 ---
 title: PREVIEW This LLM has a Context window of 1
-date: '2026-09-13'
+date: '2026-09-23'
 summary: >-
   Exploring the basics of LLMs by training a N-Gram model on my lecture notes
 tags: ['project report']
@@ -31,8 +31,6 @@ this the *markov assumption*. The probability of outputting a sentence $s=w_{1}w
 We define $T(a | B)$ as the number of occurrences of $a$ with the sentence $B$ preceeding. The next token selection is decided by $Sel: C \longrightarrow w_n$.
 
 In our case, we define $P(w_{n}|C)=\frac{ T(w_{n}| w_{n-N+1 \cdots w_{n-1}})}{ T(w_{n})}$, simplifying to $P(w_{n}|C) = \frac{T(w_n|w_{n-1})}{T(w_n)}$ with bigrams.
-
-
 
 <!-- Since we know that $\sum_wP(w|C)=1$, we can choose tokens easily by selecting based on $P$.  -->
 ### Greedy decoding always ends in a loop
@@ -117,21 +115,251 @@ We arrive at Knesner-Ney.
 The **right term** spends exactly the deficit the **left one creates**. $\lambda$ is normalized, so $P_{KN}$ is freely chosen.
 
 ## Dataset preparation
-Dataset preparation consisted of filtering out unnecessary Information from the vault by applying the following regex:
+My vault is 588 markdown files: four years of lecture notes, essays, project logs and the occasional shopping list. Getting them out of Obsidian is the easy half — skip the directories that were never prose to begin with:
+
 ```python
-# Filtering out files
-r"*/.claude/*",
-r"*/.obsidian/*",
-r"*.excalidraw.md",
-r"*/node_modules/*",
-
-# Substitutes in files:
-
-
-
+forbidden = [
+    r"*/.claude/*",
+    r"*/.obsidian/*",
+    r"*.excalidraw.md",
+    r"*/node_modules/*",
+]
 ```
 
+The hard half is that a markdown note is not text. It is text wrapped in YAML frontmatter, display math, wikilinks, callouts, table rules and fenced code. An n-gram model counts *everything* you hand it, and markup is far more repetitive than prose — so a model trained on the raw files would spend most of its probability mass learning that `---` tends to follow `---`. All of it gets stripped before tokenizing:
+
+```python
+SUBS = [
+    (re.compile(r"\A---\r?\n.*?\r?\n---\r?\n", re.S), ""),   # YAML frontmatter
+    (re.compile(r"%%.*?%%", re.S), " "),                     # obsidian comments
+    (re.compile(r"^```.*?^```", re.S | re.M), " "),          # fenced code
+    (re.compile(r"\$\$.*?\$\$", re.S), " "),                 # display math
+    (re.compile(r"\$[^$\n]{1,200}\$"), " "),                 # inline math
+    (re.compile(r"!\[\[[^\]]*\]\]"), " "),                   # ![[embeds]]
+    (re.compile(r"\[\[([^\]|#]*)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]"),
+     lambda m: m.group(2) or m.group(1)),                    # [[link|alias]] -> alias
+    (re.compile(r"\[([^\]\n]*)\]\([^)\n]*\)"), r"\1"),       # [text](url) -> text
+    (re.compile(r"^\s*>\s*\[![^\]]*\][+-]?", re.M), " "),    # > [!callout]
+    (re.compile(r"(?<!\S)#[\w/\-]+"), " "),                  # #tags
+    (re.compile(r"^\s{0,8}(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+|>\s?)+", re.M), ""),
+    # ... 8 more: html comments and tags, bare urls, images, table rules,
+    #     horizontal rules, task checkboxes, emphasis markers, blank lines
+]
+```
+
+Two rules decide what to keep. **Anything with display text keeps the display text** — `[[anomaly|Anomalie]]` becomes `Anomalie`, because that word is prose I wrote. **Anything else is deleted, not replaced** — code, math and image embeds carry no word-level content, so substituting a placeholder token would only teach the model to emit placeholders.
+
+Applied to a note, that turns this:
+
+```markdown
+## Petri Nets
+No longer distinguishing different kinds of tokens
+![[07-FSE-2026-PetriNets.pdf#page=21&rect=61,51,689,410|🖍️p.21]]
+
+Transitions always take in, always give out **EXACTLY** 1. → Non-deterministic counterpart.
+$\epsilon$ transitions: No input / no output. → "Start, end" of the petri net
+```
+
+into this:
+
+```text
+Petri Nets
+No longer distinguishing different kinds of tokens
+Transitions always take in, always give out EXACTLY 1. → Non-deterministic counterpart.
+transitions: No input / no output. → "Start, end" of the petri net
+```
+
+Note what the last line cost: $\epsilon$ is gone, and the sentence now begins with a dangling *transitions*. The model will never see a formula, so it can never write one — it can only learn the German and English prose that surrounds formulas. For a word-level model that is the right trade, but it does mean the corpus is systematically missing exactly the parts of my notes I spent the most time on.
+
+### Lines, not paragraphs
+Notes are not essays. A lecture note is a stack of bullet fragments, and the fragment above has no grammatical relationship to the fragment below it. So each **line** becomes its own training sequence, split further at sentence enders, padded with `<s>` and terminated by `</s>`:
+
+```python
+TOKEN = re.compile(r"[^\W\d_]+(?:['’\-][^\W\d_]+)*|\d+(?:[.,]\d+)*|[.,!?;:]")
+SENT  = re.compile(r"(?<=[.!?])\s+")
+
+def segments(text: str):
+    for line in clean(text).splitlines():
+        for sentence in SENT.split(line.strip()):
+            tokens = [t.lower() for t in TOKEN.findall(sentence)]
+            if len(tokens) >= 2:
+                yield tokens
+```
+
+If I treated a note as one flat token stream instead, the model would learn to run each bullet point into the next one, and every generated line would be a splice of two unrelated thoughts. Sequence boundaries are the only structure of the original document that survives cleaning, so they are worth protecting.
+
+### Duplicates, and which side of the split they land on
+The vault contains exact copies of notes — 55 of them, mostly from exports and old backups. That matters more than it sounds. If a note and its copy land on opposite sides of the train/validation split, the model gets to *memorise* the validation set, and held-out perplexity stops measuring generalisation and starts measuring my backup habits.
+
+So duplicates are dropped by content hash, and — more importantly — the split is done **per document**, never per line. Lines from one note are highly self-similar; splitting per line would leak a note's vocabulary and phrasing across the boundary even without exact duplicates.
+
+```python
+seen, texts = set(), []
+for f in sorted(RAW.glob('*.md')):
+    blob = f.read_bytes()
+    digest = hashlib.md5(blob).hexdigest()
+    if digest not in seen:
+        seen.add(digest)
+        texts.append(blob.decode('utf-8', errors='replace'))
+
+docs = [d for d in (list(segments(t)) for t in texts) if d]
+random.Random(SEED).shuffle(docs)
+cut = int(len(docs) * (1 - VAL_FRAC))
+```
+
+### The vocabulary
+Every token occurring once in the training split becomes `<unk>`. That is 8,368 of 23,988 types — a third of the vocabulary, and only 3% of the tokens. The long tail of a personal vault is filenames, German compound nouns I used exactly once, and OCR noise from PDF annotations; none of it is learnable from a single occurrence, and all of it would otherwise inflate $V$, which (as the Laplace section showed) is the term that taxes everything else.
+
+<div class="table-scroll">
+	<table>
+		<tbody>
+			<tr><th scope="row">markdown files</th><td>588</td></tr>
+			<tr><th scope="row">after deduplication</th><td>533</td></tr>
+			<tr><th scope="row">non-empty documents</th><td>388</td></tr>
+			<tr><th scope="row">training tokens</th><td>277,208</td></tr>
+			<tr><th scope="row">held-out tokens</th><td>11,023</td></tr>
+			<tr><th scope="row">types → vocabulary</th><td>23,988 → 15,622 (96.98% coverage)</td></tr>
+		</tbody>
+	</table>
+</div>
+
+277k tokens is *small*. For scale, GPT-3 was trained on roughly 300 billion — about a million times more. Keep that ratio in mind for the next section, because it explains nearly everything that goes wrong.
 
 ## Model training & Evaluation
+The implementation is interpolated Kneser-Ney exactly as derived above, with one addition: instead of stopping at the bigram, the recursion continues down through every lower order to a uniform $1/V$, so that no token is ever assigned probability zero.
+
+```python
+def _p(self, k, ctx, w):
+    if k == 0:
+        return 1.0 / self.V
+    d = self.succ[k].get(ctx)
+    if not d:                                 # unseen context -> pure backoff
+        return self._p(k - 1, ctx[1:], w)
+    tot = self.tot[k][ctx]
+    lam = self.D * len(d) / tot               # mass reserved for the lower order
+    return max(d.get(w, 0) - self.D, 0.0) / tot + lam * self._p(k - 1, ctx[1:], w)
+```
+
+The lower orders are trained on **continuation counts** — not how often a word occurs, but how many distinct words precede it. This is the *Francisco* argument [-@KneserNeySmoothing2025]: *Francisco* is a frequent unigram, but it almost only ever follows *San*, so it is a terrible guess in an unseen context. My vault's version is `Descent`, which is common and almost always preceded by `Gradient`.
+
+Pure stdlib, and it trains in a few seconds.
+
+### Perplexity
+To compare models I need a number. **Perplexity** is the exponentiated average negative log-likelihood the model assigns to held-out text:
+
+$$\text{PP}(w_{1:M}) = \exp\left(-\frac{1}{M}\sum_{i=1}^{M}\log P(w_{i}\mid w_{i-N+1:i-1})\right)$$ **Perplexity**: the model's average surprise per token
+
+Read it as an effective branching factor: *how many words is the model effectively choosing between at each step?* A uniform model over my vocabulary has a perplexity of exactly 15,622, because it is choosing uniformly between 15,622 options. Lower is better, and the number is only comparable between models sharing a vocabulary — which these do, since the vocabulary is built once, from the training split, before any model exists.
+
+### How much context is worth paying for?
+So I trained one model per order, from $N=0$ (uniform) up to $N=19$, and measured each on the same held-out documents:
+
+<div class="table-scroll">
+	<table>
+		<tbody>
+			<tr><th scope="row">N</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>8</td><td>10</td><td>12</td><td>15</td><td>19</td></tr>
+			<tr><th scope="row">Perplexity</th><td>15622</td><td>801</td><td>137.8</td><td>42.6</td><td>28.8</td><td>25.5</td><td>24.0</td><td>22.8</td><td>22.5</td><td>22.5</td><td>23.0</td><td>23.9</td></tr>
+		</tbody>
+	</table>
+</div>
+
+Three things happen here. First, the money is in the first three tokens of context: going from unigram to bigram — the "context window of 1" this post is named after — divides perplexity by six, and the trigram halves it again. After $N=4$ the curve is basically flat.
+
+Second, it bottoms out at $N=10$ with a perplexity of 22.5. Twenty-two is an absurd number for a corpus this small, and it should be the first clue that something is wrong.
+
+Third — and this is the part I did not expect — **it goes back up**. Past $N=12$, more context makes the model measurably worse. The reason is that a longer context is a rarer context: the vast majority of 12-token contexts in the held-out set were never seen in training, so the model backs off to a shorter order anyway, and pays the $\lambda$ discount at every level it falls through. You are charged for context you never get to use.
+
+### What it actually writes
+Perplexity is an aggregate, and aggregates hide things. So, same seed, same prompt, one model per order:
+
+```text
+--- N = 1 ---
+the main
+ of
+: ,
+:
+.
+ . 1
+ the 3 the , b
+die
+
+--- N = 2 ---
+the main process
+:
+for all
+x lecture 03 .
+removed and the
+in order to a basis of b ,
+fixed a 4 , then there is true .
+
+--- N = 3 ---
+the main process before processes are launched when using a kernel , the
+removed property from the other files : , email 42 , concat name , :
+the trainer no longer randomly selects a seed no longer returns a triplet 18390
+: there is a subset of examples for pytorch 2.4 .
+if is even .
+
+--- N = 5 ---
+the main academic risks are : unclosed gaps in securityprivacy weeks 14 15 , the rsa calculation error , and the missing .
+you can decompress drawing data with the command palette : decompress current excalidraw file .
+
+--- N = 10 ---
+the main academic risks are : unclosed gaps in securityprivacy weeks 14 15 , the rsa calculation error , and the missing buffer-overflow payload practice .
+fixed a bug where data would not be to punish ignorance but to prevent harm with education .
+a graph is planar if it can be drawn on a paper such that no edges cross each other
+```
+
+Every line break is the model emitting `</s>` and starting a fresh sequence, so the number of lines is itself a signal: the higher the order, the longer it keeps going before it decides a thought is finished.
+
+$N=1$ is function words and punctuation — the model has no context, so it produces the most common tokens in the language, which are the ones carrying no meaning. $N=3$ is the interesting one: locally grammatical, globally nonsense. *"the main process before processes are launched when using a kernel"* is a sentence I could plausibly have written, assembled from pieces of sentences I did write.
+
+And then $N=5$ and $N=10$ stop writing and start **quoting**. That last line is not a sample. It is a line from `6 Graphs & trees.md`, reproduced word for word. The one above it is from a vault review, also word for word — including, and I enjoy this more than I should, the fact that the sentence was written by an LLM in the first place.
+
+### The minimum is a lie
+That is a qualitative impression, so I measured it. For each order I sampled a few hundred lines, cut them into 8-grams, and checked how many of those 8-grams appear verbatim somewhere in the training corpus:
+
+<div class="table-scroll">
+	<table>
+		<tbody>
+			<tr><th scope="row">N</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>8</td><td>10</td><td>12</td></tr>
+			<tr><th scope="row">Perplexity</th><td>801</td><td>137.8</td><td>42.6</td><td>28.8</td><td>25.5</td><td>24.0</td><td>22.8</td><td>22.5</td><td>22.5</td></tr>
+			<tr><th scope="row">8-grams copied verbatim</th><td>0%</td><td>0%</td><td>7%</td><td>17%</td><td>26%</td><td>46%</td><td>67%</td><td>69%</td><td>67%</td></tr>
+		</tbody>
+	</table>
+</div>
+
+The two rows move together. Every point of perplexity I bought between $N=3$ and $N=10$ was paid for in originality: at the perplexity minimum, **roughly seven out of ten 8-word spans the model produces are copied straight out of my notes.**
+
+This is not smoothing failing. It is arithmetic. With 277k training tokens, a given 9-token context typically occurs exactly *once* in the entire corpus — and a context with one observation has exactly one continuation, with probability $1-\lambda$. The model isn't choosing. It is looking up the rest of the line.
+
+Which brings the post back to its own proof. Greedy decoding fails because it is a function on a finite set, so it must eventually cycle. Sampling fixes that — but at high $N$ the distribution it samples from has collapsed to a point mass, and the model degenerates in a second, sneakier way: it stops repeating *itself* and starts repeating *me*. Same disease, different symptom. Both are a model with nothing of its own to say, and only the first one is visible in the loss.
+
+If you want a model that writes rather than recites, the honest answer here is $N=3$ or $4$: the point where it is still recombining, just before the counts get sparse enough to memorise. That model has a perplexity of 42.6, roughly twice the minimum. **The best-scoring model and the best model are not the same model.**
+
+### One model, two languages
+One more artefact worth pointing out, since it is invisible in the perplexity table. My notes are bilingual — German lectures, English documentation — and both go into one model with one vocabulary. So it code-switches mid-line:
+
+```text
+fixed an issue to avoid validation loop : : set aller möglichen hypothesen nach der hypothesis
+der lokale daemon muss als eigenständige for any
+```
+
+An n-gram model has no notion of a language; it only knows which token followed which. Whenever a context appears in both languages — a number, a colon, a shared technical term — it is free to switch, and it does. The fix is to split the corpus by language, at the cost of training each model on less than half the data.
 
 ## Improvement opportunities
+Ordered by how cheap they are.
+
+- **Estimate the discount instead of guessing it.** $\delta$ is hard-coded to 0.75 throughout. The standard estimate from the count-of-counts, $\delta = \frac{n_1}{n_1 + 2n_2}$, is one line of code, and *modified* Kneser-Ney — separate discounts for counts of 1, 2 and 3+ — is the version that actually holds the record [-@NLP2026].
+- **Kill `<unk>` with subwords.** A BPE or character-level tokenizer removes the out-of-vocabulary problem entirely, and would let the model spell German compounds it has never seen. `segments()` is the only function that would change; `KneserNey` is generic over sequences of anything hashable.
+- **Split by language, or by subject.** Two sharper models on half the data each. Given how flat the perplexity curve is past $N=4$, I would bet this buys more than any amount of smoothing does.
+- **Measure novelty, not just perplexity.** The copy-rate above took twenty lines of code and told me more about the model than the entire perplexity sweep did. Any future model I train on this vault gets both numbers.
+
+### Why this stops here
+There is a ceiling, and it is not an engineering problem. An n-gram model stores a table indexed by context, so its parameter count grows as $V^{N}$. With my modest 15,622-token vocabulary, a 10-gram table has $15622^{10} \approx 10^{42}$ cells. I observed 277,208 of them. Every additional token of context multiplies the space by 15,622 and adds zero new evidence — which is the formal version of what the table above already showed.
+
+That is the wall the whole field hit, and the reason the next idea had to be structurally different rather than merely bigger. A transformer does not index context; it *embeds* it, and learns which parts of it matter. Its parameter count grows with the model's width, not with $V^N$, so the context window becomes something you choose rather than something you can afford. The counting is replaced by learning a function that generalises across contexts it has never seen — precisely the thing my $N=10$ model cannot do, and the reason it can only quote.
+
+## Conclusion
+So: what does a context window of 1 get you? A perplexity of 137.8, sentences that are grammatical for about four words at a time, and a model small enough that you can hold all of it in your head at once.
+
+That last part is the reason this was worth building. Every failure in this post is legible. The repetition is a pigeonhole argument, the zero probabilities are a counting problem, the memorisation is $277{,}208 \ll V^N$, and the smoothing is visible arithmetic on visible counts. None of those failures went away when the field scaled up — they got harder to see. It is quite something that the same three ideas, sparse evidence, reserved probability mass, and sampling instead of maximising, are still what determines whether the thing on the other side of the chat box says something new or just recites its notes back at you.
