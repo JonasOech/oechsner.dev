@@ -1,0 +1,78 @@
+---
+title: Classifying survey questions without letting them leave the building
+date: '2026-09-25'
+summary: >-
+  At LIfBi I build a tool that flags survey questions touching Article 9 GDPR. The data is,
+  by definition, the data you can't send anywhere, so everything runs on-premise.
+tags: ['project report', 'gdpr', 'llm']
+nerdyness: 2
+draft: false
+hero: false
+ai: true
+cover: /img/onprem/cover.svg
+coverAlt: Three stacked containers inside a closed network boundary, with the route to the internet blocked
+---
+
+## Introduction
+Since October 2025 I work at the *Leibniz-Institut für Bildungsverläufe* (LIfBi) in Bamberg. LIfBi runs large longitudinal studies, which means huge banks of survey questions. Some of those questions ask about things the GDPR treats as especially sensitive, and someone has to find them.
+
+My project is a tool that does that first pass. Given a survey question, it tells you which *special categories of personal data* the question touches. I own it end to end: requirements, talking to the people who will use it, the code, CI, and the maintenance afterwards.
+
+In this Post, I will cover what Article 9 actually asks for, why the obvious solution is the one you are not allowed to build, how the stack looks, and why I treat the classifier as a decision problem with asymmetric costs instead of a plain accuracy problem.
+
+## Article 9 in one paragraph
+> This section is based on the regulation itself [@gdpr2016, Art. 9]
+
+Art. 9(1) GDPR lists the special categories: racial or ethnic origin, political opinions, religious or philosophical beliefs, trade union membership, genetic data, biometric data used to identify a person, health, and sex life or sexual orientation. Processing them is **prohibited by default**. Art. 9(2) then lists the exceptions, for example explicit consent or scientific research with appropriate safeguards.
+
+A social science survey hits these constantly. One wave of a panel study can ask about health, religion, migration background and political interest in the same questionnaire. That is fine, it is what the exceptions exist for, but every such item needs to be *known*, so the right safeguards are in place.
+
+## The obvious solution is the illegal one
+Reading a sentence and deciding whether it asks about religion is exactly the kind of task an LLM is good at. The input is short and the categories come straight from the legal text.
+
+The obvious implementation is to call a hosted API. That is exactly what you cannot do here. The questions are unpublished research material, and the whole reason we classify them is that they might be sensitive. Sending them to a third party to find out whether they are sensitive is circular.
+
+So the constraint became the architecture: **no request ever leaves the institute's network.**
+
+## The stack
+The tool is three containers in one Docker Compose deployment:
+
+1. **Web**: a SvelteKit app, TypeScript all the way down. The frontend and the API routes live in the same project, so there is no separate backend service to secure.
+2. **Database**: PostgreSQL. Questions, classifications and who confirmed what.
+3. **Inference**: Ollama, serving an open-weights model on local hardware.
+
+The inference container publishes no ports. It is reachable from the web container over the compose network and from nowhere else, which is a much easier property to argue about in front of a data protection officer than "we have a policy that says nobody calls it".
+
+Load balancing over several inference nodes with Kubernetes is the next step, once more than a handful of people use it at the same time.
+
+## Classification as a decision problem
+Formally, for a set of questions $Q$ and the categories $K = \{k_1, \dots, k_9\}$ from Art. 9(1), the tool learns a multi-label function
+
+$$f: Q \longrightarrow \mathcal{P}(K)$$ A question can touch no category, one, or several at once
+
+In practice the model gives me an estimate $p_k(q) \approx P(q \text{ touches } k)$ for each category, and I need a rule for when to flag.
+
+The naive rule is $p_k(q) > 0.5$. That rule silently assumes both mistakes cost the same, and they don't:
+
+- A **false positive** means a person looks at a harmless question for a few seconds and unticks a box.
+- A **false negative** means a sensitive item goes through without the safeguards the law requires.
+
+Let $c_{FP}$ and $c_{FN}$ be those costs. Flagging has expected cost $(1-p)\,c_{FP}$, not flagging has expected cost $p\,c_{FN}$. Flag whenever the second is larger:
+
+$$p\,c_{FN} > (1-p)\,c_{FP} \iff p > \frac{c_{FP}}{c_{FP}+c_{FN}}$$ The Bayes-optimal threshold for two actions with asymmetric costs
+
+If a miss is ten times as bad as a false alarm, the threshold drops from $0.5$ to $\frac{1}{11}\approx 0.09$. The tool flags *a lot* more than a pure accuracy metric would like, and that is the point. What I optimise for is **recall**, and precision only has to be good enough that reviewers don't start ignoring the flags.
+
+This also answers the question of what the tool *is*. It doesn't decide anything. It sorts a question bank so a human spends their time on the items that matter, and the human's decision is what gets stored.
+
+## The parts that are not machine learning
+Most of the work turned out not to be the model:
+
+- **Requirements engineering.** "Find the sensitive questions" becomes a spec only after a lot of conversations about which categories matter, what a reviewer does with a flag, and what has to be documented.
+- **Compliance of the tool itself.** A tool that processes sensitive data has to be GDPR-compliant too. Local inference covers the biggest part; the rest is access control and knowing what the database stores.
+- **CI.** Every push builds and checks the app, so the thing people use at work doesn't break because I changed a prompt on a Tuesday.
+
+## What I took from it
+Running a project alone, from the first requirements meeting to maintenance, taught me more about software engineering than any single lecture. The legal constraint that looked like the biggest obstacle ended up being the clearest design requirement in the whole project.
+
+The tool is closed source, so there is no repository to link, but if you work on something similar, I'm happy to talk about it.
