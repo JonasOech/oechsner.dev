@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
+	import AsciiWall from '$lib/components/AsciiWall.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -16,9 +17,9 @@
 
 <div class="container">
 	<Rail label="Get In Touch" id="contact" level={1} wide>
-		<p class="lede enter" style="--i: 0">
+		<!-- <p class="lede enter" style="--i: 0">
 			The fastest way to reach me is email.
-		</p>
+		</p> -->
 
 		<dl class="channels">
 			{#each contacts as channel (channel.href)}
@@ -47,6 +48,8 @@
 		</p>
 	</Rail>
 </div>
+
+<AsciiWall />
 
 <style>
 	.lede {
@@ -114,7 +117,7 @@
 	}
 
 	.note {
-		margin-top: var(--s-8);
+		margin-top: var(--s-4);
 		font-size: 0.8125rem;
 		color: var(--text-muted);
 		max-width: var(--measure);
