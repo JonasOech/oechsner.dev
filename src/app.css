@@ -1124,6 +1124,18 @@ a {
 	padding: var(--s-4);
 }
 
+/* — A pair of figures that only mean something read together. `auto-fit` is what
+     keeps them in one row: inside a 68ch measure two flex items with a basis wide
+     enough to be legible add up to more than the column and wrap to a stack
+     instead. The tracks give way on their own once the measure itself is narrow. — */
+
+.prose .fig-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+	gap: var(--s-4);
+	align-items: start;
+}
+
 /* — Aside callout — */
 
 .prose .note {
