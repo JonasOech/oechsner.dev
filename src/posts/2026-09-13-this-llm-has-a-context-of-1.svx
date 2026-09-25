@@ -121,7 +121,7 @@ $$\text{PP}(w_{1:M}) = \exp\left(-\frac{1}{M}\sum_{i=1}^{M}\log P(w_{i}\mid w_{i
 
 Read it as an effective branching factor: *how many words is the model effectively choosing between at each step?* A uniform model over my vocabulary has a perplexity of exactly 15,622, because it is choosing uniformly between 15,622 options. Lower is better [@NLP2026].
 
-## Dataset preparation
+## Building an N-Gram Model
 I was able to extract 585 .md files, skipping the following:
 
 ```python
@@ -133,7 +133,7 @@ forbidden = [
 ]
 ```
 
-**Preprocessing.** Markdown is not prose: an n-gram model counts every token it is handed, and markup is far more repetitive than text, so a model trained on the raw vault would spend most of its probability mass learning that `[` follows `]`. Twenty-one ordered regex substitutions normalise this, anything carrying display text is reduced to it (aliased wikilinks, markdown links, callout headers), anything else is deleted rather than replaced (frontmatter, code, math, embeds, URLs, HTML, hashtags, rules). Pure markers (headings, bullets, blockquotes, checkboxes, emphasis) are stripped. Because a lecture note is a stack of grammatically unrelated bullet fragments, each **line** becomes its own training sequence. All exact duplicate notes are dropped by content hash, since the same content being in training and validation set would defeat the point. 
+**Preprocessing:** Markdown is not prose, since markup is far more repetitive than text, so a model trained on the raw vault would spend most of its probability mass learning that `[` follows `]`. Twenty-one ordered regex substitutions normalise this, anything carrying display text is reduced to it (aliased wikilinks, markdown links, callout headers), anything else is deleted rather than replaced (frontmatter, code, math, embeds, URLs, HTML, hashtags, rules). Pure markers (headings, bullets, blockquotes, checkboxes, emphasis) are stripped. Because a lecture note is a stack of grammatically unrelated bullet fragments, each **line** becomes its own training sequence. All exact duplicate notes are dropped by content hash, since the same content being in training and validation set would defeat the point. 
 
 <div class="table-scroll">
 	<table>
@@ -162,14 +162,11 @@ So I trained one model per order, from $N=0$ (uniform) up to $N=19$, and measure
 	</table>
 </div>
 
-Three things happen here. First, the money is in the first three tokens of context: going from unigram to bigram — the "context window of 1" this post is named after — divides perplexity by almost six, and the trigram cuts it by another two thirds. After $N=4$ the curve is basically flat.
+Improvement seems to be lorarithmic. The "context window of 1" divides perplexity by almost six, and the trigram cuts it by another two thirds. After $N=4$ perplexity doesn't seem to improve.
 
-Second, it bottoms out at $N=10$ with a perplexity of 22.5. Twenty-two is an absurd number for a corpus this small, and it should be the first clue that something is wrong.
-
-Third — and this is the part I did not expect — **it goes back up**. Past $N=12$, more context makes the model measurably worse. The reason is that a longer context is a rarer context. At $N=3$, 15% of held-out tokens arrive with a context the model has never seen; by $N=12$ it is 35%, and every one of those falls through to a shorter order anyway — paying the $\lambda$ discount at each level on the way down. You are charged for context you never get to use.
-
+Later **it surprisingly goes back up**. Past $N=12$, more context makes the model measurably worse. This seemingly is because it has fewer training data for longer lines. At $N=3$, 15% of held-out tokens arrive with a context the model has never seen; by $N=12$ it is 35%.
 ### What it actually writes
-Perplexity is an aggregate, and aggregates hide things. So, same seed, same prompt, one model per order:
+Perplexity doesn't paint the whole Picture. So a test run: same seed, same prompt, one model per order:
 
 ```text
 --- N = 1 ---
@@ -204,18 +201,17 @@ you can decompress drawing data with the command palette : decompress current ex
 
 --- N = 10 ---
 the main academic risks are : unclosed gaps in securityprivacy weeks 14 15 , the rsa calculation error , and the missing buffer-overflow payload practice .
-fixed a bug where data would not be to punish ignorance but to prevent harm with education .
 a graph is planar if it can be drawn on a paper such that no edges cross each other
 ```
 
-Every line break is the model emitting `</s>` and starting a fresh sequence, so the number of lines is itself a signal: the higher the order, the longer it keeps going before it decides a thought is finished.
+Every line break is the model emitting `</s>` and starting a fresh sequence, so the number of lines is itself a signal: the higher the order, the longer it keeps going before it decides EOS.
 
-$N=1$ is function words and punctuation — the model has no context, so it produces the most common tokens in the language, which are the ones carrying no meaning. $N=3$ is the interesting one: locally grammatical, globally nonsense. *"the main process before processes are launched when using a kernel"* is a sentence I could plausibly have written, assembled from pieces of sentences I did write.
+$N=1$ is function words and punctuation — the model has no context, so it produces the most common tokens in the language, which are the ones carrying no meaning. $N=3$ is the interesting one: locally grammatical, globally nonsense. *"the main process before processes are launched when using a kernel"* actually quite good, you'd have to secondguess to figure out it is nonsense.
 
-And then $N=5$ and $N=10$ stop writing and start **quoting**. That last line is not a sample. It is a line from `6 Graphs & trees.md`, reproduced word for word. The one above it is from a vault review, also word for word — including, and I enjoy this more than I should, the fact that the sentence was written by an LLM in the first place.
+And then $N=5$ and $N=10$ stop writing and start **quoting**.  *"A graph is planar if it can be drawn on a paper such that no edges cross each other"* is a line from my notes on discrete modelling, reproduced word for word.
 
 ### The minimum is a lie
-That is just an impression though, so let's measure it. For each order I sampled a few hundred lines, cut them into 8-grams, and checked how many of those 8-grams appear verbatim in the training split — and, separately, how many of the generated lines are entire lines of the vault reproduced exactly:
+That is just an impression though, so let's measure it. For each order I sampled a few hundred lines, cut them into 8-grams, and checked how many of those 8-grams appear word for word in the training split and, separately, how many of the generated lines are entire lines of the vault reproduced exactly:
 
 <div class="fig-row">
 	<figure class="plain">
@@ -228,11 +224,11 @@ That is just an impression though, so let's measure it. For each order I sampled
 
 The rows move together. Every point of perplexity I bought past $N=3$ was paid for in originality: at the perplexity minimum, **two out of three 8-word spans the model produces are copied straight out of my notes, and half of the lines it writes are completely out of my notes.**
 
-This is not smoothing failing. It is arithmetic. At $N=10$, 62% of the contexts the model knows occur exactly *once* in the entire corpus — and a context with a single observation has exactly one continuation, which takes all of its probability mass except the $\lambda$ reserved for backing off. The model isn't choosing. It is looking up the rest of the line.
+At $N=10$, 62% of the contexts the model knows occur exactly *once* in the entire corpus. The model isn't choosing. It is looking up the rest of the line.
 
 Which brings us back to its own proof. Greedy decoding fails because it is a function on a finite set, so it must eventually cycle. Sampling fixes that, but at high $N$ it stops repeating *itself* and starts repeating *me*. Both are a model with nothing of its own to say, and only the first one is visible in the loss.
 
-If you want an original model, I suggest $N=3$ or $4$: still recombining, just before the counts get sparse enough to memorise. **→ The best-scoring model and the best model are not the same.**
+If you want the most original model, I suggest $N=3$ or $4$: still recombining, just before the counts get sparse enough to overfit. **→ The best-scoring model and the best model are not the same.**
 
 ### One model, two languages
 My notes are bilingual, and both go into one model with one vocabulary. So it code-switches mid-line, as I do in my notes:
