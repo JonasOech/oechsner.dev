@@ -44,7 +44,7 @@ export const experience: Entry[] = [
 		title: 'Tutor — "Introduction to AI"',
 		org: 'Cognitive Systems Chair, Otto-Friedrich-Universität Bamberg',
 		place: 'Bamberg, Germany',
-		period: 'Jul 2026 — Present',
+		period: 'Mar 2026 — Aug 2026',
 		points: ['Teach and support students in the "Introduction to AI" course.']
 	},
 	{
@@ -80,10 +80,10 @@ export const education: Entry[] = [
 	},
 	{
 		title: 'Röntgen-Gymnasium Würzburg',
-		org: 'Abitur, grade 2.0',
+		org: 'Abitur',
 		place: 'Würzburg, Germany',
 		period: 'Sep 2016 — Jul 2024',
-		points: []
+		points: ['Grade 2.0']
 	}
 ];
 
