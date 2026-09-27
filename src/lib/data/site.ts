@@ -55,8 +55,8 @@ export const footerNav: NavItem[] = [
 export const contacts = [
 	{
 		label: 'Email',
-		value: 'jonasoechsner06@gmail.com',
-		href: 'mailto:jonasoechsner06@gmail.com',
+		value: 'jonas@oechsner.dev',
+		href: 'mailto:jonas@oechsner.dev',
 		icon: 'mail' as const,
 		primary: true
 	},
