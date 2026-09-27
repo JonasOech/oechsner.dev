@@ -2,16 +2,4 @@
 User-agent: *
 Disallow:
 
-# No training on this site's content.
-User-agent: GPTBot
-User-agent: ClaudeBot
-User-agent: Claude-User
-User-agent: Google-Extended
-User-agent: Applebot-Extended
-User-agent: CCBot
-User-agent: Bytespider
-User-agent: meta-externalagent
-User-agent: PerplexityBot
-Disallow: /
-
 Sitemap: https://oechsner.dev/sitemap.xml
