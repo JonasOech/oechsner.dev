@@ -2,6 +2,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { feeds, footerNav, site } from '$lib/data/site';
 	import { trackFeed } from '$lib/track';
+	import { reopenConsent } from '$lib/consent.svelte';
 
 	const year = new Date().getFullYear();
 </script>
@@ -28,6 +29,15 @@
 			© {site.startYear === year ? year : `${site.startYear}–${year}`}
 			{site.name} - 
 			<a class="footer__legal-link" href="/impressum">Impressum</a>
+			<span aria-hidden="true">·</span>
+			<a class="footer__legal-link" href="/datenschutz">Datenschutz</a>
+			<span aria-hidden="true">·</span>
+			<!-- Withdrawing consent has to be as easy as giving it (Art. 7 Abs. 3 DSGVO), so
+			     the banner is one press away from every page. A button rather than a link:
+			     it changes state here, it does not go anywhere. -->
+			<button type="button" class="footer__legal-link" onclick={reopenConsent}>
+				Cookie settings
+			</button>
 		</p>
 
 		<p class="footer__colophon">
@@ -114,6 +124,13 @@
 	}
 
 	.footer__legal-link {
+		/* The button shares the anchors' styling exactly, so the three read as one row of
+		   equals — a `button` inherits none of it, hence the explicit reset. */
+		appearance: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		font-family: var(--font-sans);
 		font-size: 0.75rem;
 		font-weight: 700;
 		color: var(--text-muted);

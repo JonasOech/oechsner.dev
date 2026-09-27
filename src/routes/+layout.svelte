@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
 
 	let { children } = $props();
 </script>
@@ -16,6 +17,11 @@
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>
+
+<!-- Second in the tab order, behind the skip link: the thing asking for a decision
+     should be reachable before the nav, not buried past the footer. It is fixed to the
+     bottom of the viewport, so its position here costs the layout nothing. -->
+<ConsentBanner />
 
 <Header />
 

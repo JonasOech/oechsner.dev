@@ -87,6 +87,18 @@ export const contacts = [
 export const cvPath = '/resume-en.pdf';
 
 /**
+ * Revision date for the Datenschutzerklärung. The text itself lives in
+ * src/routes/datenschutz/+page.svelte — only this is data, and only because the page has
+ * to state when it last changed.
+ *
+ * Bump it whenever the *substance* changes: a new processor, a new legal basis, a change
+ * to what Analytics is configured to keep. Wording fixes do not count.
+ */
+export const privacy = {
+	updated: '2026-09-27'
+} as const;
+
+/**
  * Operator details for the Impressum (§ 5 DDG, formerly § 5 TMG) and the
  * content-responsibility statement under § 18 Abs. 2 MStV.
  *

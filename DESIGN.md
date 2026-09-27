@@ -324,6 +324,27 @@ breakpoint. The footer repeats the full nav, which is the fallback when scriptin
 .tag[aria-disabled='true']{ opacity: 0.45; pointer-events: none; }
 ```
 
+### Consent banner
+
+The one surface on the site that asks the visitor for something, and the one place where §4's
+button hierarchy is deliberately suspended: **both buttons are `.btn--secondary`**, sized to a
+shared `min-width` so the pair is symmetric. A white primary "Allow" beside a dark "Decline"
+would be the design system working correctly and the consent working incorrectly — German
+supervisory authorities read a visually louder accept as steering the choice, and a steered
+choice is not consent. Nothing else on the site is allowed to borrow this equal-weight pairing;
+it is a legal constraint, not a style.
+
+It is a bottom-anchored panel, not a modal: no scrim, no focus trap, the page stays readable
+and navigable behind it. That is only defensible because ignoring the banner means no
+analytics — `src/lib/consent.svelte.ts` does not load the tag until it is told to. If that ever
+changes, this has to become blocking.
+
+The panel borrows the header's translucency language — `rgba(var(--surface-rgb), 0.92)` over
+`blur(12px)`, at the same 14px cap — with `--shadow-4`, the one non-modal use of the modal
+elevation step, because it floats over content rather than sitting in the flow. It renders only
+after hydration has read the stored decision (`consent.ready`); every page here is prerendered,
+so markup in the HTML would flash on every load for everyone who already answered.
+
 ### Rail section (the template's signature construct)
 
 ```css
@@ -447,6 +468,7 @@ exist only where an element genuinely floats.
 | Page content | `1` | `--shadow-0` |
 | Article row on hover | `1` | tint only, no shadow |
 | Sticky header (scrolled) | `50` | `--shadow-3` + 12px backdrop blur |
+| Consent banner | `90` | `--shadow-4` + 12px backdrop blur |
 | Skip link on focus | `100` | `--shadow-2` |
 
 **Rule**: no element gains more than one elevation step on hover, and cards never gain a shadow
@@ -680,7 +702,14 @@ a no-JS visitor receives a fully rendered page.
    arises under German law and the text must be intelligible to the audience it protects —
    the one deliberate exception to the site's English-only rule. It reuses the rail construct
    unchanged, so it does not introduce a new layout.
-6. **A Projects section is added to About.** The reference has Experiences and Formations only.
+6. **A consent banner and a Datenschutz page are added.** The reference has neither, and a
+   template that ships analytics usually ships it ungated. Google Analytics here loads only
+   after an explicit press, so the site has one interruptive surface the reference does not —
+   kept to a bottom-anchored panel rather than the full-screen wall most consent libraries
+   produce, and kept out of the prerendered HTML so it costs nothing to the visitors who have
+   already answered. `/datenschutz` reuses the Impressum's `.legal` layout unchanged and is
+   German for the same reason it is (deviation 5).
+7. **A Projects section is added to About.** The reference has Experiences and Formations only.
    Both flagship projects here are closed source, so these are prose write-ups with no repo
    links — deliberately not linked cards with GitHub icons.
 

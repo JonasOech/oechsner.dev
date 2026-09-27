@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types';
 
 export const prerender = true;
 
-const staticPaths = ['/', '/about', '/blog', '/contact', '/impressum'];
+const staticPaths = ['/', '/about', '/blog', '/contact', '/impressum', '/datenschutz'];
 
 export const GET: RequestHandler = () => {
 	const urls = [
