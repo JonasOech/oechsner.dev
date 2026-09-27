@@ -22,6 +22,13 @@ export const FEED_SURFACES = ['post-footer', 'site-footer', 'home-intro'] as con
 export type FeedAction = (typeof FEED_ACTIONS)[number];
 export type FeedSurface = (typeof FEED_SURFACES)[number];
 
+declare global {
+	interface Window {
+		/** Declared synchronously by the gtag snippet in `src/app.html`. */
+		gtag?: (...args: unknown[]) => void;
+	}
+}
+
 /**
  * Reports one press, and never gets in the way of what the visitor actually asked for.
  *
@@ -31,9 +38,19 @@ export type FeedSurface = (typeof FEED_SURFACES)[number];
  * there is no response to read and no failure this code could act on.
  */
 export function trackFeed(action: FeedAction, surface: FeedSurface): void {
-	// Absent during SSR, and in any browser old enough to lack it. The counter is a
-	// convenience for the author, so its absence must cost the visitor nothing.
-	if (typeof navigator === 'undefined' || !navigator.sendBeacon) return;
+	// Absent during SSR. The counter is a convenience for the author, so its absence must
+	// cost the visitor nothing.
+	if (typeof window === 'undefined') return;
+
+	// GA4 sees none of this on its own: the feed links are same-origin, so they never
+	// become an outbound `click`; `.xml` is not in the `file_download` extension list; and
+	// the copy button never touches the network at all. The site has to say so out loud
+	// here too, for the same reason it posts to `/api/event`. The call queues into
+	// dataLayer even before gtag.js has finished loading, and is a no-op if it never does.
+	window.gtag?.('event', 'feed_subscribe', { method: action, surface });
+
+	// Missing in any browser old enough to lack it; the beacon is best-effort either way.
+	if (!navigator.sendBeacon) return;
 
 	const body = new Blob([JSON.stringify({ action, surface })], { type: 'application/json' });
 	navigator.sendBeacon('/api/event', body);
