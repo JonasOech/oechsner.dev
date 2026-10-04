@@ -89,6 +89,16 @@ export const education: Entry[] = [
 
 export const projects: Entry[] = [
 	{
+		title: 'Personal Blog & Portfolio (oechsner.dev)',
+		period: '2025 — Present',
+		stack: 'SvelteKit · Svelte 5 · mdsvex · Cloudflare Pages',
+		points: [
+			'Designed and built this fully prerendered personal site from scratch, including a custom mdsvex pipeline for citations, display math, and reading-time estimates.',
+			'Authored a written design contract and kept the whole site to a single dark theme with no hard-coded colors.',
+			'Deployed on Cloudflare Pages via Git-integrated continuous deployment.'
+		]
+	},
+	{
 		title: "Raven's Progressive Matrices — Abstract Visual Reasoning",
 		org: 'Cognitive Systems, Universität Bamberg',
 		period: 'Mar 2026 — Aug 2026',
@@ -117,8 +127,8 @@ export const projects: Entry[] = [
 	}
 ];
 
-/** Both projects above are closed source — there are no repository links by design. */
-export const projectsNote = 'Both projects are closed source.';
+/** The two engineering projects above are closed source; this website's source is not listed here by design. */
+export const projectsNote = 'The LIfBi and Raven\'s Progressive Matrices projects are closed source.';
 
 export const grades = {
 	summary: 'Some highlights from my transcript, sorted by grade. Full transcript available on request.',
