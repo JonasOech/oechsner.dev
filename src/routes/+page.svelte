@@ -43,7 +43,8 @@
 		<h3 class="intro__greeting">{site.intro}</h3>
 		<p class="intro__tagline">
 			Applied CS at Uni Bamberg, currently TU Dublin<br />
-			Software engineer &amp; AI tutor
+			Software engineer &amp; AI tutor <br />
+			Currently looking for an Internship in Dublin
 		</p>
 		<p class="intro__actions">
 			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
