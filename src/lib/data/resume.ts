@@ -13,6 +13,13 @@ export type Entry = {
 	period: string;
 	stack?: string;
 	points: string[];
+	/**
+	 * An artefact to hand out alongside the entry. `href` is a path into `static/`, so the
+	 * link is same-origin and the `download` attribute on it actually takes effect — the file
+	 * is saved, never opened in a viewer. `meta` is the format and weight, shown next to the
+	 * button so nobody is surprised by what lands in their Downloads folder.
+	 */
+	download?: { href: string; label: string; meta: string };
 };
 
 export const about = [
@@ -89,16 +96,6 @@ export const education: Entry[] = [
 
 export const projects: Entry[] = [
 	{
-		title: 'Personal Blog & Portfolio (oechsner.dev)',
-		period: '2025 — Present',
-		stack: 'SvelteKit · Svelte 5 · mdsvex · Cloudflare Pages',
-		points: [
-			'Designed and built this fully prerendered personal site from scratch, including a custom mdsvex pipeline for citations, display math, and reading-time estimates.',
-			'Authored a written design contract and kept the whole site to a single dark theme with no hard-coded colors.',
-			'Deployed on Cloudflare Pages via Git-integrated continuous deployment.'
-		]
-	},
-	{
 		title: "Raven's Progressive Matrices — Abstract Visual Reasoning",
 		org: 'Cognitive Systems, Universität Bamberg',
 		period: 'Mar 2026 — Aug 2026',
@@ -106,11 +103,15 @@ export const projects: Entry[] = [
 		points: [
 			`Team project attempting to replicate "An Interpretable Neuro-symbolic Model for Raven's
 			 Progressive Matrices Reasoning" (Zhao et al., 2023).`,
-			'Reproduced two published dataset generators, RAVEN and RAVEN-FAIR.',
 			`Reproduced the paper's three-stage neuro-symbolic pipeline — CNN → supervised VAE for
 			 semantic attribute extraction → cognitive-map relational reasoning — reaching 94%
 			 prediction accuracy.`
-		]
+		],
+		download: {
+			href: '/cognitive-maps-for-rpm-presentation.pptx',
+			label: 'Download presentation',
+			meta: 'PPTX · 2.4 MB'
+		}
 	},
 	{
 		title: 'LLM-Powered GDPR Compliance Classifier',
@@ -123,6 +124,16 @@ export const projects: Entry[] = [
 			`Developed the full stack: SvelteKit/TypeScript frontend and API routes, PostgreSQL schema,
 			 and a three-container Docker Compose deployment. Kubernetes load balancing is planned.`,
 			'Ran all LLM inference locally through Ollama so sensitive institute data never leaves the network.'
+		]
+	},
+	{
+		title: 'Personal Blog & Portfolio (oechsner.dev)',
+		period: '2025 — Present',
+		stack: 'SvelteKit · Svelte 5 · mdsvex · Cloudflare Pages',
+		points: [
+			'Designed and built this fully prerendered personal site from scratch, including a custom mdsvex pipeline for citations, display math, and reading-time estimates.',
+			'Authored a written design contract and kept the whole site to a single dark theme with no hard-coded colors.',
+			'Deployed on Cloudflare Pages via Git-integrated continuous deployment.'
 		]
 	}
 ];

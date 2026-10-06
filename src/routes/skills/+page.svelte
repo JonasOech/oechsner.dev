@@ -15,7 +15,7 @@
 </script>
 
 <Seo
-	title="Skills"
+	title="Projects"
 	description="Jonas Öchsner — applied computer science at Universität Bamberg, machine learning and data-protection engineering at LIfBi, ERASMUS at TU Dublin from September 2026."
 />
 
@@ -32,6 +32,15 @@
 						<li>{point}</li>
 					{/each}
 				</ul>
+				{#if project.download}
+					<div class="download">
+						<a class="btn btn--secondary" href={project.download.href} download>
+							<Icon name="arrow-down" />
+							{project.download.label}
+						</a>
+						<span class="mono download__meta">{project.download.meta}</span>
+					</div>
+				{/if}
 				<p class="meta">{project.period}{project.org ? ` · ${project.org}` : ''}</p>
 			</article>
 		{/each}
@@ -57,6 +66,29 @@
 <style>
 	.entry__stack {
 		margin: 0 0 var(--s-3);
+	}
+
+	/* The `download` attribute on the anchor is the point of this block: a .pptx would
+	   otherwise be handed to whatever viewer the browser or OS has registered for it. */
+	.download {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--s-3);
+		margin: 0 0 var(--s-4);
+	}
+
+	.download__meta {
+		white-space: nowrap;
+	}
+
+	@media (max-width: 479px) {
+		/* `.btn` is width: 100% below 480px, so the weight hint has to drop to its own line
+		   rather than try to share one. */
+		.download {
+			align-items: flex-start;
+			gap: var(--s-2);
+		}
 	}
 
 	.note {
