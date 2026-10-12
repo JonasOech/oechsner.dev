@@ -20,6 +20,8 @@ My team, [Graciela Uscanga](https://www.linkedin.com/in/graciela-uscanga-7815641
 
 In this post I want to talk about our solution and approach. I especially want to cover the technical solution we chose.
 
+> Feel free to read the short version on [LinkedIn](https://lnkd.in/p/eXHFBd4Y), your time is valuable.
+
 ## The situation: One monolythic Excel File
 
 We worked on Challenge 2, *Smarter equipment tracking for better patient care*, submitted by a discharge planning occupational therapist.
