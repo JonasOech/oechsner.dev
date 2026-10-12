@@ -811,7 +811,8 @@ a {
 	margin-block: var(--s-8);
 }
 
-.prose img {
+.prose img,
+.prose video {
 	border-radius: 6px;
 	border: 1px solid var(--line);
 }

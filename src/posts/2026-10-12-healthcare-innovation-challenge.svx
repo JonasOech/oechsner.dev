@@ -52,7 +52,15 @@ Research with the staff shut all of that down quickly:
 So the real constraint was not about technology at all. The tracker already holds the right information. It's just that updating it is a separate task, done at a desk: a place where hospital staff should spend the least possible amount of time at.
 
 ## The winning idea
-After some research and brainsrtorming, we realized that everything we needed for identification was already there! It turns out the hospital uses a service called *HealthCare21* for equipment maintainence. This service requires a clear identifieing sticker on every piece of equipment they service: if the sticker is missing, they won't maintain the equipment. This is perfect opportunity to use as a primary identifier for our system, since this is a Stable, Unique and always present ID. This also perfectly reflected on the approach on change: See [#Change Management]
+
+<figure>
+	<video src="/img/hic/QuickEquipmentLog_promo.mp4" controls preload="metadata" playsinline>
+		<a href="/img/hic/QuickEquipmentLog_promo.mp4">Watch the promo video</a>
+	</video>
+	<figcaption>Our promo video for the app, produced AFTER Hackathon submission </figcaption>
+</figure>
+
+After some research and brainstorming, we realized that everything we needed for identification was already there! It turns out the hospital uses a service called *HealthCare21* for equipment maintainence. This service requires a clear identifieing sticker on every piece of equipment they service: if the sticker is missing, they won't maintain the equipment. This is perfect opportunity to use as a primary identifier for our system, since this is a Stable, Unique and always present ID. This also perfectly reflected on the approach on change: See [#Change Management]
 
 The moment a therapist hands a wheelchair to a patient, they already know everything needed for documentation: item id (it's on the item), which patient, which bed, roughly how long. What they don't have is a free hand.
 
