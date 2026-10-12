@@ -5,9 +5,9 @@ summary: >-
   Tallaght University Hospital loses track of its wheelchairs because nobody has time to update an
   Excel file. We spent a night building an LLM-powered voice logger for inventory management and learned that the hard part of solving the problem isn't technology.
 tags: ['hackathon', 'project report']
-cover: /img/hic/cover.jpeg
+cover: /img/hic/cover.svg
 nerdyness: 1
-draft: true
+draft: false
 hero: false
 ai: true
 ---
