@@ -1,0 +1,98 @@
+---
+title: 'Winning a prize at my first hackathon'
+date: '2026-10-12'
+summary: >-
+  Tallaght University Hospital loses track of its wheelchairs because nobody has time to update an
+  Excel file. We spent a night building an LLM-powered voice logger for inventory management and learned that the hard part of solving the problem isn't technology.
+tags: ['hackathon', 'project report']
+cover: /img/hic/cover.jpeg
+nerdyness: 1
+draft: true
+hero: false
+ai: true
+---
+
+## Introduction
+
+This weekend I took part in the Health Innovation Challenge at TU Dublin's Tallaght Campus, run together with Tallaght University Hospital (TUH) and supported by Amazon. Clinicians from TUH briefed us on real problems from their wards, Amazon people coached us on prototyping and pitching, and then we had ten hours, through the night, to build something.
+
+My team, [Graciela Uscanga](https://www.linkedin.com/in/graciela-uscanga-781564125/), [Marvin Chewchut](https://www.linkedin.com/in/marvin-chewchut/) and I, won **Best Use of Technology**!
+
+In this post I want to talk about our solution and approach. I especially want to cover the technical solution we chose.
+
+## The situation: One monolythic Excel File
+
+We worked on Challenge 2, *Smarter equipment tracking for better patient care*, submitted by a discharge planning occupational therapist.
+
+The Occupational Therapy (OT) department owns about 155 items of specialist equipment. They are issued to inpatients on the daily, based on clinical need. Currently, all of it is tracked in an Excel workbook that only one person can open at any given time. Colour coding marks items that are in repair, out on a short-term loan or missing. A separate tab holds the waitlist.
+
+When a therapist issues an item, they are supposed to open the spreadsheet and enter the patient, the equipment, the location, the date and whether it's on loan. In practice, that often happens hours later or not at all. You can't blame the Therapists for that, hospital reality is a lot of stress and chaos. It's natural human error in a system, that's not adjusted to the real needs.
+
+- Updates are retrospective, so the tracker never reflects reality.
+- Therapy assistants do a monthly stock check, walking the wards to see where things actually are.
+- The waitlist gets skipped, because checking it means logging in, finding the file and scrolling through it, so equipment goes to whoever is asking rather than to whoever is next.
+- With that much colour-coded spreadsheet, it is hard to see at a glance what is actually available.
+- About **€4,600 a year** of equipment goes missing and has to be replaced. 
+- A lot of money gets lost due to the added working time.
+
+## Everything we wanted to build, and why we couldn't
+
+Our first brainstorm went where every engineer's brainstorm goes: tag everything and track it automatically. RFID tags, NFC stickers, BLE beacons, OCR on Serial numbers, maybe even tracking staff location so the system could infer who moved what.
+
+Research with the staff shut all of that down quickly:
+
+- **RFID won't work.** That was the clearest "" we got all night.
+- **Stickers don't stick.** Equipment gets washed and decontaminated between patients. NFC tags fall off or get scrubbed off. 
+- **Staff don't carry smartphones.** The device on the ward is the *Universal Communication Device* (UCD from now on), a hospital handset whose main jobs are sending email and looking up patient records.
+- **No Cameras available** those UCD don't have cameras. Buying them and supplying a device with a camera to every staff member wouldn't be financially viable and will probably violate some privacy regulation.
+- **Equipment leaves the building.** Some items go home with discharged patients on loan. A tracker that only works inside the hospital misses exactly the items that get lost.
+
+So the real constraint was not about technology at all. The tracker already holds the right information. It's just that updating it is a separate task, done at a desk: a place where hospital staff should spend the least possible amount of time at.
+
+## The winning idea
+After some research and brainsrtorming, we realized that everything we needed for identification was already there! It turns out the hospital uses a service called *HealthCare21* for equipment maintainence. This service requires a clear identifieing sticker on every piece of equipment they service: if the sticker is missing, they won't maintain the equipment. This is perfect opportunity to use as a primary identifier for our system, since this is a Stable, Unique and always present ID. This also perfectly reflected on the approach on change: See [#Change Management]
+
+The moment a therapist hands a wheelchair to a patient, they already know everything needed for documentation: item id (it's on the item), which patient, which bed, roughly how long. What they don't have is a free hand.
+
+So our solution was a central database replacing the spreadsheet, with **voice input from the handset staff already carry**. At the bedside you press one button and say something like:
+
+> "Book wheelchair four eight two nine, ten fifty-three to bed 4B twelve for three weeks."
+
+An LLM turns that into a structured record, the screen shows what it understood, and one tap confirms it. If the item is already out, confirming puts the patient on the waitlist instead, and the waitlist stops being a tab nobody opens. 
+
+But of course we know that in a chaotic hospital environment, input would rather look like this:
+> "Uh, the wheelchair, four eight two nine one oh five three, no wait, ending three five, to bed twelve, actually, sorry, fourteen, for like a week. Oh and the cushion next to bed seven is broken by the way."
+
+This is why we also added a custom llm prompt that accounts for exactly that: Try to understand what was meant (not said) and always let the last value win
+
+<figure class="plain">
+	<img src="/img/hic/DataflowDiagram.png" alt="" />
+	<figcaption>The data architecture we chose. The patient id encryption is necessary to ensure pseudonymisation</figcaption>
+</figure>
+
+
+None of this is clever on its own. Together, it's the difference between a demo that works when you speak slowly and clearly, and one that works when someone talks the way people actually talk.
+
+## Change management: touch as little as possible
+
+The first thing we emphasised in the pitch was that we were trying to change **as little of the existing workflow as possible**.
+
+The tracker's columns stay the same. The asset numbers and HC21 stickers stay the same. The device stays the same. The only thing that changes is *when* and *how* the record gets updated: at the bedside, by voice, in the ten seconds after the handover, instead of hours later at a desk.
+
+Why did we do this? A hospital is not a startup. Every new process needs training across shifts, and every new app competes for staff attention. And especially non-technical medical experts surely struggle to adapt to drastic change. A system that needs everyone to change their habits will fail just like the spreadsheet it depends on compliance. 
+
+## Financial viability: someone has to pay for this
+
+The second thing was money. Innovation is exciting, but the project still has to be fundable, and €4,600 a year in lost equipment does not pay for a building-wide tracking network.
+
+Our approach needs no new hardware. Staff already have the handsets, and the equipment already has its stickers. What's left is a database, a small app, and speech parsing per log entry, which costs very little at the volume of one OT department. Then there is the time that comes back: fewer monthly stock-check walks, fewer hunts for "that cushion that should be on 4B". That's an argument a hospital can take to whoever signs off the budget. *Installing RTLS everywhere* is not.
+
+It also scales perfectly well. Other departments that lend out shared equipment have the same problem, and none of them would need anything new installed either. We are talking about low initial investment and even lower scaling costs
+
+## Learnings
+
+- **The constraints are the problem.** Our most exciting ideas were the first ones that were implicitly rejected. The ten hours of working time were only useful because we took our time to develop an idea that conforms to the constraints.
+- **LLMs are good at understanding stuff.** Extracting JSON is not impressive by itself. Handling a messy, self-correcting sentence and showing what was understood before saving anything is what makes it usable.
+- **The pitch is half the project.** Leading with restating the problem and ending with finance, rather than with the architecture, is what made the idea land.
+
+Huge thanks to Graciela and Marvin, to TUH, to Amazon, and to the TU Dublin School of Enterprise Computing & Digital Transformation for organising it.
