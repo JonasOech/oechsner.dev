@@ -20,6 +20,8 @@ export type Entry = {
 	 * button so nobody is surprised by what lands in their Downloads folder.
 	 */
 	download?: { href: string; label: string; meta: string };
+	/** A page to read more on, usually the post that writes the entry up. */
+	link?: { href: string; label: string };
 };
 
 export const about = [
@@ -95,6 +97,26 @@ export const education: Entry[] = [
 ];
 
 export const projects: Entry[] = [
+	{
+		title: 'Quick Equipment Log — Hospital Equipment Tracking by Voice',
+		org: 'Health Innovation Challenge, TU Dublin',
+		period: 'Oct 2026',
+		stack: 'Kotlin · Jetpack Compose · Gemini API · Three.js',
+		points: [
+			`Overnight hackathon with Tallaght University Hospital: in a team of three, replaced the
+			 occupational therapy department's single-user Excel equipment tracker with voice logging
+			 from the ward handsets staff already carry. Won Best Use of Technology.`,
+			`Built the Android demo app: an LLM turns rambling, self-correcting dictation into a
+			 structured booking via a JSON schema, the screen shows what it understood, and one tap
+			 confirms it or puts the patient on the waitlist.`,
+			`Identified items by the HealthCare21 service stickers already on every piece of
+			 equipment, so the solution needs no new hardware.`
+		],
+		link: {
+			href: '/blog/healthcare-innovation-challenge',
+			label: 'Read the write-up'
+		}
+	},
 	{
 		title: "Raven's Progressive Matrices — Abstract Visual Reasoning",
 		org: 'Cognitive Systems, Universität Bamberg',
