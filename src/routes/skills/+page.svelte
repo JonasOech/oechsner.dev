@@ -41,6 +41,27 @@
 						<span class="mono download__meta">{project.download.meta}</span>
 					</div>
 				{/if}
+				{#if project.link || project.source}
+					<div class="download">
+						{#if project.link}
+							<a class="btn btn--secondary" href={project.link.href}>
+								<Icon name="arrow-right" />
+								{project.link.label}
+							</a>
+						{/if}
+						{#if project.source}
+							<a
+								class="btn btn--secondary"
+								href={project.source.href}
+								target="_blank"
+								rel="noreferrer noopener"
+							>
+								<Icon name="github" />
+								{project.source.label}
+							</a>
+						{/if}
+					</div>
+				{/if}
 				<p class="meta">{project.period}{project.org ? ` · ${project.org}` : ''}</p>
 			</article>
 		{/each}
@@ -68,8 +89,9 @@
 		margin: 0 0 var(--s-3);
 	}
 
-	/* The `download` attribute on the anchor is the point of this block: a .pptx would
-	   otherwise be handed to whatever viewer the browser or OS has registered for it. */
+	/* The row under an entry's points: a download (whose `download` attribute is the point —
+	   a .pptx would otherwise be handed to whatever viewer the OS has registered for it), or a
+	   link to read more next to the repository the code lives in. */
 	.download {
 		display: flex;
 		flex-wrap: wrap;

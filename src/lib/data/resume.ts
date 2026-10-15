@@ -20,6 +20,10 @@ export type Entry = {
 	 * button so nobody is surprised by what lands in their Downloads folder.
 	 */
 	download?: { href: string; label: string; meta: string };
+	/** A page to read more on, usually the post that writes the entry up. */
+	link?: { href: string; label: string };
+	/** The repository the entry's code lives in. Always off-site, so it opens in a new tab. */
+	source?: { href: string; label: string };
 };
 
 export const about = [
@@ -135,6 +139,27 @@ export const projects: Entry[] = [
 			'Authored a written design contract and kept the whole site to a single dark theme with no hard-coded colors.',
 			'Deployed on Cloudflare Pages via Git-integrated continuous deployment.'
 		]
+	},
+	{
+		title: 'Quick Equipment Log: Hospital Equipment Tracking by Voice',
+		org: 'Health Innovation Challenge, TU Dublin',
+		period: 'Oct 2026',
+		stack: 'Kotlin · Jetpack Compose · Gemini API · Three.js',
+		points: [
+			`Overnight hackathon with Tallaght University Hospital: replaced the
+			 occupational therapy department's Excel equipment tracker with AI-powered voice logging
+			 from the ward handsets staff already carry. Won Best Use of Technology.`,
+			`Android demo app: an LLM turns dictation into a structured bookings via a JSON schema autofills a form: Human in the loop.`,
+			`Identified items by the HealthCare21 service stickers already on every piece of equipment, so the solution needs no new hardware.`
+		],
+		link: {
+			href: '/blog/healthcare-innovation-challenge',
+			label: 'Read the write-up'
+		},
+		source: {
+			href: 'https://github.com/JonasOech/HealthcareInnovationChallenge',
+			label: 'Source code'
+		}
 	}
 ];
 
