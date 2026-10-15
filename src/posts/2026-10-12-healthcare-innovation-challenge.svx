@@ -80,8 +80,8 @@ But of course we know that in a chaotic hospital environment, input would rather
 
 This is why we also added a custom llm prompt that accounts for exactly that: Try to understand what was meant (not said) and always let the last value win
 
-<figure class="plain">
-	<img src="/img/hic/DataflowDiagram.png" alt="" />
+<figure>
+	<img src="/img/hic/dataflow.png" alt="Data flow from voice to a verified record: speech recorded on the mobile device goes to the TUH server (local or AWS) for transcription, patient ID encryption and the custom prompt, then to an LLM (any cloud model through OpenRouter, or local inference with Ollama / OpenLLM), and the autofilled form comes back to the mobile device for modification and submission, with a human in the loop." />
 	<figcaption>The data architecture we chose. The patient id encryption is necessary to ensure pseudonymisation</figcaption>
 </figure>
 
