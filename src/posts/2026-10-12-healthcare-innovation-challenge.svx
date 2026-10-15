@@ -16,6 +16,14 @@ ai: true
 	import DeckEmbed from '$lib/components/DeckEmbed.svelte';
 </script>
 
+<DeckEmbed
+	src="https://tuh.oechsner.dev"
+	slide={1}
+	title="Quick Equipment Log — the pitch deck"
+>
+	Our pitch deck for the app, produced AFTER Hackathon submission. <a href="https://tuh.oechsner.dev">OPEN</a>.
+</DeckEmbed>
+
 ## Introduction
 
 This weekend I took part in the Health Innovation Challenge at TU Dublin's Tallaght Campus, run together with Tallaght University Hospital (TUH) and supported by Amazon. Clinicians from TUH briefed us on real problems from their wards, Amazon people coached us on prototyping and pitching, and then we had ten hours, through the night, to build something.
@@ -56,14 +64,6 @@ Research with the staff shut all of that down quickly:
 So the real constraint was not about technology at all. The tracker already holds the right information. It's just that updating it is a separate task, done at a desk: a place where hospital staff should spend the least possible amount of time at.
 
 ## The winning idea
-
-<DeckEmbed
-	src="https://tuh.oechsner.dev"
-	slides={16}
-	title="Quick Equipment Log — the pitch deck"
->
-	Our pitch deck for the app, produced AFTER Hackathon submission. <a href="https://tuh.oechsner.dev">OPEN</a>.
-</DeckEmbed>
 
 After some research and brainstorming, we realized that everything we needed for identification was already there! It turns out the hospital uses a service called *HealthCare21* for equipment maintainence. This service requires a clear identifieing sticker on every piece of equipment they service: if the sticker is missing, they won't maintain the equipment. This is perfect opportunity to use as a primary identifier for our system, since this is a Stable, Unique and always present ID. This also perfectly reflected on the approach on change: See [Change management](#change-management-touch-as-little-as-possible).
 
