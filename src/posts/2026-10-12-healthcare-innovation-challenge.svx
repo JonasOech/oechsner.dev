@@ -21,7 +21,7 @@ ai: true
 	slide={1}
 	title="Quick Equipment Log — the pitch deck"
 >
-	Our pitch deck for the app, produced AFTER Hackathon submission. <a href="https://tuh.oechsner.dev">OPEN</a>.
+	Our pitch deck for the app, produced AFTER Hackathon submission, for further presentation to TUH. Due to low risk and time constraints fully AI generated and iterated on. <a href="https://github.com/JonasOech/HealthcareInnovationChallenge">Source Code</a>
 </DeckEmbed>
 
 ## Introduction
