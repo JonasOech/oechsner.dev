@@ -9,10 +9,16 @@ tags: ['digital transformation', 'case study']
 nerdyness: 1
 draft: false
 hero: false
+cover: /img/tuvalu/cover.svg
+coverAlt: >-
+  The outlines of Tuvalu's nine islands, enlarged and strung together by a dotted line from the
+  northern atolls down to Niulakita, each ringed by contour lines, with Funafuti glowing amber
 ai: false
 ---
 
 *My case study report for the module CRDD H1200 Digital Transformation at TU Dublin: challenges, deep-technology solutions and sustainability alignment.*
+
+*Cover: the outlines of Tuvalu’s islands, © [OpenStreetMap contributors](https://www.openstreetmap.org/copyright), enlarged 9× and rotated to fit.*
 
 ## Introduction
 
