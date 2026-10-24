@@ -4,14 +4,19 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import { initTheme } from '$lib/theme.svelte';
 
 	let { children } = $props();
+
+	$effect(() => {
+		initTheme();
+	});
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
+	<!-- Light --bg from app.css; src/lib/theme.svelte.ts swaps it when the scheme changes. -->
+	<meta name="theme-color" content="#f6efe6" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 </svelte:head>

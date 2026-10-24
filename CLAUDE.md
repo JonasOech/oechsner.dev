@@ -32,7 +32,10 @@ in the project. Non-negotiables that come out of it:
 - **No component hard-codes a colour.** Everything resolves to a `var(--…)` token declared
   in `src/app.css`. (`src/lib/components/rpm/` is a deliberate exception — that figure set
   renders on a light plate and in feed readers.)
-- **Dark is the only theme.** Do not add a light mode or a theme toggle.
+- **This branch is the "Wayfinder" design exploration** (after georgesiosi.com): warm paper
+  light theme plus a deep-teal dark theme behind a toggle (`src/lib/theme.svelte.ts`). Every
+  colour token in `src/app.css` has a value for both; where DESIGN.md says dark-only or
+  forbids the name as the largest type (§11), this branch deliberately differs.
 - Type roles are fixed: Playfair Display for the lead-post title and rail labels only,
   DM Sans for everything else, JetBrains Mono for code. `--text-muted` is meta text only
   and has no contrast headroom — re-measure against both `--bg` and `--surface` if changed.

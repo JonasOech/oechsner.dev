@@ -7,6 +7,20 @@
 		<!-- No analytics tag here on purpose. gtag.js used to load from this document, which
 		     put it on the page before the visitor had any say; it is now injected by
 		     src/lib/consent.svelte.ts, and only after consent. -->
+		<!-- Colour scheme before first paint, so the page never flashes the wrong one: the
+		     visitor's saved choice, else their OS preference. See src/lib/theme.svelte.ts. -->
+		<script>
+			(function () {
+				var t = null;
+				try {
+					t = localStorage.getItem('theme');
+				} catch (e) {}
+				if (t !== 'light' && t !== 'dark') {
+					t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				}
+				document.documentElement.dataset.theme = t;
+			})();
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

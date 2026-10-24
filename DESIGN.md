@@ -1,5 +1,11 @@
 # DESIGN.md — oechsner.dev
 
+> **Branch note — "Wayfinder" exploration.** This branch re-skins the site after
+> [georgesiosi.com](https://www.georgesiosi.com/): cream paper (`#f6efe6`) with a copper accent,
+> Playfair italics for the name and titles, numbered hairline-ruled index rows, pill buttons, and
+> a deep-teal dark theme behind a toggle. `src/app.css` is the source of truth for it; the
+> palette and dark-only rules below describe the original design.
+
 > Derived from the **Elevate** portfolio template by Gaël Duval
 > ([dribbble.com/shots/20829830](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)).
 > Reference audit: see §10.

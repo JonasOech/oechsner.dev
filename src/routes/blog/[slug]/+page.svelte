@@ -210,11 +210,11 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
+		font-size: 0.72rem;
 		font-weight: 700;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--accent);
 		text-decoration: none;
 		padding: 0.5rem 0;
 		min-height: 44px;
@@ -245,16 +245,18 @@
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-family: var(--font-display);
+		font-size: clamp(2.125rem, 5vw, 3.25rem);
+		font-weight: 400;
+		line-height: 1.08;
+		letter-spacing: -0.025em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		font-family: var(--font-display);
+		font-size: clamp(1.05rem, 2.1vw, 1.25rem);
+		line-height: 1.55;
+		color: var(--text);
 	}
 
 	.post__dot {
@@ -351,7 +353,9 @@
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-size: 1.1rem;
+		font-weight: 500;
 		line-height: 1.4;
 	}
 
