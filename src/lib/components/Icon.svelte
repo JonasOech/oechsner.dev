@@ -17,7 +17,13 @@
 		| 'copy'
 		| 'check'
 		| 'maximize'
-		| 'minimize';
+		| 'minimize'
+		| 'sun'
+		| 'moon'
+		| 'arrow-up-right'
+		| 'search'
+		| 'menu'
+		| 'x';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -44,7 +50,14 @@
 		// Two corners pushed apart, and the same two pulled back together — the maximise
 		// toggle on a formula plate.
 		maximize: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
-		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'
+		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7',
+		// Theme switch: a disc with eight rays, and a crescent.
+		sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41',
+		moon: 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z',
+		'arrow-up-right': 'M7 17 17 7M8 7h9v9',
+		search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4.2-4.2',
+		menu: 'M4 7h16M4 12h16M4 17h16',
+		x: 'M18 6 6 18M6 6l12 12'
 	};
 </script>
 

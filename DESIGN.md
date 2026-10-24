@@ -1,5 +1,14 @@
 # DESIGN.md — oechsner.dev
 
+> **Branch note — "Hairline" exploration.** This branch re-skins the site after
+> [aanandmadhav.com](https://aanandmadhav.com/) and adopts its home-page structure: three hero words
+> that each reveal a small pointer-driven isometric drawing, an interactive isometric workbench in
+> place of a portrait, metric cards and rows, "in rotation" cards, projects, writing in Instrument
+> Serif, a life story with a photo, and a closing "Bring me the hard problem" band. Warm paper
+> (`#f5f1ea`) with a rust accent, square corners, a ⌘K command palette, and a dark theme behind a
+> toggle. `src/app.css` is the source of truth for it; the palette, type and dark-only rules below
+> describe the original design.
+
 > Derived from the **Elevate** portfolio template by Gaël Duval
 > ([dribbble.com/shots/20829830](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)).
 > Reference audit: see §10.

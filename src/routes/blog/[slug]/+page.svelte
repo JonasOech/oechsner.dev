@@ -210,9 +210,10 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 400;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -244,16 +245,18 @@
 		box-shadow: var(--focus-ring);
 	}
 
+	/* Titles of writing are set in the serif, as on the reference's writing pages. */
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 5vw, 3.75rem);
+		font-weight: 400;
+		line-height: 1.05;
+		letter-spacing: -0.01em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.125rem;
+		line-height: 1.6;
 		color: var(--text-secondary);
 	}
 
@@ -289,8 +292,7 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
+		border-radius: 0;
 		margin-bottom: var(--s-8);
 	}
 
@@ -319,7 +321,7 @@
 		gap: var(--s-2);
 		padding: var(--s-4);
 		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
+		border-radius: 0;
 		border: 1px solid transparent;
 		text-decoration: none;
 		transition:
@@ -351,7 +353,9 @@
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-size: 1.375rem;
+		font-weight: 400;
 		line-height: 1.4;
 	}
 

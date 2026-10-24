@@ -121,8 +121,8 @@
 		display: flex;
 		flex-direction: column;
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
+		border: 0;
+		border-radius: 0;
 		box-shadow: var(--shadow-inset);
 		overflow: hidden;
 	}
@@ -139,11 +139,11 @@
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
 		font-weight: 400;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 var(--s-3);
@@ -207,7 +207,7 @@
 		position: relative;
 		display: block;
 		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
+		border-radius: 0;
 		font-size: 0.8125rem;
 		line-height: 1.35;
 		color: var(--text-muted);
@@ -272,7 +272,7 @@
 		align-items: center;
 		gap: var(--s-2);
 		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
+		border-radius: 0;
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-decoration: none;

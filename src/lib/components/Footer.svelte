@@ -1,48 +1,67 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import { feeds, footerNav, site } from '$lib/data/site';
+	import { contacts, cvPath, feeds, site } from '$lib/data/site';
+	import { posts } from '$lib/posts';
 	import { trackFeed } from '$lib/track';
 	import { reopenConsent } from '$lib/consent.svelte';
 
 	const year = new Date().getFullYear();
+	const years = site.startYear === year ? `${year}` : `${site.startYear}–${year}`;
+	const social = contacts.filter((c) => c.label === 'GitHub' || c.label === 'LinkedIn');
+	const email = contacts.find((c) => c.primary);
+	const recent = posts.slice(0, 4);
 </script>
 
+<!-- After aanandmadhav.com: a closing band with one big two-tone line and a way to get in
+     touch, then the colophon and three columns of links. -->
 <footer class="footer">
-	<div class="container footer__inner">
-		<nav class="footer__nav" aria-label="Footer">
-			{#each footerNav as item (item.href)}
-				<a class="footer__link" href={item.href}>{item.label}</a>
-			{/each}
-			<a
-				class="footer__link footer__feed"
-				href={feeds.rss}
-				type="application/rss+xml"
-				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'site-footer')}
-			>
-				<Icon name="rss" size={13} />
-				RSS
-			</a>
-		</nav>
+	<div class="container">
+		<div class="footer__band">
+			<h2 class="footer__line">Bring me the <span class="hl">hard problem.</span></h2>
+			<div class="footer__pitch">
+				<p>
+					I’m looking for an internship in Dublin, and I’m always up for a conversation about
+					machine learning, systems and the concepts behind them. I read every message.
+				</p>
+				<a class="btn btn--primary" href="/contact">Get in touch →</a>
+				<p class="footer__social">
+					{#each social as s (s.href)}
+						<a class="arrow-link" href={s.href}>{s.label} <Icon name="arrow-up-right" /></a>
+					{/each}
+					{#if email}<a class="arrow-link" href={email.href}>Email <Icon name="arrow-up-right" /></a>{/if}
+				</p>
+			</div>
+		</div>
 
-		<p class="footer__copy">
-			© {site.startYear === year ? year : `${site.startYear}–${year}`}
-			{site.name} - 
-			<a class="footer__legal-link" href="/impressum">Impressum</a>
-			<span aria-hidden="true">·</span>
-			<a class="footer__legal-link" href="/datenschutz">Datenschutz</a>
-			<span aria-hidden="true">·</span>
-			<!-- Withdrawing consent has to be as easy as giving it (Art. 7 Abs. 3 DSGVO), so
-			     the banner is one press away from every page. A button rather than a link:
-			     it changes state here, it does not go anywhere. -->
-			<button type="button" class="footer__legal-link" onclick={reopenConsent}>
-				Cookie settings
-			</button>
-		</p>
-
-		<p class="footer__colophon">
-			Deployed with SvelteKit on Cloudflare Pages. Built with AI.
-		</p>
+		<div class="footer__cols">
+			<div class="footer__colophon">
+				<p class="footer__copy">© {years} {site.name}</p>
+				<p>Built in Bamberg and Dublin. SvelteKit on Cloudflare Pages.</p>
+			</div>
+			<nav class="footer__col" aria-label="Recent writing">
+				<p class="footer__title">Writing</p>
+				{#each recent as p (p.slug)}
+					<a href="/blog/{p.slug}">{p.title}</a>
+				{/each}
+			</nav>
+			<nav class="footer__col" aria-label="Site">
+				<p class="footer__title">Site</p>
+				<a href="/about">About</a>
+				<a href="/skills">Projects</a>
+				<a href="/contact">Contact</a>
+				<a href={cvPath} target="_blank" rel="noopener">CV (PDF)</a>
+				<a href={feeds.rss} type="application/rss+xml" data-sveltekit-reload onclick={() => trackFeed('open-rss', 'site-footer')}>RSS</a>
+			</nav>
+			<div class="footer__col">
+				<p class="footer__title">Legal</p>
+				<a href="/impressum">Impressum</a>
+				<a href="/datenschutz">Datenschutz</a>
+				<!-- Withdrawing consent has to be as easy as giving it (Art. 7 Abs. 3 DSGVO), so
+				     the banner is one press away from every page. A button rather than a link:
+				     it changes state here, it does not go anywhere. -->
+				<button type="button" onclick={reopenConsent}>Cookie settings</button>
+			</div>
+		</div>
 	</div>
 </footer>
 
@@ -50,138 +69,137 @@
 	.footer {
 		position: relative;
 		z-index: 1;
-		margin-top: var(--gap-hero);
-		padding-block: var(--s-8) var(--s-7);
-		background: var(--bg-deep);
+		margin-top: 96px;
 		border-top: 1px solid var(--line);
+		background: var(--bg-deep);
 	}
 
-	.footer__inner {
+	.footer__band {
 		display: grid;
-		justify-items: center;
-		gap: var(--s-5);
-		text-align: center;
+		gap: 32px;
+		padding-block: 96px 64px;
+		border-bottom: 1px solid var(--line-strong);
 	}
 
-	.footer__nav {
+	.footer__line {
+		margin: 0;
+		font-size: clamp(3rem, 7vw, 6rem);
+		font-weight: 500;
+		line-height: 0.94;
+		letter-spacing: -0.045em;
+		max-width: 9ch;
+	}
+
+	.footer__pitch {
+		display: grid;
+		gap: 24px;
+		justify-items: start;
+		align-content: start;
+		max-width: 34rem;
+	}
+
+	.footer__pitch p {
+		margin: 0;
+		line-height: 1.65;
+	}
+
+	.footer__social {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-5);
+		gap: 16px;
 	}
 
-	.footer__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		line-height: 1;
-		letter-spacing: 0.11em;
+	.footer__cols {
+		display: grid;
+		gap: 32px;
+		padding-block: 40px 48px;
+	}
+
+	.footer__colophon p {
+		margin: 0;
+		font-size: 0.875rem;
+	}
+
+	.footer__copy,
+	.footer__title {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem !important;
+		letter-spacing: 0.08em;
 		text-transform: uppercase;
 		color: var(--text-muted);
+	}
+
+	.footer__copy {
+		margin-bottom: 8px !important;
+	}
+
+	.footer__col {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+
+	.footer__title {
+		margin: 0 0 6px;
+	}
+
+	.footer__col a,
+	.footer__col button {
+		appearance: none;
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		font-size: 0.875rem;
+		color: var(--text);
+		text-align: left;
 		text-decoration: none;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	/* The icon takes the accent so the feed is findable at a glance; the label stays in
-	   step with the other footer links. */
-	.footer__feed {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4em;
-	}
-
-	.footer__feed :global(svg) {
-		color: var(--accent-dim);
-		transition: color var(--dur-fast) var(--ease-out);
+		cursor: pointer;
+		transition: color 0.15s;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.footer__link:hover {
-			color: var(--text);
-		}
-		.footer__feed:hover :global(svg) {
+		.footer__col a:hover,
+		.footer__col button:hover {
 			color: var(--accent);
 		}
 	}
 
-	.footer__link:active {
-		color: var(--text-secondary);
-	}
-
-	.footer__link:focus-visible {
+	.footer__col a:focus-visible,
+	.footer__col button:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
-	.footer__copy {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
-		margin: 0;
-	}
-
-	.footer__legal-link {
-		/* The button shares the anchors' styling exactly, so the three read as one row of
-		   equals — a `button` inherits none of it, hence the explicit reset. */
-		appearance: none;
-		background: none;
-		border: none;
-		cursor: pointer;
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
-		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
-		text-underline-offset: 3px;
-		padding: 0.5rem 0.125rem;
-		display: inline-block;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.footer__legal-link:hover {
-			color: var(--text);
-			text-decoration-color: var(--text);
+	@media (min-width: 900px) {
+		.footer__band {
+			grid-template-columns: 1.1fr 1fr;
+			align-items: start;
+		}
+		.footer__cols {
+			grid-template-columns: 1.6fr 1fr 1fr 1fr;
 		}
 	}
 
-	.footer__legal-link:active {
-		color: var(--text-secondary);
-	}
-
-	.footer__legal-link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
-	}
-
-	@media (pointer: coarse) {
-		.footer__legal-link {
-			display: inline-flex;
-			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
+	@media (min-width: 600px) and (max-width: 899px) {
+		.footer__cols {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		.footer__colophon {
+			grid-column: 1 / -1;
 		}
 	}
 
-	.footer__colophon {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		max-width: 46ch;
-		line-height: 1.6;
-		margin: 0;
-	}
-
 	@media (pointer: coarse) {
-		.footer__link {
+		.footer__col a,
+		.footer__col button {
+			min-height: 44px;
 			display: inline-flex;
 			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
+		}
+		.footer__col {
+			gap: 0;
 		}
 	}
 </style>
