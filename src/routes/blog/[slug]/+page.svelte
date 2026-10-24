@@ -5,6 +5,7 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
+	import Seal from '$lib/components/Seal.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -139,6 +140,9 @@
 		<div class="prose post__body">
 			<Content />
 		</div>
+
+		<!-- The seal as the end mark, stamped after the last word. It links home. -->
+		<p class="post__end"><a href="/" aria-label="Home"><Seal size="1.4em" /></a></p>
 	</article>
 
 	<div class="post__subscribe">
@@ -176,6 +180,8 @@
 
 	@media (min-width: 1100px) {
 		.post-layout {
+			/* Wider than the 900px page: the outline hangs in the margin beside the text. */
+			max-width: calc(var(--measure-prose) + 2 * var(--outline-width) + 2 * var(--s-5) + 2 * var(--gutter));
 			/* The two flanking tracks are equal, so the middle one lands on the page's centre
 			   line whether or not an outline was rendered into the left. Both may shrink, so
 			   the layout meets its breakpoint instead of overflowing just past it. */
@@ -210,10 +216,8 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		font-size: 0.95rem;
+		font-style: italic;
 		color: var(--text-muted);
 		text-decoration: none;
 		padding: 0.5rem 0;
@@ -245,16 +249,34 @@
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
+		font-family: var(--font-display);
+		font-size: clamp(2rem, 4.5vw, 2.5rem);
 		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		line-height: 1.2;
+		letter-spacing: 0;
+	}
+
+	.post__end {
+		margin: var(--s-6) 0 0;
+		max-width: var(--measure-prose);
+	}
+
+	.post__end a {
+		display: inline-block;
+		text-decoration: none;
+		transition: opacity 0.2s ease;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.post__end a:hover {
+			opacity: 0.7;
+		}
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		font-size: 1.1rem;
+		line-height: 1.6;
+		color: var(--text-muted);
 	}
 
 	.post__dot {
@@ -351,7 +373,9 @@
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 600;
 		line-height: 1.4;
 	}
 

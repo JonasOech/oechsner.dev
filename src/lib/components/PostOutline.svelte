@@ -120,10 +120,9 @@
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		/* Plain text in the margin, like the reference's contents list: no card. */
+		background: transparent;
+		border: 0;
 		overflow: hidden;
 	}
 
@@ -140,12 +139,10 @@
 
 	.outline__label {
 		font-family: var(--font-display);
-		font-size: 0.75rem;
+		font-size: 1rem;
 		font-weight: 400;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text);
 		margin: 0 0 var(--s-3);
 		white-space: nowrap;
 		overflow: hidden;

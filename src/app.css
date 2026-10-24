@@ -1,90 +1,107 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — "Ink" design exploration (after alexwang.ai)
    Every colour in this project resolves to a variable declared in this block.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Light is the default scheme; `[data-theme='dark']` below redefines every colour token.
+   The inline script in src/app.html picks the scheme before first paint. */
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	/* — Canvas: rice paper — */
+	--bg: #f5f3ee;
+	--bg-rgb: 245, 243, 238;
+	--bg-deep: #ece9e2;
+	--bg-deep-rgb: 236, 233, 226;
+	--surface: #efece5;
+	--surface-rgb: 239, 236, 229;
+	--surface-hover: #e9e5dd;
+	--surface-hover-rgb: 233, 229, 221;
+	--surface-active: #e2ddd3;
+	--surface-active-rgb: 226, 221, 211;
 
 	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	--text: #2c2d30;
+	--text-rgb: 44, 45, 48;
+	--text-secondary: #3a3b3e;
+	--text-secondary-rgb: 58, 59, 62;
+	--text-muted: #595a5d;
+	--text-muted-rgb: 89, 90, 93;
+	/* Text set on the accent (pressed tags, widget buttons). */
+	--text-inverse: #f5f3ee;
+	--text-inverse-rgb: 245, 243, 238;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #2c2d30;
+	--text-pressed-rgb: 44, 45, 48;
 
 	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	--line: #dcd9d2;
+	--line-rgb: 220, 217, 210;
+	--line-strong: #c9c5bc;
+	--line-strong-rgb: 201, 197, 188;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Accent: cinnabar, the colour of seal paste (6.0:1 on --bg) — */
+	--accent: #b3202a;
+	--accent-rgb: 179, 32, 42;
+	--accent-dim: #8e1a22;
+	--accent-dim-rgb: 142, 26, 34;
+	--accent-wash: rgba(179, 32, 42, 0.08);
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Ink drawings: the owl, the brush stroke on link clicks, the seal — */
+	--ink-rgb: 55, 50, 41;
+	--owl-paper: #f5f3ee;
+	--owl-face: #f7f5f0;
+	--owl-eye: #c79a3e;
+	--owl-lid: #bdb6a8;
+	--seal: #b3202a;
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
+	/* — Figure plate: diagrams drawn in dark ink sit on a light card. — */
+	--plate: #fbfaf7;
 
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series: the cool counterpart to the cinnabar. — */
+	--series-cool: #3b6488;
+	--series-cool-rgb: 59, 100, 136;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #b3202a;
+	--danger-rgb: 179, 32, 42;
+	--success: #2f7a3e;
+	--success-rgb: 47, 122, 62;
 
 	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.55);
+
+	/* — Elevation: barely there on paper — */
+	--shadow-0: none;
+	--shadow-1: 0 1px 2px rgba(44, 45, 48, 0.06);
+	--shadow-2: 0 4px 12px rgba(44, 45, 48, 0.08);
+	--shadow-3: 0 12px 32px rgba(44, 45, 48, 0.1);
+	--shadow-4: 0 24px 64px rgba(44, 45, 48, 0.14);
+	--shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+	color-scheme: light;
 
 	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	/* The body face. Still named "sans" so every component keeps working, but in this design
+	   it is a text serif: Newsreader, the reference's body face. */
+	--font-sans: 'Newsreader', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
-	--container: 1080px;
+	--container: calc(900px + 2 * var(--gutter));
 	--measure: 62ch;
-	--measure-prose: 68ch;
+	/* In rem, not ch: the post grid measures it in the body size, the prose in its larger one. */
+	--measure-prose: 42rem;
 	--rail-width: 200px;
 	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
 	   and the post column has to keep its measure with two of these beside it. */
 	--outline-width: 180px;
 	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* The header scrolls away with the page (it is not sticky in this design), so nothing
+	   has to clear it; kept as a token because the outline and anchor offsets read it. */
+	--header-h: 0rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -103,13 +120,6 @@
 	--gap-hero: var(--s-11);
 	--gap-section: var(--s-10);
 
-	/* — Elevation — */
-	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
 
 	/* — Motion — */
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -117,6 +127,68 @@
 	--dur-fast: 180ms;
 	--dur-base: 260ms;
 	--dur-slow: 620ms;
+
+}
+
+/* Dark: ink-black paper, pale ink, a brighter cinnabar. */
+:root[data-theme='dark'] {
+	--bg: #181714;
+	--bg-rgb: 24, 23, 20;
+	--bg-deep: #121110;
+	--bg-deep-rgb: 18, 17, 16;
+	--surface: #201f1b;
+	--surface-rgb: 32, 31, 27;
+	--surface-hover: #26241f;
+	--surface-hover-rgb: 38, 36, 31;
+	--surface-active: #2c2a25;
+	--surface-active-rgb: 44, 42, 37;
+
+	--text: #ebe6da;
+	--text-rgb: 235, 230, 218;
+	--text-secondary: #d9d3c6;
+	--text-secondary-rgb: 217, 211, 198;
+	--text-muted: #9e998e;
+	--text-muted-rgb: 158, 153, 142;
+	--text-inverse: #181714;
+	--text-inverse-rgb: 24, 23, 20;
+	--text-bright: #ffffff;
+	--text-bright-rgb: 255, 255, 255;
+	--text-pressed: #ebe6da;
+	--text-pressed-rgb: 235, 230, 218;
+
+	--line: #34322d;
+	--line-rgb: 52, 50, 45;
+	--line-strong: #46433c;
+	--line-strong-rgb: 70, 67, 60;
+
+	--accent: #e8706a;
+	--accent-rgb: 232, 112, 106;
+	--accent-dim: #f08e88;
+	--accent-dim-rgb: 240, 142, 136;
+	--accent-wash: rgba(232, 112, 106, 0.1);
+
+	--ink-rgb: 230, 224, 210;
+	--owl-paper: #24221d;
+	--owl-face: #2e2c26;
+	--owl-eye: #d4a94e;
+	--owl-lid: #4a463e;
+	--seal: #d2453d;
+
+	--plate: #ebe6da;
+
+	--series-cool: #8fb3d6;
+	--series-cool-rgb: 143, 179, 214;
+
+	--danger: #e8706a;
+	--danger-rgb: 232, 112, 106;
+	--success: #6cc47e;
+	--success-rgb: 108, 196, 126;
+
+	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.35);
+	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.4);
+	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.5);
+	--shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
 	color-scheme: dark;
 }
@@ -147,43 +219,21 @@ body {
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
-	background: var(--bg);
-	color: var(--text-secondary);
+	background-color: var(--bg);
+	/* Paper: fine bumps in the sheet, lit from the upper left. Grey and soft-light blended,
+	   so they lighten and darken whatever --bg is without tinting it. */
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='p' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3CfeDiffuseLighting surfaceScale='1.8' lighting-color='%23fff'%3E%3CfeDistantLight azimuth='225' elevation='40'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='.32'/%3E%3C/svg%3E");
+	background-size: 280px;
+	background-blend-mode: soft-light;
+	color: var(--text);
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
+	font-size: 1.0625rem;
+	line-height: 1.7;
+	font-variant-numeric: oldstyle-nums;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -193,6 +243,7 @@ h4,
 h5,
 h6 {
 	color: var(--text);
+	font-family: var(--font-display);
 	font-weight: 700;
 	margin: 0;
 	text-wrap: balance;
@@ -215,7 +266,7 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
+	background: rgba(var(--accent-rgb), 0.22);
 	color: var(--text);
 }
 
@@ -242,22 +293,20 @@ a {
 
 /* The template's signature construct: a letterspaced serif label in its own
    column, with a narrow content measure beside it. */
+/* A section: a quiet serif title in muted ink above its content, as on the reference. */
 .rail {
 	display: grid;
-	grid-template-columns: var(--rail-width) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr);
 	gap: 0;
 }
 
 .rail__label {
 	font-family: var(--font-display);
-	font-size: 0.8125rem;
+	font-size: 1.3rem;
 	font-weight: 400;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
 	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
-	margin: 0;
+	margin: 0 0 1.5rem;
 }
 
 .rail__body {
@@ -282,30 +331,24 @@ a {
 
 .eyebrow {
 	font-family: var(--font-display);
-	font-size: 0.875rem;
+	font-size: 1.3rem;
 	font-weight: 400;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text-muted);
 	margin: 0;
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: clamp(2.25rem, 5vw, 3rem);
+	font-weight: 700;
+	line-height: 1.15;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
+	font-family: var(--font-display);
+	font-size: clamp(2rem, 4vw, 2.5rem);
 	font-weight: 700;
 	line-height: 1.2;
 	letter-spacing: -0.01em;
@@ -318,21 +361,21 @@ a {
 
 .meta {
 	font-family: var(--font-sans);
-	font-size: 0.75rem;
-	font-weight: 700;
+	font-size: 0.85rem;
+	font-weight: 400;
 	line-height: 1.4;
-	letter-spacing: 0.01em;
+	letter-spacing: 0;
 	color: var(--text-muted);
 	margin: 0;
 }
 
 .label {
-	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: 1.05rem;
+	font-style: italic;
+	font-weight: 400;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
-	text-transform: uppercase;
+	letter-spacing: 0;
 	color: var(--text-muted);
 	margin: 0;
 }
@@ -355,17 +398,17 @@ a {
 	justify-content: center;
 	gap: var(--s-2);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	font-weight: 700;
+	font-size: 1.05rem;
+	font-weight: 400;
 	line-height: 1;
-	padding: 0.6875rem 1.125rem;
+	padding: 0;
 	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	border-radius: 0;
+	border: 0;
+	background: none;
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
 		border-color var(--dur-fast) var(--ease-out),
@@ -381,46 +424,31 @@ a {
 	transition: transform 220ms var(--ease-out);
 }
 
+/* No filled buttons on the reference: actions are words, the primary one in cinnabar. */
 .btn--primary {
-	background: var(--text);
-	color: var(--text-inverse);
+	color: var(--accent);
 }
 
 .btn--secondary {
-	background: var(--surface);
 	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
+	.btn:hover {
+		color: var(--accent);
+		text-decoration: underline 1px;
+		text-underline-offset: 0.2em;
 	}
 	.btn--primary:hover svg {
 		transform: translateX(3px);
-	}
-	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
 	}
 	.btn--secondary:hover svg {
 		transform: translateY(2px);
 	}
 }
 
-.btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
-}
-
-.btn--secondary:active {
-	transform: translateY(0);
-	background: var(--surface-active);
+.btn:active {
+	color: var(--accent-dim);
 }
 
 .btn:focus-visible {
@@ -440,7 +468,7 @@ a {
 .btn-row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--s-3);
+	gap: var(--s-2) var(--s-6);
 }
 
 /* — Prose links — */
@@ -485,14 +513,13 @@ a {
 .tag {
 	display: inline-block;
 	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-size: 0.85rem;
+	font-weight: 400;
 	line-height: 1;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
+	letter-spacing: 0;
+	padding: 0.3rem 0.55rem;
+	border-radius: 2px;
+	background: transparent;
 	color: var(--text-muted);
 	border: 1px solid var(--line);
 	text-decoration: none;
@@ -547,16 +574,17 @@ a {
 }
 
 .entry__title {
-	font-size: 1.1875rem;
-	font-weight: 700;
-	line-height: 1.35;
-	letter-spacing: -0.005em;
+	font-family: var(--font-display);
+	font-size: 1.5rem;
+	font-weight: 600;
+	line-height: 1.2;
+	letter-spacing: 0;
 	color: var(--text);
 	margin: 0 0 0.625rem;
 }
 
 .entry__body {
-	color: var(--text-secondary);
+	color: var(--text);
 	margin: 0 0 var(--s-3);
 }
 
@@ -703,49 +731,34 @@ a {
 
 .prose {
 	max-width: var(--measure-prose);
-	font-size: 1.0625rem;
-	line-height: 1.8;
-	color: var(--text-secondary);
+	font-size: 1.25rem;
+	line-height: 1.65;
+	color: var(--text);
 }
 
 .prose > * + * {
 	margin-top: var(--s-5);
 }
 
-/* Body copy is set justified (Blocksatz) rather than ragged-right. Justification
-   is about where the two margins land, not about where the column sits: the post
-   column is centred in its page (see the post route), but the text inside it is
-   still flush to both of its own edges rather than centred line by line, which is
-   what §9 actually forbids. `.intro__byline` on the home page sets the precedent.
-   Hyphenation is part of the same decision, not an extra: a 68ch column justified
-   without it opens rivers between words.
-
-   Short lines stay ragged, which is all CSS can actually promise. Under
-   `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
-   line — and a one-line paragraph, which is nothing but a final line — is never
-   stretched to the measure. It is spelled out here rather than left to the
-   default because it is the behaviour being relied on. Below that there is no
-   per-line threshold in CSS; the case it cannot express is a column too narrow
-   to fit enough words per line, and that one is handled by viewport width in §9. */
+/* Ragged-right, as on the reference. Hyphenation stays on for long German compounds, and
+   a URL or a long identifier may break rather than overflow the column. */
 .prose > p,
 .prose > blockquote p {
-	text-align: justify;
-	text-align-last: left;
 	hyphens: auto;
-	/* A URL or a long identifier cannot break, and one sitting in a justified
-	   line stretches every space around it. Let it break instead. */
 	overflow-wrap: break-word;
 }
 
 .prose h2 {
-	font-size: 1.375rem;
+	font-weight: 600;
+	font-size: 1.85rem;
 	line-height: 1.3;
 	letter-spacing: -0.01em;
 	margin-top: var(--s-8);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
+	font-weight: 600;
+	font-size: 1.45rem;
 	line-height: 1.4;
 	margin-top: var(--s-7);
 }
@@ -760,16 +773,16 @@ a {
 .prose a {
 	color: var(--text);
 	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition: color var(--dur-fast) var(--ease-out);
+	border-bottom: 1px solid rgba(var(--accent-rgb), 0.5);
+	transition:
+		color var(--dur-fast) var(--ease-out),
+		border-color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
 		color: var(--accent);
+		border-bottom-color: var(--accent);
 	}
 }
 
@@ -799,10 +812,9 @@ a {
 
 .prose blockquote {
 	margin-inline: 0;
-	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
+	padding-left: 1rem;
+	border-left: 2px solid var(--line);
 	color: var(--text-secondary);
-	font-style: italic;
 }
 
 .prose hr {
@@ -831,7 +843,7 @@ a {
    carry several, so they trade the accent underline every other link wears for a
    faint dotted one: present, but quieter than a link the reader should follow. */
 .prose a.cite {
-	background-image: none;
+	border-bottom: 0;
 	text-decoration: underline dotted var(--text-muted);
 	text-underline-offset: 0.2em;
 }
@@ -1058,7 +1070,7 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: 4px;
 }
 
 .prose .widget > figcaption {
@@ -1182,16 +1194,6 @@ a {
 		--gap-hero: var(--s-8);
 		--gap-section: var(--s-7);
 	}
-
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
-	}
 }
 
 @media (max-width: 479px) {
@@ -1199,18 +1201,9 @@ a {
 	   that width: too few words per line, so the spaces that absorb the slack
 	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
 	   on, since it still earns its keep on a narrow column. */
-	.prose > p,
-	.prose > blockquote p {
-		text-align: left;
-	}
-
 	.btn-row {
 		flex-direction: column;
-		align-items: stretch;
-	}
-
-	.btn {
-		width: 100%;
+		align-items: flex-start;
 	}
 }
 
@@ -1226,5 +1219,36 @@ a {
 		align-items: center;
 		min-height: 44px;
 		padding: 0 0.75rem;
+	}
+}
+
+/* =============================================================================
+   Page transitions: the old page lifts away like wet ink; the owl never moves.
+   The brush stroke itself is src/lib/components/InkSplash.svelte; the transition is
+   started in src/routes/+layout.svelte.
+   ========================================================================== */
+
+::view-transition {
+	background: var(--bg);
+}
+
+::view-transition-group(ink-owl),
+::view-transition-new(ink-owl),
+::view-transition-new(root) {
+	animation: none;
+}
+
+::view-transition-old(ink-owl) {
+	display: none;
+}
+
+::view-transition-old(root) {
+	animation: ink-lift 180ms ease-in both;
+}
+
+@keyframes ink-lift {
+	to {
+		opacity: 0;
+		filter: blur(0.6px);
 	}
 }

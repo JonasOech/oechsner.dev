@@ -1,5 +1,12 @@
 # DESIGN.md — oechsner.dev
 
+> **Branch note — "Ink" exploration.** This branch re-skins the site after
+> [alexwang.ai](https://alexwang.ai/): textured rice paper (`#f5f3ee`) with ink-black text and a
+> cinnabar accent, Cormorant Garamond headings over Newsreader body text, a 900px column, an
+> ink-wash owl that follows the pointer, a brush stroke on link clicks, view-transition page
+> fades, a name seal, and an ink-black dark theme behind a toggle. `src/app.css` is the source
+> of truth for it; the palette, type and dark-only rules below describe the original design.
+
 > Derived from the **Elevate** portfolio template by Gaël Duval
 > ([dribbble.com/shots/20829830](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)).
 > Reference audit: see §10.

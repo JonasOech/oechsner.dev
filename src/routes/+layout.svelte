@@ -4,14 +4,35 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import InkSplash from '$lib/components/InkSplash.svelte';
+	import { onNavigate } from '$app/navigation';
+	import { initTheme } from '$lib/theme.svelte';
 
 	let { children } = $props();
+
+	$effect(() => {
+		initTheme();
+	});
+
+	// Each page fades into the next, ink and all (see the view-transition rules at the end
+	// of app.css). The reference uses cross-document view transitions; SvelteKit navigates
+	// client-side, so this is the same-document API.
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
+	<!-- Light --bg from app.css; src/lib/theme.svelte.ts swaps it when the scheme changes. -->
+	<meta name="theme-color" content="#f5f3ee" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 </svelte:head>
@@ -30,6 +51,8 @@
 </main>
 
 <Footer />
+
+<InkSplash />
 
 <style>
 	main {

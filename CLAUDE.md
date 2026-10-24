@@ -32,7 +32,12 @@ in the project. Non-negotiables that come out of it:
 - **No component hard-codes a colour.** Everything resolves to a `var(--…)` token declared
   in `src/app.css`. (`src/lib/components/rpm/` is a deliberate exception — that figure set
   renders on a light plate and in feed readers.)
-- **Dark is the only theme.** Do not add a light mode or a theme toggle.
+- **This branch is the "Ink" design exploration** (after alexwang.ai): rice-paper light theme
+  plus an ink-black dark theme behind a toggle (`src/lib/theme.svelte.ts`), Cormorant Garamond
+  for headings and Newsreader for body text (still exposed as `--font-sans`), a cinnabar accent,
+  an interactive ink owl in the header (`InkOwl.svelte`) and a WebGL brush stroke on internal link
+  clicks (`InkSplash.svelte`). Where DESIGN.md says dark-only or fixes other type roles, this
+  branch deliberately differs.
 - Type roles are fixed: Playfair Display for the lead-post title and rail labels only,
   DM Sans for everything else, JetBrains Mono for code. `--text-muted` is meta text only
   and has no contrast headroom — re-measure against both `--bg` and `--surface` if changed.
