@@ -5,6 +5,8 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
+	import Spread from '$lib/components/Spread.svelte';
+	import Tile from '$lib/components/Tile.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -73,26 +75,62 @@
 	})}<\/script>`}
 </svelte:head>
 
-<!-- Three tracks, the outer two the same width: the post keeps the centred position it has
-     without an outline, and the left track is simply filled when there is one to show. The
-     right track stays empty on purpose — it is the counterweight that does the centring. -->
-<div class="container post-layout">
-	{#if outline.length}
-		<PostOutline headings={outline} {activeId} />
-	{/if}
+<!-- The post as a spread: its cover, summary and outline hold still on the left while the
+     text scrolls on the right; the neighbouring posts are the round tiles. -->
+<Spread>
+	{#snippet corner()}
+		<a class="corner-btn" href="/" aria-label="Close, back to all writing">
+			<Icon name="x" size={22} />
+		</a>
+	{/snippet}
+
+	{#snippet story()}
+		<p class="story-kicker">{post.tags[0] ?? 'Writing'}</p>
+		<p class="story-sub"><time datetime={post.date}>{formatDate(post.date)}</time></p>
+		{#if outline.length}
+			<div class="post__outline">
+				<PostOutline headings={outline} {activeId} />
+			</div>
+		{:else}
+			<p class="story-headline">{post.readingMinutes} minutes, one idea.</p>
+		{/if}
+	{/snippet}
+
+	{#snippet image()}
+		{#if post.cover}
+			<div class="image-fill">
+				<img src={post.cover} alt={post.coverAlt ?? ''} decoding="async" />
+			</div>
+		{/if}
+	{/snippet}
+
+	{#snippet tiles()}
+		{#if neighbours.prev}
+			<Tile
+				href="/blog/{neighbours.prev.slug}"
+				image={neighbours.prev.cover}
+				label={neighbours.prev.title}
+				kicker="Newer"
+			/>
+		{/if}
+		{#if neighbours.next}
+			<Tile
+				href="/blog/{neighbours.next.slug}"
+				image={neighbours.next.cover}
+				label={neighbours.next.title}
+				kicker="Older"
+			/>
+		{/if}
+	{/snippet}
+
+	{#snippet quote()}
+		{#if post.summary}<p class="quote-text">{post.summary}</p>{/if}
+	{/snippet}
 
 	<article class="post">
-		<header class="post__header enter" style="--i: 0">
-			<a class="post__back" href="/">
-				<Icon name="arrow-left" />
-				All articles
-			</a>
-
+		<header class="post__header">
+			<p class="eyebrow">What it’s about</p>
 			<h1 class="post__title">{post.title}</h1>
-
-			{#if post.summary}
-				<p class="post__summary">{post.summary}</p>
-			{/if}
 
 			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
 			     the measure, and the badge claims the slack the two of them leave behind. -->
@@ -124,137 +162,63 @@
 			</div>
 		</header>
 
-		{#if post.cover}
-			<img
-				class="post__cover enter"
-				style="--i: 1"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="1200"
-				height="675"
-				decoding="async"
-			/>
-		{/if}
-
 		<div class="prose post__body">
 			<Content />
 		</div>
+
+		<div class="post__subscribe">
+			<Subscribe />
+		</div>
+
+		{#if neighbours.prev || neighbours.next}
+			<nav class="post__nav" aria-label="More articles">
+				{#if neighbours.prev}
+					<a class="post__nav-link" href="/blog/{neighbours.prev.slug}">
+						<span class="label">Newer</span>
+						<span class="post__nav-title">{neighbours.prev.title}</span>
+					</a>
+				{/if}
+				{#if neighbours.next}
+					<a class="post__nav-link" href="/blog/{neighbours.next.slug}">
+						<span class="label">Older</span>
+						<span class="post__nav-title">{neighbours.next.title}</span>
+					</a>
+				{/if}
+			</nav>
+		{/if}
 	</article>
-
-	<div class="post__subscribe">
-		<Subscribe />
-	</div>
-
-	{#if neighbours.prev || neighbours.next}
-		<nav class="post__nav" aria-label="More articles">
-			{#if neighbours.prev}
-				<a class="post__nav-link" href="/blog/{neighbours.prev.slug}">
-					<span class="label">Newer</span>
-					<span class="post__nav-title">{neighbours.prev.title}</span>
-				</a>
-			{:else}
-				<span></span>
-			{/if}
-
-			{#if neighbours.next}
-				<a class="post__nav-link post__nav-link--next" href="/blog/{neighbours.next.slug}">
-					<span class="label">Older</span>
-					<span class="post__nav-title">{neighbours.next.title}</span>
-				</a>
-			{/if}
-		</nav>
-	{/if}
-</div>
+</Spread>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
-	.post-layout {
-		display: grid;
-	}
-
-	@media (min-width: 1100px) {
-		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
-			grid-template-columns:
-				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
-				minmax(0, var(--outline-width));
-			justify-content: center;
-			column-gap: var(--s-5);
-		}
-	}
-
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
 		max-width: var(--measure-prose);
-		margin-inline: auto;
+		animation: post-in 0.9s 0.35s var(--ease-out) both;
+	}
+
+	@keyframes post-in {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
 	}
 
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
-	.post__back {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		text-decoration: none;
-		padding: 0.5rem 0;
-		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.post__back:hover {
-			color: var(--text);
-		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
-		}
-	}
-
-	.post__back:active {
-		color: var(--text-secondary);
-	}
-
-	.post__back:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
-	}
-
+	/* A step below the front page's lead title, which stays the largest type on the site. */
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
-	}
-
-	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		margin-top: var(--s-3);
+		font-size: clamp(2.1rem, 3.4vw, 3rem);
+		font-weight: 900;
+		line-height: 1.05;
+		letter-spacing: -0.01em;
 	}
 
 	.post__dot {
@@ -264,108 +228,74 @@
 
 	.post__facts {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--s-5);
-		flex-wrap: wrap;
+		gap: var(--s-4);
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
+		gap: var(--s-3);
 	}
 
-	.post__tags {
-		margin-top: var(--s-1);
+	/* The outline fills what is left of the story panel below its kicker. */
+	.post__outline {
+		display: flex;
+		flex: 1 1 auto;
+		min-height: 0;
+		margin-top: var(--s-6);
 	}
 
-	.post__cover {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+	@media (max-width: 1099px) {
+		.post__outline {
+			display: none;
+		}
 	}
 
 	.post__subscribe {
-		grid-column: 2;
-		width: 100%;
-		max-width: var(--measure-prose);
-		margin-inline: auto;
 		margin-top: var(--s-8);
 	}
 
 	.post__nav {
-		grid-column: 2;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
+		margin-top: var(--s-7);
 	}
 
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		padding: var(--s-4) 0;
+		border-top: 1px solid var(--line);
+		color: inherit;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	.post__nav-link--next {
-		text-align: right;
-		justify-items: end;
+	.post__nav-title {
+		font-family: var(--font-display);
+		font-size: 1.1rem;
+		font-weight: 700;
+		line-height: 1.3;
+		color: var(--text);
+		transition: color 0.2s;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
 		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
-	.post__nav-title {
-		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
-	}
-
-	@media (max-width: 767px) {
+	@media (prefers-reduced-motion: reduce) {
 		.post {
-			padding-top: var(--s-6);
-		}
-		.post__nav {
-			grid-template-columns: 1fr;
-			gap: var(--s-6);
-		}
-		.post__nav-link--next {
-			text-align: left;
-			justify-items: start;
+			animation: none;
 		}
 	}
 </style>

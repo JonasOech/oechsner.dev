@@ -105,25 +105,14 @@
 </nav>
 
 <style>
-	/* The outline as a contained object rather than a bare list floating in the track:
-	   a bordered panel, sticky in the article's row, bled slightly toward the page edge
-	   so its padding does not eat further into the already-narrow 180px track. */
+	/* Set inside the spread's charcoal story panel, which re-points the colour tokens at
+	   its own palette: a plain list that fills what is left of the panel's height. */
 	.outline {
-		grid-column: 1;
-		grid-row: 1;
-		position: sticky;
-		align-self: start;
-		top: calc(var(--header-h) + var(--s-5));
-		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
-		max-height: calc(100dvh - var(--header-h) - var(--s-7));
+		flex: 1 1 auto;
+		min-height: 0;
 		display: flex;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		margin-inline: calc(var(--s-4) * -1);
 		overflow: hidden;
 	}
 
@@ -140,12 +129,12 @@
 
 	.outline__label {
 		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 400;
+		font-size: 0.8rem;
+		font-weight: 700;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text);
 		margin: 0 0 var(--s-3);
 		white-space: nowrap;
 		overflow: hidden;
@@ -175,6 +164,7 @@
 
 	.outline__readout {
 		flex: none;
+		font-family: var(--font-ui);
 		font-size: 0.6875rem;
 		font-variant-numeric: tabular-nums;
 		color: var(--text-muted);
@@ -207,8 +197,8 @@
 		position: relative;
 		display: block;
 		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
-		font-size: 0.8125rem;
+		border-radius: 0;
+		font-size: 0.875rem;
 		line-height: 1.35;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -272,7 +262,8 @@
 		align-items: center;
 		gap: var(--s-2);
 		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
+		border-radius: 0;
+		font-family: var(--font-ui);
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-decoration: none;

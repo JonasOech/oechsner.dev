@@ -32,7 +32,13 @@ in the project. Non-negotiables that come out of it:
 - **No component hard-codes a colour.** Everything resolves to a `var(--…)` token declared
   in `src/app.css`. (`src/lib/components/rpm/` is a deliberate exception — that figure set
   renders on a light plate and in feed readers.)
-- **Dark is the only theme.** Do not add a light mode or a theme toggle.
+- **This branch is the "Glacier" design exploration** (an editorial magazine spread): a
+  fixed ice-blue side rail replaces the header, and the home and post pages are a sticky panel
+  composition (`Spread.svelte`: charcoal story, cover image, round `Tile`s, ice pull quote)
+  beside a scrolling reading column. Playfair Display sets everything, body included (still
+  exposed as `--font-sans`); DM Sans survives only as `--font-ui` for small labels. Light theme
+  plus a dark one behind a toggle (`src/lib/theme.svelte.ts`). Where DESIGN.md says dark-only
+  or fixes other type roles, this branch deliberately differs.
 - Type roles are fixed: Playfair Display for the lead-post title and rail labels only,
   DM Sans for everything else, JetBrains Mono for code. `--text-muted` is meta text only
   and has no contrast headroom — re-measure against both `--bg` and `--surface` if changed.

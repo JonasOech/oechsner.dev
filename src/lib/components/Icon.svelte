@@ -17,7 +17,14 @@
 		| 'copy'
 		| 'check'
 		| 'maximize'
-		| 'minimize';
+		| 'minimize'
+		| 'sun'
+		| 'moon'
+		| 'waves'
+		| 'file-text'
+		| 'layers'
+		| 'user'
+		| 'x';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -44,7 +51,18 @@
 		// Two corners pushed apart, and the same two pulled back together — the maximise
 		// toggle on a formula plate.
 		maximize: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
-		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'
+		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7',
+		// Theme switch: a disc with eight rays, and a crescent.
+		sun: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41',
+		moon: 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z',
+		// The side rail: the home mark and one glyph per section.
+		waves:
+			'M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1',
+		'file-text': 'M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7zM14 2v4a2 2 0 0 0 2 2h4M10 9H8M16 13H8M16 17H8',
+		layers:
+			'M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83zM2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17',
+		user: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2M12 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8',
+		x: 'M18 6 6 18M6 6l12 12'
 	};
 </script>
 

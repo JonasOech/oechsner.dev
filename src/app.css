@@ -1,75 +1,93 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — "Glacier" design exploration (an editorial magazine spread)
    Every colour in this project resolves to a variable declared in this block.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
 
+/* Light is the default scheme; `[data-theme='dark']` below redefines every colour token.
+   The inline script in src/app.html picks the scheme before first paint. */
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	/* — Canvas: the reading column, a cool off-white — */
+	--bg: #f4f5f5;
+	--bg-rgb: 244, 245, 245;
+	--bg-deep: #e9ecec;
+	--bg-deep-rgb: 233, 236, 236;
+	--surface: #ffffff;
+	--surface-rgb: 255, 255, 255;
+	--surface-hover: #eef1f2;
+	--surface-hover-rgb: 238, 241, 242;
+	--surface-active: #e3e8ea;
+	--surface-active-rgb: 227, 232, 234;
 
 	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	--text: #2c2d30;
+	--text-rgb: 44, 45, 48;
+	--text-secondary: #46474b;
+	--text-secondary-rgb: 70, 71, 75;
+	--text-muted: #64666b;
+	--text-muted-rgb: 100, 102, 107;
+	--text-inverse: #ffffff;
+	--text-inverse-rgb: 255, 255, 255;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #2c2d30;
+	--text-pressed-rgb: 44, 45, 48;
 
 	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	--line: #d9dddf;
+	--line-rgb: 217, 221, 223;
+	--line-strong: #b4bcc1;
+	--line-strong-rgb: 180, 188, 193;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Accent: glacier blue-grey, from the italic pull quote — */
+	--accent: #4b6d82;
+	--accent-rgb: 75, 109, 130;
+	--accent-dim: #3a5869;
+	--accent-dim-rgb: 58, 88, 105;
+	--accent-wash: rgba(75, 109, 130, 0.08);
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — The panels of the spread. Each is its own little world: charcoal for the cover
+	   story, slate for the tiles, ice for the pull quote, a paler ice for the side rail. — */
+	--panel-ink: #2b2b2e;
+	--panel-ink-text: #e4e4e7;
+	--panel-ink-muted: #9c9ca3;
+	--panel-ink-line: rgba(255, 255, 255, 0.1);
+	--panel-slate: #48484d;
+	--panel-slate-hover: #545459;
+	--panel-slate-text: #ffffff;
+	--panel-ice: #d6e6ec;
+	--panel-ice-soft: #e4eef2;
+	--panel-ice-text: #55788c;
+	--rail-bg: #e4eef2;
+	--rail-icon: #4f6472;
+	--rail-line: #c9d8de;
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
+	/* — Figure plate: diagrams drawn in dark ink sit on a white card. — */
+	--plate: #ffffff;
 
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series: a warm counterpart to the blue-grey. — */
+	--series-cool: #4b6d82;
+	--series-cool-rgb: 75, 109, 130;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #b8322f;
+	--danger-rgb: 184, 50, 47;
+	--success: #2f7a3e;
+	--success-rgb: 47, 122, 62;
 
 	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.6);
+
+
+	color-scheme: light;
 
 	/* — Type — */
 	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	/* The body face. Still named "sans" so every component keeps working, but this design
+	   sets its text in Playfair too; the sans survives only as --font-ui, for small labels. */
+	--font-sans: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	--font-ui: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
@@ -81,10 +99,12 @@
 	   and the post column has to keep its measure with two of these beside it. */
 	--outline-width: 180px;
 	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* The fixed side rail on the left (a top bar on phones). */
+	--rail-w: 64px;
+	--bar-h: 56px;
+	/* There is no sticky header (navigation is the side rail), so nothing has to clear
+	   it; kept as a token because the outline and anchor offsets read it. */
+	--header-h: 0rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -118,6 +138,75 @@
 	--dur-base: 260ms;
 	--dur-slow: 620ms;
 
+}
+
+/* Dark: the reading column goes charcoal, the ice panel deep slate-blue. */
+:root[data-theme='dark'] {
+	--bg: #1c1d20;
+	--bg-rgb: 28, 29, 32;
+	--bg-deep: #151619;
+	--bg-deep-rgb: 21, 22, 25;
+	--surface: #24252a;
+	--surface-rgb: 36, 37, 42;
+	--surface-hover: #2a2b30;
+	--surface-hover-rgb: 42, 43, 48;
+	--surface-active: #313238;
+	--surface-active-rgb: 49, 50, 56;
+
+	--text: #ebecee;
+	--text-rgb: 235, 236, 238;
+	--text-secondary: #c7c9cd;
+	--text-secondary-rgb: 199, 201, 205;
+	--text-muted: #9c9ea4;
+	--text-muted-rgb: 156, 158, 164;
+	--text-inverse: #1c1d20;
+	--text-inverse-rgb: 28, 29, 32;
+	--text-bright: #ffffff;
+	--text-bright-rgb: 255, 255, 255;
+	--text-pressed: #ebecee;
+	--text-pressed-rgb: 235, 236, 238;
+
+	--line: #34363b;
+	--line-rgb: 52, 54, 59;
+	--line-strong: #4a4d54;
+	--line-strong-rgb: 74, 77, 84;
+
+	--accent: #9cc0d4;
+	--accent-rgb: 156, 192, 212;
+	--accent-dim: #bcd6e4;
+	--accent-dim-rgb: 188, 214, 228;
+	--accent-wash: rgba(156, 192, 212, 0.1);
+
+	--panel-ink: #111113;
+	--panel-ink-text: #dcdce0;
+	--panel-ink-muted: #8f8f96;
+	--panel-ink-line: rgba(255, 255, 255, 0.08);
+	--panel-slate: #2b2c31;
+	--panel-slate-hover: #34353b;
+	--panel-slate-text: #ececef;
+	--panel-ice: #1b2b33;
+	--panel-ice-soft: #17232a;
+	--panel-ice-text: #93b7ca;
+	--rail-bg: #161e23;
+	--rail-icon: #a9bcc7;
+	--rail-line: #26333a;
+
+	--plate: #f2f3f3;
+
+	--series-cool: #9cc0d4;
+	--series-cool-rgb: 156, 192, 212;
+
+	--danger: #f07a72;
+	--danger-rgb: 240, 122, 114;
+	--success: #6cc47e;
+	--success-rgb: 108, 196, 126;
+
+	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.35);
+	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.4);
+	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.5);
+	--shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+
 	color-scheme: dark;
 }
 
@@ -150,40 +239,14 @@ body {
 	background: var(--bg);
 	color: var(--text-secondary);
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
+	font-size: 1rem;
+	line-height: 1.65;
+	/* The side rail is fixed; everything else sits to its right. */
+	padding-left: var(--rail-w);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -193,6 +256,7 @@ h4,
 h5,
 h6 {
 	color: var(--text);
+	font-family: var(--font-display);
 	font-weight: 700;
 	margin: 0;
 	text-wrap: balance;
@@ -250,12 +314,12 @@ a {
 
 .rail__label {
 	font-family: var(--font-display);
-	font-size: 0.8125rem;
-	font-weight: 400;
+	font-size: 0.875rem;
+	font-weight: 700;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	color: var(--text-muted);
+	color: var(--text);
 	padding-top: 0.35rem; /* optically aligns with the first content line */
 	margin: 0;
 }
@@ -280,33 +344,38 @@ a {
    Typography helpers
    ========================================================================== */
 
+/* "What to know": a short rule over a small bold serif line. */
 .eyebrow {
 	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-size: 1rem;
+	font-weight: 700;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text);
 	margin: 0;
+}
+
+.eyebrow::before {
+	content: '';
+	display: block;
+	width: 22px;
+	height: 2px;
+	margin-bottom: 0.6rem;
+	background: currentColor;
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: clamp(2.4rem, 4.2vw, 3.6rem);
+	font-weight: 900;
+	line-height: 1.02;
+	letter-spacing: -0.01em;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: clamp(2rem, 3.6vw, 2.6rem);
+	font-weight: 900;
 	line-height: 1.2;
 	letter-spacing: -0.01em;
 }
@@ -317,9 +386,9 @@ a {
 }
 
 .meta {
-	font-family: var(--font-sans);
-	font-size: 0.75rem;
-	font-weight: 700;
+	font-family: var(--font-ui);
+	font-size: 0.78rem;
+	font-weight: 500;
 	line-height: 1.4;
 	letter-spacing: 0.01em;
 	color: var(--text-muted);
@@ -327,7 +396,7 @@ a {
 }
 
 .label {
-	font-family: var(--font-sans);
+	font-family: var(--font-ui);
 	font-size: 0.6875rem;
 	font-weight: 700;
 	line-height: 1.4;
@@ -354,24 +423,28 @@ a {
 	align-items: center;
 	justify-content: center;
 	gap: var(--s-2);
-	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	font-weight: 700;
+	position: relative;
+	font-family: var(--font-ui);
+	font-size: 0.8rem;
+	font-weight: 600;
 	line-height: 1;
-	padding: 0.6875rem 1.125rem;
-	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	padding: 0 1.75rem;
+	min-height: 52px;
+	min-width: 9.5rem;
+	border-radius: 0;
+	border: 1px solid var(--line-strong);
+	/* Two hairline diagonals, one out of each opposite corner, as on the reference's
+	   ghost button. They lengthen on hover. */
+	background:
+		linear-gradient(to top right, transparent calc(50% - 0.5px), var(--line-strong) 50%, transparent calc(50% + 0.5px)) left bottom / 38% 70% no-repeat,
+		linear-gradient(to top right, transparent calc(50% - 0.5px), var(--line-strong) 50%, transparent calc(50% + 0.5px)) right top / 30% 60% no-repeat;
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
 	transition:
-		background-color var(--dur-fast) var(--ease-out),
+		background-size 420ms var(--ease-out),
 		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
-		transform var(--dur-fast) var(--ease-out),
-		box-shadow var(--dur-fast) var(--ease-out);
+		color var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
@@ -382,45 +455,29 @@ a {
 }
 
 .btn--primary {
-	background: var(--text);
-	color: var(--text-inverse);
+	color: var(--text);
 }
 
 .btn--secondary {
-	background: var(--surface);
-	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	color: var(--text-muted);
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
+	.btn:hover {
+		color: var(--text);
+		border-color: var(--text);
+		background-size: 70% 100%, 60% 100%;
 	}
 	.btn--primary:hover svg {
 		transform: translateX(3px);
-	}
-	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
 	}
 	.btn--secondary:hover svg {
 		transform: translateY(2px);
 	}
 }
 
-.btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
-}
-
-.btn--secondary:active {
-	transform: translateY(0);
-	background: var(--surface-active);
+.btn:active {
+	color: var(--accent);
 }
 
 .btn:focus-visible {
@@ -446,7 +503,7 @@ a {
 /* — Prose links — */
 
 .link {
-	color: var(--text);
+	color: var(--accent);
 	text-decoration: none;
 	background-image: linear-gradient(var(--accent), var(--accent));
 	background-size: 0% 1px;
@@ -484,15 +541,15 @@ a {
 
 .tag {
 	display: inline-block;
-	font-family: var(--font-sans);
-	font-size: 0.6875rem;
+	font-family: var(--font-ui);
+	font-size: 0.66rem;
 	font-weight: 700;
 	line-height: 1;
-	letter-spacing: 0.08em;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
+	padding: 0.45rem 0.65rem;
+	border-radius: 0;
+	background: transparent;
 	color: var(--text-muted);
 	border: 1px solid var(--line);
 	text-decoration: none;
@@ -547,7 +604,8 @@ a {
 }
 
 .entry__title {
-	font-size: 1.1875rem;
+	font-family: var(--font-display);
+	font-size: 1.25rem;
 	font-weight: 700;
 	line-height: 1.35;
 	letter-spacing: -0.005em;
@@ -578,13 +636,13 @@ a {
 
 .field {
 	width: 100%;
-	font-family: var(--font-sans);
+	font-family: var(--font-ui);
 	font-size: 0.9375rem;
 	font-weight: 400;
 	background: var(--surface);
 	color: var(--text);
 	border: 1px solid var(--line);
-	border-radius: 5px;
+	border-radius: 0;
 	padding: 0.6875rem 0.875rem;
 	transition:
 		border-color var(--dur-fast) var(--ease-out),
@@ -621,7 +679,7 @@ a {
 /* — Skip link — */
 
 .skip-link {
-	position: absolute;
+	position: fixed;
 	left: var(--s-4);
 	top: -100px;
 	z-index: 100;
@@ -704,7 +762,7 @@ a {
 .prose {
 	max-width: var(--measure-prose);
 	font-size: 1.0625rem;
-	line-height: 1.8;
+	line-height: 1.75;
 	color: var(--text-secondary);
 }
 
@@ -712,40 +770,27 @@ a {
 	margin-top: var(--s-5);
 }
 
-/* Body copy is set justified (Blocksatz) rather than ragged-right. Justification
-   is about where the two margins land, not about where the column sits: the post
-   column is centred in its page (see the post route), but the text inside it is
-   still flush to both of its own edges rather than centred line by line, which is
-   what §9 actually forbids. `.intro__byline` on the home page sets the precedent.
-   Hyphenation is part of the same decision, not an extra: a 68ch column justified
-   without it opens rivers between words.
-
-   Short lines stay ragged, which is all CSS can actually promise. Under
-   `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
-   line — and a one-line paragraph, which is nothing but a final line — is never
-   stretched to the measure. It is spelled out here rather than left to the
-   default because it is the behaviour being relied on. Below that there is no
-   per-line threshold in CSS; the case it cannot express is a column too narrow
-   to fit enough words per line, and that one is handled by viewport width in §9. */
+/* Ragged-right, as on the reference. Hyphenation stays on for long German compounds, and
+   a URL or a long identifier may break rather than overflow the column. */
 .prose > p,
 .prose > blockquote p {
-	text-align: justify;
-	text-align-last: left;
 	hyphens: auto;
-	/* A URL or a long identifier cannot break, and one sitting in a justified
-	   line stretches every space around it. Let it break instead. */
 	overflow-wrap: break-word;
 }
 
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
+	font-size: 1.75rem;
+	font-weight: 900;
+	line-height: 1.15;
+	letter-spacing: -0.005em;
 	margin-top: var(--s-8);
 }
 
+/* Small bold capitals, like the reference's CAMPING / HOTELS. */
 .prose h3 {
-	font-size: 1.125rem;
+	font-size: 0.95rem;
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
 	line-height: 1.4;
 	margin-top: var(--s-7);
 }
@@ -758,18 +803,16 @@ a {
 }
 
 .prose a {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.18em;
 	transition: color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
-		color: var(--accent);
+		color: var(--text);
 	}
 }
 
@@ -797,11 +840,14 @@ a {
 	font-weight: 700;
 }
 
+/* The pull quote in the ice panel, brought into the text. */
 .prose blockquote {
 	margin-inline: 0;
-	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
-	color: var(--text-secondary);
+	padding: var(--s-4) var(--s-5);
+	background: var(--panel-ice);
+	color: var(--panel-ice-text);
+	font-size: 1.3rem;
+	line-height: 1.45;
 	font-style: italic;
 }
 
@@ -813,7 +859,7 @@ a {
 
 .prose img,
 .prose video {
-	border-radius: 6px;
+	border-radius: 0;
 	border: 1px solid var(--line);
 }
 
@@ -876,7 +922,7 @@ a {
 	line-height: 1.65;
 	background: var(--bg-deep);
 	border: 1px solid var(--line);
-	border-radius: 6px;
+	border-radius: 0;
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -1058,7 +1104,7 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: 0;
 }
 
 .prose .widget > figcaption {
@@ -1080,7 +1126,7 @@ a {
      button system, and these are small controls inside a figure. — */
 
 .prose .rpm-btn {
-	font-family: var(--font-sans);
+	font-family: var(--font-ui);
 	font-size: 0.8125rem;
 	font-weight: 600;
 	line-height: 1.4;
@@ -1183,14 +1229,10 @@ a {
 		--gap-section: var(--s-7);
 	}
 
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
+	/* Phones: the rail turns into a bar across the top. */
+	body {
+		padding-left: 0;
+		padding-top: var(--bar-h);
 	}
 }
 
@@ -1199,11 +1241,6 @@ a {
 	   that width: too few words per line, so the spaces that absorb the slack
 	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
 	   on, since it still earns its keep on a narrow column. */
-	.prose > p,
-	.prose > blockquote p {
-		text-align: left;
-	}
-
 	.btn-row {
 		flex-direction: column;
 		align-items: stretch;
@@ -1226,5 +1263,29 @@ a {
 		align-items: center;
 		min-height: 44px;
 		padding: 0 0.75rem;
+	}
+}
+
+/* =============================================================================
+   The spread: panels slide down into place on first paint, one after another.
+   ========================================================================== */
+
+@keyframes panel-in {
+	from {
+		clip-path: inset(0 0 100% 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+.panel-in {
+	animation: panel-in 900ms var(--ease-inout) both;
+	animation-delay: calc(var(--d, 0) * 110ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.panel-in {
+		animation: none;
 	}
 }

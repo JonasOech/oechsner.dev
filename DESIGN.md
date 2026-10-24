@@ -1,5 +1,13 @@
 # DESIGN.md — oechsner.dev
 
+> **Branch note — "Glacier" exploration.** This branch re-skins the site as an editorial
+> magazine spread, after a reference travel-magazine layout ("To sleep in Iceland"): a slim ice
+> rail on the left, a sticky composition of charcoal, slate and ice panels with the cover image,
+> round image tiles and an italic pull quote, beside an off-white reading column set entirely in
+> Playfair Display; ghost buttons with hairline diagonals; and a dark theme behind a toggle.
+> `src/app.css` is the source of truth for it; the palette, type and dark-only rules below
+> describe the original design.
+
 > Derived from the **Elevate** portfolio template by Gaël Duval
 > ([dribbble.com/shots/20829830](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)).
 > Reference audit: see §10.
