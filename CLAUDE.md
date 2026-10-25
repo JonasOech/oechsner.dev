@@ -26,20 +26,19 @@ Wrangler config.
 
 ## Styling: read DESIGN.md first
 
-`DESIGN.md` is the spec; `src/app.css` is its implementation and holds every CSS variable
-in the project. Non-negotiables that come out of it:
+`DESIGN.md` is the spec ("Editorial print": paper, ink, one vermilion spot colour);
+`src/app.css` is its implementation and holds every CSS variable in the project. Non-negotiables:
 
 - **No component hard-codes a colour.** Everything resolves to a `var(--…)` token declared
   in `src/app.css`. (`src/lib/components/rpm/` is a deliberate exception — that figure set
   renders on a light plate and in feed readers.)
-- **Dark is the only theme.** Do not add a light mode or a theme toggle.
-- Type roles are fixed: Playfair Display for the lead-post title and rail labels only,
-  DM Sans for everything else, JetBrains Mono for code. `--text-muted` is meta text only
-  and has no contrast headroom — re-measure against both `--bg` and `--surface` if changed.
+- **Light paper is the only theme.** Do not add a dark mode or a theme toggle.
+- Type roles are fixed: Playfair Display for display, Newsreader for text and UI, JetBrains
+  Mono for code (all self-hosted via `@fontsource-variable`). `--text-muted` is meta text only —
+  re-measure against both `--bg` and `--surface` if changed.
 - Icons are inline SVG in `src/lib/components/Icon.svelte`. No emoji, no icon font.
-- §11 ("content-first hierarchy") governs the home page: the largest type on the site is
-  always a piece of writing, never the author's name. Read it before moving anything above
-  the fold.
+- §8 ("content-first hierarchy") governs the home page: the largest type on the site is
+  always a piece of writing, never the author's name.
 
 ## Posts
 

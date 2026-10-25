@@ -5,9 +5,11 @@
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
+<!-- A column of the archive: cover plate, kicker, headline, standfirst, byline. The whole
+     card is the link, so there is exactly one tab stop per post. -->
+<a class="card" class:card--featured={featured} href="/blog/{post.slug}">
+	{#if post.cover}
+		<div class="card__media">
 			<img
 				class="card__img"
 				src={post.cover}
@@ -21,11 +23,14 @@
 	{/if}
 
 	<div class="card__text">
+		{#if post.tags.length}
+			<p class="kicker card__kicker">{post.tags.slice(0, 2).join(' · ')}</p>
+		{/if}
 		<h3 class="card__title">{post.title}</h3>
 		{#if post.summary}
 			<p class="card__summary">{post.summary}</p>
 		{/if}
-		<p class="meta">
+		<p class="meta card__meta">
 			<time datetime={post.date}>{formatDate(post.date)}</time>
 			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
@@ -37,107 +42,65 @@
 			{/if}
 		</p>
 	</div>
-
-	{#if !featured && post.cover}
-		<div class="card__media">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="380"
-				height="285"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
 </a>
 
 <style>
 	.card {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
-		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-4);
+		height: 100%;
+		padding-top: var(--s-4);
+		border-top: 1px solid var(--rule);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
-	}
-
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.card--featured {
-		gap: var(--s-5);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
-	}
-
-	.card:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-2);
 		min-width: 0;
+		flex: 1 1 auto;
+	}
+
+	.card__kicker {
+		font-size: 0.6875rem;
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
+		font-size: 1.5rem;
 		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		line-height: 1.15;
+		letter-spacing: -0.015em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.card--featured .card__title {
-		font-size: 1.375rem;
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.16em;
+		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	.card__summary {
+		font-size: 1rem;
+		line-height: 1.5;
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+	}
+
+	.card__meta {
+		margin-top: auto;
+		padding-top: var(--s-2);
 	}
 
 	.card__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
 	}
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
-		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
+		aspect-ratio: 3 / 2;
+		border: 1px solid var(--line-strong);
+		background: var(--plate);
 	}
 
 	.card__img {
@@ -147,19 +110,25 @@
 		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+	@media (hover: hover) and (pointer: fine) {
+		.card:hover .card__title {
+			text-decoration-color: var(--accent);
+		}
+		.card:hover .card__img {
+			transform: scale(1.03);
 		}
 	}
 
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
-		}
+	.card:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	.card:focus-visible .card__title {
+		text-decoration-color: var(--accent);
+	}
+
+	.card--featured .card__title {
+		font-size: 1.875rem;
 	}
 </style>

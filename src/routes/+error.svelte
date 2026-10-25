@@ -9,7 +9,7 @@
 </svelte:head>
 
 <div class="container error">
-	<p class="eyebrow enter" style="--i: 0">Error {page.status}</p>
+	<p class="kicker enter" style="--i: 0">Error {page.status} · Stop press</p>
 	<h1 class="hero-title enter" style="--i: 1">
 		{page.status === 404 ? 'Nothing here.' : 'Something broke.'}
 	</h1>

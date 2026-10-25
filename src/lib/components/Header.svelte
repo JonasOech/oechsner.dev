@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
-
-	let sentinel: HTMLElement;
-	let scrolled = $state(false);
+	import { nav, site } from '$lib/data/site';
 
 	/**
 	 * `nav[0]` (Writing) is the site's root and stays on the bar at every width; the rest
@@ -17,28 +14,11 @@
 	 * so it tracks the label widths under text-only zoom rather than the raw viewport, and
 	 * duplicated in the stylesheet's media query: the two have to move together.
 	 */
-	const COLLAPSE_QUERY = '(max-width: 35em)';
+	const COLLAPSE_QUERY = '(max-width: 21em)';
 
 	let moreOpen = $state(false);
 	let moreEl: HTMLElement;
 	let moreButton: HTMLButtonElement;
-
-	/**
-	 * Header scroll state via a 1px sentinel at the top of the document rather than a
-	 * `scroll` listener — no per-frame work (DESIGN.md §7).
-	 */
-	$effect(() => {
-		if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				scrolled = !entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	});
 
 	// Widening past the breakpoint puts the collapsed links back on the bar, so the
 	// disclosure state they belonged to has to go with them.
@@ -85,9 +65,18 @@
 
 <svelte:window onkeydown={onWindowKeydown} />
 
-<div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
+<header class="masthead">
+	<div class="container masthead__head">
+		<p class="masthead__strap">
+			<span>Writing &amp; portfolio</span>
+			<span class="masthead__est">Est. {site.startYear}</span>
+			<span>Bamberg · Dublin</span>
+		</p>
 
-<header class="header" data-scrolled={scrolled}>
+		<a class="masthead__name" href="/">{site.name}</a>
+		<p class="masthead__tagline">Notes on machine learning, statistics and distributed systems</p>
+	</div>
+
 	<nav class="container nav" aria-label="Primary">
 		<a
 			class="nav__link"
@@ -137,83 +126,129 @@
 </header>
 
 <style>
-	.sentinel {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
-	}
-
-	.header {
-		position: sticky;
-		top: 0;
+	/* The masthead: a heavy rule, a small-caps strap line, the name set in the display
+	   face (deliberately modest — the writing below outranks it, DESIGN.md §10), and the
+	   navigation between two hairlines like the section strip of a broadsheet. It scrolls
+	   away with the page; nothing sticks. */
+	.masthead {
+		position: relative;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+		border-top: 6px solid var(--rule);
+		padding-top: var(--s-3);
 	}
 
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+	.masthead__head {
+		display: grid;
+		justify-items: center;
+		text-align: center;
+	}
+
+	.masthead__strap {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: baseline;
+		width: 100%;
+		margin: 0;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		line-height: 1.4;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+
+	.masthead__strap span:first-child {
+		text-align: left;
+	}
+
+	.masthead__strap span:last-child {
+		text-align: right;
+	}
+
+	.masthead__est {
+		text-align: center;
+	}
+
+	.masthead__name {
+		margin-top: var(--s-3);
+		font-family: var(--font-display);
+		font-size: clamp(1.625rem, 4.4vw, 2.5rem);
+		font-weight: 800;
+		font-style: italic;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+		color: var(--text);
+		text-decoration: none;
+		border-radius: 2px;
+	}
+
+	.masthead__name:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	.masthead__tagline {
+		margin: var(--s-1) 0 var(--s-4);
+		font-size: 0.9375rem;
+		font-style: italic;
+		line-height: 1.4;
+		color: var(--text-secondary);
+		text-wrap: balance;
 	}
 
 	.nav {
 		display: flex;
 		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		gap: 2rem;
+		padding-block: 0;
+		/* Hairlines run the width of the page, not of the container. */
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
+		width: calc(100% - 2 * var(--gutter));
+		max-width: calc(var(--container) - 2 * var(--gutter));
+		padding-inline: 0;
 	}
 
 	.nav__link {
-		font-family: var(--font-sans);
+		font-family: var(--font-text);
 		font-size: 0.75rem;
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
+		padding: 0.9rem 0.125rem;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
+	/* The current page is marked by an ink bar sitting on the lower hairline. */
 	.nav__link::after {
 		content: '';
 		position: absolute;
 		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
+		right: 0;
+		bottom: -1px;
+		height: 3px;
+		background: var(--accent);
 		transform: scaleX(0);
-		transform-origin: right;
+		transform-origin: left;
 		transition: transform var(--dur-base) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
+			color: var(--accent);
 		}
 		.nav__link:hover::after {
 			transform: scaleX(1);
-			transform-origin: left;
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		color: var(--accent-dim);
 	}
 
 	.nav__link[aria-current='page'],
@@ -221,9 +256,13 @@
 		color: var(--text);
 	}
 
+	.nav__link[aria-current='page']::after,
+	.nav__link[data-current='true']::after {
+		transform: scaleX(1);
+	}
+
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -247,7 +286,6 @@
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
 		margin-left: -0.11em;
 		stroke-linecap: round;
 		stroke-linejoin: round;
@@ -258,12 +296,26 @@
 		transform: rotate(180deg);
 	}
 
+	@media (max-width: 40em) {
+		.nav {
+			gap: 0.6rem;
+			justify-content: space-between;
+		}
+		.nav__link {
+			letter-spacing: 0.1em;
+			font-size: 0.6875rem;
+		}
+		.masthead__strap span:last-child {
+			display: none;
+		}
+		.masthead__strap {
+			grid-template-columns: 1fr auto;
+		}
+	}
+
 	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
 	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
-	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
+	@media (max-width: 21em) {
 		.nav {
 			flex-wrap: nowrap;
 		}
@@ -281,28 +333,15 @@
 			display: grid;
 			position: absolute;
 			z-index: 1;
-			top: calc(100% + var(--s-2));
+			top: 100%;
 			left: 50%;
 			transform: translateX(-50%);
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
 			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
+			background: var(--bg);
+			border: 1px solid var(--rule);
 			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -310,27 +349,22 @@
 		}
 
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
+			padding: 0.75rem var(--s-3);
 			text-align: center;
 			justify-content: center;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
 		.more__panel .nav__link::after {
 			content: none;
 		}
 	}
 
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
+			padding-block: 0;
 		}
 	}
 </style>

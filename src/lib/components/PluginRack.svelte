@@ -108,7 +108,7 @@
 		border-top: 1px solid var(--line);
 		border-left: 1px solid var(--line);
 		background: none;
-		font-family: var(--font-sans);
+		font-family: var(--font-text);
 		font-size: 0.8125rem;
 		font-weight: 600;
 		line-height: 1.35;

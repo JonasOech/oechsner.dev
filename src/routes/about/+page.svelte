@@ -21,11 +21,18 @@
 
 <div class="container">
 	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
-		<div class="stack enter lede" style="--i: 1">
-			{#each about as paragraph (paragraph)}
-				<p>{paragraph}</p>
-			{/each}
+		<p class="kicker enter" style="--i: 0">About</p>
+		<h1 class="page-title enter" style="--i: 0">{site.role}</h1>
+		<div class="intro__grid">
+			<div class="stack enter lede intro__text prose dropcap" style="--i: 1">
+				{#each about as paragraph (paragraph)}
+					<p>{paragraph}</p>
+				{/each}
+			</div>
+			<!-- A pull quote lifted from the site's own byline, not new copy. -->
+			<blockquote class="pullquote intro__quote enter" style="--i: 2">
+				Interested in the concepts behind the software.
+			</blockquote>
 		</div>
 		<div class="btn-row enter" style="--i: 2">
 			<a class="btn btn--primary" href="/contact">
@@ -93,9 +100,33 @@
 <style>
 	.intro {
 		display: grid;
-		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+		gap: var(--s-4);
+		padding-top: var(--s-6);
+	}
+
+	.intro__grid {
+		display: grid;
+		gap: var(--s-6);
+		margin-block: var(--s-3) var(--s-4);
+	}
+
+	/* The about copy is set as running text in two columns on wide screens, with the pull
+	   quote hung in the margin beside it. */
+	.intro__text {
+		max-width: var(--measure-prose);
+		font-size: 1.1875rem;
+		line-height: 1.65;
+	}
+
+	.intro__quote {
+		align-self: start;
+	}
+
+	@media (min-width: 900px) {
+		.intro__grid {
+			grid-template-columns: minmax(0, var(--measure-prose)) minmax(0, 1fr);
+			column-gap: var(--s-8);
+		}
 	}
 
 	.entry__org {
@@ -146,9 +177,4 @@
 		color: var(--text);
 	}
 
-	@media (max-width: 767px) {
-		.intro {
-			padding-top: var(--s-6);
-		}
-	}
 </style>

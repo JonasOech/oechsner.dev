@@ -41,7 +41,7 @@
 	   line of text beside it. */
 	.hw__quill {
 		display: block;
-		height: 3.75rem;
+		height: 3rem;
 		width: auto;
 		flex: none;
 	}
@@ -54,6 +54,5 @@
 		line-height: 1.2;
 		letter-spacing: -0.005em;
 		color: var(--accent);
-		white-space: nowrap;
 	}
 </style>
