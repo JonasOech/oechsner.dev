@@ -10,10 +10,9 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<!-- Must match --bg in app.css (light, then dark); a meta attribute cannot reference a CSS variable. -->
+	<meta name="theme-color" content="#fbfaf6" media="(prefers-color-scheme: light)" />
+	<meta name="theme-color" content="#151514" media="(prefers-color-scheme: dark)" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>

@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { reveal } from '$lib/actions/reveal';
 
 	/**
-	 * A labelled section: letterspaced serif rail label on the left, narrow content
-	 * measure on the right. Collapses to label-above-content below 1024px.
+	 * A labelled section: a quiet italic label above its content, in the one column.
+	 * (The name is a holdover from the earlier two-column design; the API is unchanged.)
 	 *
-	 * `level` picks the heading rank — pass 1 when this rail is the page's own title
+	 * `level` picks the heading rank — pass 1 when this section is the page's own title
 	 * (Contact), leave it at 2 for sections within a page.
 	 */
 	let {
@@ -20,7 +19,7 @@
 	const labelId = $derived(id ? `${id}-label` : undefined);
 </script>
 
-<section class="section rail" {id} use:reveal aria-labelledby={labelId}>
+<section class="section rail" {id} aria-labelledby={labelId}>
 	{#if level === 1}
 		<h1 class="rail__label" id={labelId}>{label}</h1>
 	{:else}

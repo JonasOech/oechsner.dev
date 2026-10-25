@@ -44,66 +44,47 @@
 {/if}
 
 <style>
-	/* Above the sticky header (50), below the skip link (100) — the one control that must
-	   stay reachable no matter what else is on screen. */
+	/* Above nothing else, below the skip link. A hairline-topped strip on the page's own
+	   background: it asks, it does not shout, and it never covers the text for long. */
 	.consent {
 		position: fixed;
 		z-index: 90;
 		inset: auto 0 0 0;
+		background: var(--bg);
+		border-top: 1px solid var(--line-strong);
 		padding: var(--s-4) var(--gutter);
-		/* Clears the home indicator on a phone without padding the panel on a desktop. */
 		padding-bottom: max(var(--s-4), env(safe-area-inset-bottom));
-		pointer-events: none;
+		animation: consent-fade var(--dur-base) var(--ease-out) both;
+	}
+
+	@keyframes consent-fade {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.consent__panel {
-		pointer-events: auto;
-		max-width: var(--container);
+		max-width: var(--measure);
 		margin-inline: auto;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		gap: var(--s-4) var(--s-6);
-		padding: var(--s-5);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
-		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
-		   heavier one the "More" menu uses. */
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
-		box-shadow: var(--shadow-4);
-		animation: consent-rise var(--dur-base) var(--ease-out) both;
-	}
-
-	/* Where backdrop-filter is unavailable the tint alone would let text read through. */
-	@supports not (backdrop-filter: blur(12px)) {
-		.consent__panel {
-			background: var(--surface);
-		}
-	}
-
-	@keyframes consent-rise {
-		from {
-			opacity: 0;
-			transform: translateY(12px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
+		gap: var(--s-3) var(--s-5);
 	}
 
 	.consent__text {
 		display: grid;
-		gap: var(--s-2);
+		gap: var(--s-1);
 	}
 
 	.consent__copy {
 		margin: 0;
 		max-width: 62ch;
 		font-size: 0.9375rem;
-		line-height: 1.7;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
@@ -112,11 +93,8 @@
 		gap: var(--s-3);
 	}
 
-	/* Both buttons sized to the wider label so the pair is symmetric — the same reason
-	   they share a variant: nothing here should look like the answer being suggested. */
 	.consent__actions .btn {
-		min-width: 7rem;
-		justify-content: center;
+		min-width: 6rem;
 	}
 
 	@media (max-width: 767px) {
@@ -130,7 +108,6 @@
 		.consent__actions {
 			display: grid;
 			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-			gap: var(--s-3);
 		}
 	}
 </style>

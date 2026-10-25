@@ -84,8 +84,8 @@
 	<article class="post">
 		<header class="post__header enter" style="--i: 0">
 			<a class="post__back" href="/">
-				<Icon name="arrow-left" />
-				All articles
+				<Icon name="arrow-left" size={13} />
+				All writing
 			</a>
 
 			<h1 class="post__title">{post.title}</h1>
@@ -167,42 +167,38 @@
 </div>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	/* One column. At 1100px and up the outline gets a margin of its own on the left; the
+	   right track is the empty counterweight that keeps the text on the page's centre line. */
 	.post-layout {
 		display: grid;
 	}
 
 	@media (min-width: 1100px) {
 		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
+			max-width: calc(
+				var(--measure-prose) + 2 * var(--outline-width) + 2 * var(--s-6) + 2 * var(--gutter)
+			);
 			grid-template-columns:
 				minmax(0, var(--outline-width))
 				minmax(0, var(--measure-prose))
 				minmax(0, var(--outline-width));
 			justify-content: center;
-			column-gap: var(--s-5);
+			column-gap: var(--s-6);
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		padding-top: var(--s-8);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
+		width: 100%;
 	}
 
 	.post__header {
 		display: grid;
-		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		gap: var(--s-3);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__back {
@@ -210,88 +206,68 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		justify-self: start;
+		font-size: 1rem;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
-		min-height: 44px;
+		padding-block: 0.4rem;
+		margin-bottom: var(--s-4);
 		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
 			color: var(--text);
 		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
-		}
-	}
-
-	.post__back:active {
-		color: var(--text-secondary);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
+		font-size: clamp(1.875rem, 6vw, 2.5rem);
+		font-weight: 600;
 		line-height: 1.15;
 		letter-spacing: -0.02em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.1875rem;
+		font-style: italic;
+		line-height: 1.55;
 		color: var(--text-secondary);
+		text-wrap: pretty;
 	}
 
 	.post__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
 	}
 
 	.post__facts {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: var(--s-5);
+		gap: var(--s-4);
 		flex-wrap: wrap;
+		margin-top: var(--s-2);
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
-	}
-
-	.post__tags {
-		margin-top: var(--s-1);
+		gap: var(--s-1);
+		min-width: min(100%, 16rem);
+		flex: 1 1 16rem;
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		border-radius: 2px;
+		margin-bottom: var(--s-7);
 	}
 
 	.post__subscribe {
@@ -306,25 +282,20 @@
 		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
+		gap: var(--s-5);
+		margin-top: var(--s-7);
+		padding-top: var(--s-5);
 		border-top: 1px solid var(--line);
 		max-width: var(--measure-prose);
+		width: 100%;
 		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
-		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		gap: var(--s-1);
+		align-content: start;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -332,36 +303,35 @@
 		justify-items: end;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
+	.post__nav-title {
+		color: var(--accent);
+		line-height: 1.4;
+		text-decoration: underline;
+		text-decoration-color: rgba(var(--accent-rgb), 0.4);
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
 	}
 
-	.post__nav-link:active {
-		background: var(--surface-active);
+	@media (hover: hover) and (pointer: fine) {
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent-dim);
+			text-decoration-color: currentColor;
+		}
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
-	.post__nav-title {
-		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
-	}
-
-	@media (max-width: 767px) {
+	@media (max-width: 599px) {
 		.post {
 			padding-top: var(--s-6);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;

@@ -105,8 +105,6 @@
 	}
 
 	@media (max-width: 479px) {
-		/* `.btn` is width: 100% below 480px, so the weight hint has to drop to its own line
-		   rather than try to share one. */
 		.download {
 			align-items: flex-start;
 			gap: var(--s-2);
@@ -115,25 +113,24 @@
 
 	.note {
 		margin-top: var(--s-4);
-		font-weight: 400;
 		font-style: italic;
 	}
 
 	.skills {
 		margin: 0;
 		display: grid;
-		gap: var(--s-5);
+		gap: var(--s-4);
 	}
 
 	.skills__group {
 		display: grid;
-		gap: var(--s-3);
+		gap: var(--s-1);
 	}
 
 	.skills__items {
 		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--s-2);
+		gap: 0 var(--s-3);
 	}
 </style>

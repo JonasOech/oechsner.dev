@@ -2,7 +2,6 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
-	import AsciiWall from '$lib/components/AsciiWall.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -49,25 +48,18 @@
 	</Rail>
 </div>
 
-<AsciiWall />
-
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
-	}
-
 	.channels {
 		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		gap: var(--s-4);
 	}
 
 	.channel {
 		display: grid;
-		gap: var(--s-2);
+		grid-template-columns: 7.5rem minmax(0, 1fr);
+		gap: var(--s-3);
+		align-items: baseline;
 		min-width: 0;
 	}
 
@@ -81,45 +73,49 @@
 		align-items: center;
 		gap: var(--s-2);
 		min-height: 44px;
-		color: var(--text);
-		text-decoration: none;
-		font-size: 0.9375rem;
+		color: var(--accent);
 		max-width: 100%;
-		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.channel__link :global(svg) {
+		flex: none;
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		text-decoration: underline;
+		text-decoration-color: rgba(var(--accent-rgb), 0.45);
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
 		overflow-wrap: anywhere;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.channel__link:hover {
-			color: var(--accent);
+			color: var(--accent-dim);
 		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			text-decoration-color: currentColor;
 		}
-	}
-
-	.channel__link:active {
-		color: var(--accent-dim);
 	}
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
-		margin-top: var(--s-4);
-		font-size: 0.8125rem;
+		margin-top: var(--s-6);
+		font-size: 1rem;
+		font-style: italic;
 		color: var(--text-muted);
 		max-width: var(--measure);
+	}
+
+	@media (max-width: 479px) {
+		.channel {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
 	}
 </style>

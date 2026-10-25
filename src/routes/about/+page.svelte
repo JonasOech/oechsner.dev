@@ -94,18 +94,17 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-8);
 		max-width: var(--measure);
 	}
 
 	.entry__org {
 		color: var(--text-secondary);
-		margin-bottom: var(--s-3);
+		margin-bottom: var(--s-2);
 	}
 
 	.note {
 		margin-top: var(--s-4);
-		font-weight: 400;
 		font-style: italic;
 	}
 
@@ -118,7 +117,6 @@
 	.grades {
 		margin: 0;
 		display: grid;
-		gap: 0;
 	}
 
 	.grades__row {
@@ -126,7 +124,7 @@
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: var(--s-4);
 		align-items: baseline;
-		padding: var(--s-3) 0;
+		padding: var(--s-2) 0;
 		border-bottom: 1px solid var(--line);
 	}
 
@@ -136,17 +134,16 @@
 
 	.grades dt {
 		color: var(--text-secondary);
-		font-size: 0.9375rem;
+		font-size: 1.0625rem;
 	}
 
 	.grades dd {
 		margin: 0;
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
 		color: var(--text);
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 599px) {
 		.intro {
 			padding-top: var(--s-6);
 		}

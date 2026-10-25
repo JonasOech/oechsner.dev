@@ -71,29 +71,16 @@
 </aside>
 
 <style>
+	/* A closing paragraph under a hairline, not a card. */
 	.subscribe {
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto;
-		align-items: center;
-		gap: var(--s-4) var(--s-5);
-		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		gap: var(--s-3);
+		padding-top: var(--s-5);
+		border-top: 1px solid var(--line);
 	}
 
-	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
-	   site's ordinary surface, so it reads as part of the post's ending, not an advert. */
 	.subscribe__mark {
-		display: grid;
-		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		display: none;
 	}
 
 	.subscribe__text {
@@ -103,15 +90,15 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
-		line-height: 1.6;
 		color: var(--text-secondary);
+		text-wrap: pretty;
 	}
 
 	.subscribe__actions {
-		display: grid;
-		justify-items: center;
-		gap: var(--s-2);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--s-3) var(--s-5);
 	}
 
 	/* Fixed to its wider label, so "Copied" does not make the button jump. */
@@ -125,41 +112,12 @@
 	}
 
 	.subscribe__links a {
-		color: var(--text-muted);
-		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
-		text-underline-offset: 3px;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.subscribe__links a:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
-		}
-	}
-
-	.subscribe__links a:active {
-		color: var(--accent-dim);
+		color: var(--accent);
 	}
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
-	}
-
-	@media (max-width: 767px) {
-		.subscribe {
-			grid-template-columns: auto minmax(0, 1fr);
-		}
-
-		.subscribe__actions {
-			grid-column: 1 / -1;
-			grid-template-columns: auto auto;
-			justify-content: start;
-			align-items: center;
-			gap: var(--s-4);
-		}
 	}
 </style>

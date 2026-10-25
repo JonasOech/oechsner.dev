@@ -132,12 +132,10 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Website verwendet ausschließlich die auf Ihrem Gerät installierten Systemschriften
+					und lädt keine Schriftarten von externen Servern nach. Es findet dabei keine
+					Datenübertragung an Dritte statt. Die Schrift für mathematische Formeln in einzelnen
+					Beiträgen (KaTeX) wird von diesem Server selbst ausgeliefert.
 				</p>
 			</section>
 
@@ -181,7 +179,7 @@
 <style>
 	.legal {
 		display: grid;
-		gap: var(--s-7);
+		gap: var(--s-6);
 		/* German legal prose is dense; keep the measure and leading generous. */
 		max-width: var(--measure);
 		line-height: 1.8;
@@ -194,9 +192,10 @@
 
 	.legal__h {
 		font-size: 1rem;
-		font-weight: 700;
+		font-style: italic;
+		font-weight: 400;
 		line-height: 1.4;
-		color: var(--text);
+		color: var(--text-muted);
 	}
 
 	.legal p {
@@ -205,7 +204,7 @@
 
 	.legal code {
 		font-family: var(--font-mono);
-		font-size: 0.8125em;
+		font-size: 0.85em;
 		color: var(--text);
 		overflow-wrap: anywhere;
 	}
@@ -220,9 +219,9 @@
 		padding: 0;
 		font: inherit;
 		cursor: pointer;
-		color: var(--text);
 		text-decoration: underline;
-		text-decoration-color: var(--accent-dim);
+		color: var(--accent);
+		text-decoration-color: rgba(var(--accent-rgb), 0.45);
 		text-underline-offset: 3px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}

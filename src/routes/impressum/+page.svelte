@@ -137,7 +137,7 @@
 <style>
 	.legal {
 		display: grid;
-		gap: var(--s-7);
+		gap: var(--s-6);
 		/* German legal prose is dense; keep the measure and leading generous. */
 		max-width: var(--measure);
 		line-height: 1.8;
@@ -150,9 +150,10 @@
 
 	.legal__h {
 		font-size: 1rem;
-		font-weight: 700;
+		font-style: italic;
+		font-weight: 400;
 		line-height: 1.4;
-		color: var(--text);
+		color: var(--text-muted);
 	}
 
 	.legal address {
@@ -175,8 +176,7 @@
 
 	.legal__dl dt {
 		color: var(--text-muted);
-		font-size: 0.8125rem;
-		font-weight: 700;
+		font-size: 0.9375rem;
 	}
 
 	.legal__dl dd {

@@ -19,7 +19,7 @@
 </script>
 
 <div class="hw">
-	<svg class="hw__quill" viewBox="0 0 578 743" fill="var(--accent)" aria-hidden="true">
+	<svg class="hw__quill" viewBox="0 0 578 743" fill="var(--text-muted)" aria-hidden="true">
 		<path d={SWOOSH} />
 		<path d={FEATHER} />
 	</svg>
@@ -41,19 +41,17 @@
 	   line of text beside it. */
 	.hw__quill {
 		display: block;
-		height: 3.75rem;
+		height: 3rem;
 		width: auto;
 		flex: none;
 	}
 
 	.hw__claim {
 		margin: 0;
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 500;
+		font-size: 0.9375rem;
+		font-style: italic;
 		line-height: 1.2;
-		letter-spacing: -0.005em;
-		color: var(--accent);
+		color: var(--text-muted);
 		white-space: nowrap;
 	}
 </style>
