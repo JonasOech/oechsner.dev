@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
+	import { nav, site } from '$lib/data/site';
 
 	let sentinel: HTMLElement;
 	let scrolled = $state(false);
@@ -89,48 +89,54 @@
 
 <header class="header" data-scrolled={scrolled}>
 	<nav class="container nav" aria-label="Primary">
-		<a
-			class="nav__link"
-			href={primary.href}
-			aria-current={isCurrent(primary.href) ? 'page' : undefined}
-		>
-			{primary.label}
-		</a>
+		<a class="nav__brand" href="/">{site.name}</a>
 
-		<!-- `display: contents` above the breakpoint, so these links sit directly in the
-		     nav row and only become a dropdown once the bar runs out of width. -->
-		<div
-			class="more"
-			data-open={moreOpen}
-			bind:this={moreEl}
-			onfocusout={onMoreFocusout}
-		>
-			<button
-				class="nav__link more__button"
-				type="button"
-				bind:this={moreButton}
-				aria-expanded={moreOpen}
-				aria-controls="nav-more"
-				data-current={moreHoldsCurrent ? 'true' : undefined}
-				onclick={() => (moreOpen = !moreOpen)}
+		<div class="nav__links">
+			<a
+				class="nav__link"
+				href={primary.href}
+				aria-current={isCurrent(primary.href) ? 'page' : undefined}
 			>
-				More
-				<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-					<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-				</svg>
-			</button>
+				<span class="nav__num" aria-hidden="true">01</span>
+				{primary.label}
+			</a>
 
-			<div class="more__panel" id="nav-more">
-				{#each collapsible as item (item.href)}
-					<a
-						class="nav__link"
-						href={item.href}
-						aria-current={isCurrent(item.href) ? 'page' : undefined}
-						onclick={() => (moreOpen = false)}
-					>
-						{item.label}
-					</a>
-				{/each}
+			<!-- `display: contents` above the breakpoint, so these links sit directly in the
+			     nav row and only become a dropdown once the bar runs out of width. -->
+			<div
+				class="more"
+				data-open={moreOpen}
+				bind:this={moreEl}
+				onfocusout={onMoreFocusout}
+			>
+				<button
+					class="nav__link more__button"
+					type="button"
+					bind:this={moreButton}
+					aria-expanded={moreOpen}
+					aria-controls="nav-more"
+					data-current={moreHoldsCurrent ? 'true' : undefined}
+					onclick={() => (moreOpen = !moreOpen)}
+				>
+					More
+					<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+						<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+					</svg>
+				</button>
+
+				<div class="more__panel" id="nav-more">
+					{#each collapsible as item, i (item.href)}
+						<a
+							class="nav__link"
+							href={item.href}
+							aria-current={isCurrent(item.href) ? 'page' : undefined}
+							onclick={() => (moreOpen = false)}
+						>
+							<span class="nav__num" aria-hidden="true">0{i + 2}</span>
+							{item.label}
+						</a>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</nav>
@@ -146,46 +152,72 @@
 		pointer-events: none;
 	}
 
+	/* A solid sheet with the page's one heavy rule on top and a hairline underneath.
+	   The hairline only appears once the page has scrolled beneath it. */
 	.header {
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
+		background: var(--bg);
+		border-top: 2px solid var(--text);
 		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+		transition: border-color var(--dur-base) var(--ease-out);
 	}
 
 	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		border-bottom-color: var(--line-strong);
 	}
 
+	/* The bar is on the twelve-column grid: the name hangs in the first three columns,
+	   the links start on the fourth. */
 	.nav {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: var(--col-gap);
+		align-items: center;
+		height: calc(var(--header-h) - 3px);
+	}
+
+	.nav__brand {
+		grid-column: 1 / 4;
+		font-size: 0.9375rem;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+		color: var(--text);
+		text-decoration: none;
+		white-space: nowrap;
+		padding-block: 0.5rem;
+		justify-self: start;
+	}
+
+	.nav__links {
+		grid-column: 4 / -1;
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: center;
+		gap: var(--s-6);
 	}
 
 	.nav__link {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.45em;
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.875rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
+		padding: 0.5rem 0;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.nav__num {
+		font-size: 0.6875rem;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+		color: var(--text-muted);
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
@@ -193,27 +225,29 @@
 		content: '';
 		position: absolute;
 		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
+		right: 0;
+		bottom: 0.1rem;
 		height: 1px;
 		background: currentColor;
 		transform: scaleX(0);
-		transform-origin: right;
+		transform-origin: left;
 		transition: transform var(--dur-base) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
+			color: var(--text);
+		}
+		.nav__link:hover .nav__num {
+			color: var(--accent);
 		}
 		.nav__link:hover::after {
 			transform: scaleX(1);
-			transform-origin: left;
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		color: var(--accent-dim);
 	}
 
 	.nav__link[aria-current='page'],
@@ -221,9 +255,18 @@
 		color: var(--text);
 	}
 
+	.nav__link[aria-current='page'] .nav__num {
+		color: var(--accent);
+	}
+
+	.nav__link[aria-current='page']::after {
+		transform: scaleX(1);
+	}
+
+	.nav__brand:focus-visible,
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
@@ -247,8 +290,6 @@
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transition: transform var(--dur-base) var(--ease-out);
@@ -261,11 +302,14 @@
 	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
 	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
 	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
 		.nav {
+			display: flex;
 			flex-wrap: nowrap;
+			justify-content: space-between;
+		}
+
+		.nav__links {
+			gap: var(--s-5);
 		}
 
 		.nav .more {
@@ -277,32 +321,17 @@
 			display: inline-flex;
 		}
 
+		/* A plain ruled sheet, flush to the right edge of the bar. */
 		.nav .more__panel {
 			display: grid;
 			position: absolute;
 			z-index: 1;
 			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
-			min-width: max-content;
+			right: 0;
+			min-width: 11rem;
 			max-width: calc(100vw - 2 * var(--gutter));
-			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			background: var(--bg);
+			border: 1px solid var(--text);
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -310,27 +339,32 @@
 		}
 
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
+			padding: 0.875rem var(--s-4);
+			border-bottom: 1px solid var(--line);
+		}
+
+		.more__panel .nav__link:last-child {
+			border-bottom: 0;
 		}
 
 		/* The underline is a bar affordance; inside the panel the row itself is the target. */
 		.more__panel .nav__link::after {
 			content: none;
 		}
+
+		.more__panel .nav__link[aria-current='page'] {
+			background: var(--surface);
+		}
 	}
 
 	@media (pointer: coarse) {
 		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
 		   alone lands at 36px and misses the 44px target. */
-		.nav__link {
+		.nav__link,
+		.nav__brand {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
 		}
 	}
 </style>

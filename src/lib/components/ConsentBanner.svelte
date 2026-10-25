@@ -45,52 +45,34 @@
 
 <style>
 	/* Above the sticky header (50), below the skip link (100) — the one control that must
-	   stay reachable no matter what else is on screen. */
+	   stay reachable no matter what else is on screen. A plain ruled strip on the paper. */
 	.consent {
 		position: fixed;
 		z-index: 90;
 		inset: auto 0 0 0;
-		padding: var(--s-4) var(--gutter);
+		background: var(--bg);
+		border-top: 2px solid var(--text);
 		/* Clears the home indicator on a phone without padding the panel on a desktop. */
+		padding: var(--s-4) var(--gutter);
 		padding-bottom: max(var(--s-4), env(safe-area-inset-bottom));
-		pointer-events: none;
+		animation: consent-rise var(--dur-base) var(--ease-out) both;
 	}
 
 	.consent__panel {
-		pointer-events: auto;
-		max-width: var(--container);
+		max-width: calc(var(--container) - 2 * var(--gutter));
 		margin-inline: auto;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--s-4) var(--s-6);
-		padding: var(--s-5);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
-		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
-		   heavier one the "More" menu uses. */
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
-		box-shadow: var(--shadow-4);
-		animation: consent-rise var(--dur-base) var(--ease-out) both;
-	}
-
-	/* Where backdrop-filter is unavailable the tint alone would let text read through. */
-	@supports not (backdrop-filter: blur(12px)) {
-		.consent__panel {
-			background: var(--surface);
-		}
 	}
 
 	@keyframes consent-rise {
 		from {
 			opacity: 0;
-			transform: translateY(12px);
 		}
 		to {
 			opacity: 1;
-			transform: none;
 		}
 	}
 
@@ -101,10 +83,14 @@
 
 	.consent__copy {
 		margin: 0;
-		max-width: 62ch;
+		max-width: 68ch;
 		font-size: 0.9375rem;
-		line-height: 1.7;
+		line-height: 1.6;
 		color: var(--text-secondary);
+	}
+
+	.consent__copy :global(a) {
+		color: var(--accent);
 	}
 
 	.consent__actions {

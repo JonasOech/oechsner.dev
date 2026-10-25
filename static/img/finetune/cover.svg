@@ -1,43 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="A stack of ruled lecture notes feeding into a grid of model weights where only a scattered few cells are lit">
   <defs>
-    <radialGradient id="ftGlowA" cx="12%" cy="14%" r="70%">
-      <stop offset="0%" stop-color="#4a5fb0" stop-opacity="0.36"/>
-      <stop offset="100%" stop-color="#4a5fb0" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="ftGlowB" cx="88%" cy="88%" r="65%">
-      <stop offset="0%" stop-color="#2e8f8a" stop-opacity="0.30"/>
-      <stop offset="100%" stop-color="#2e8f8a" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="ftDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
-    </pattern>
-
-    <linearGradient id="ftCell" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#8fa0f4"/>
-      <stop offset="100%" stop-color="#4a5fb0"/>
-    </linearGradient>
-    <linearGradient id="ftCellB" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#6fd6c6"/>
-      <stop offset="100%" stop-color="#2e8f8a"/>
-    </linearGradient>
   </defs>
 
-  <rect width="1200" height="675" fill="#0e0f12"/>
-  <rect width="1200" height="675" fill="url(#ftDots)"/>
-  <rect width="1200" height="675" fill="url(#ftGlowA)"/>
-  <rect width="1200" height="675" fill="url(#ftGlowB)"/>
+  <rect width="1200" height="675" fill="#f4f1ea"/>
 
   <!-- The vault: three pages of notes, the back two fanned out behind the front one. -->
   <g transform="translate(146 168)">
     <g transform="rotate(-7 130 180)">
-      <rect x="26" y="16" width="212" height="300" rx="8" fill="#3a3c46"/>
+      <rect x="26" y="16" width="212" height="300" rx="8" fill="#e3ded2"/>
     </g>
     <g transform="rotate(-3 130 180)">
-      <rect x="16" y="8" width="212" height="300" rx="8" fill="#6a6d7a"/>
+      <rect x="16" y="8" width="212" height="300" rx="8" fill="#d6d1c5"/>
     </g>
-    <rect x="4" y="0" width="216" height="304" rx="8" fill="#dcdad1"/>
+    <rect x="4" y="0" width="216" height="304" rx="8" fill="#fbfaf6" stroke="#8a8679" stroke-width="2"/>
     <!-- Ruled lines. One line is lit: the note that made it into the training set. -->
-    <g stroke="#9b9caa" stroke-width="5" stroke-linecap="round">
+    <g stroke="#b9b4a6" stroke-width="5" stroke-linecap="round">
       <path d="M32 44h140"/>
       <path d="M32 76h160"/>
       <path d="M32 140h152"/>
@@ -46,11 +23,11 @@
       <path d="M32 236h104"/>
       <path d="M32 268h144"/>
     </g>
-    <path stroke="#8fa0f4" stroke-width="6" stroke-linecap="round" d="M32 108h132"/>
+    <path stroke="#243f8f" stroke-width="6" stroke-linecap="round" d="M32 108h132"/>
   </g>
 
   <!-- The notes flowing into the weights. -->
-  <g fill="none" stroke="#8fa0f4" stroke-width="3" stroke-linecap="round" opacity="0.85">
+  <g fill="none" stroke="#243f8f" stroke-width="3" stroke-linecap="round" opacity="0.85">
     <path d="M400 250C486 250 512 214 596 214"/>
     <path d="M400 322C492 322 508 338 596 338"/>
     <path d="M400 394C486 394 512 446 596 446"/>
@@ -59,7 +36,7 @@
   <!-- The weight grid. Almost all of it is frozen; a scattered few cells move,
        which is the whole shape of a finetune. -->
   <g transform="translate(636 148)">
-    <g fill="#14161b" stroke="#34353d" stroke-width="2">
+    <g fill="#ebe7de" stroke="#b9b4a6" stroke-width="2">
       <rect x="0" y="0" width="46" height="46" rx="6"/><rect x="58" y="0" width="46" height="46" rx="6"/><rect x="116" y="0" width="46" height="46" rx="6"/><rect x="174" y="0" width="46" height="46" rx="6"/><rect x="232" y="0" width="46" height="46" rx="6"/><rect x="290" y="0" width="46" height="46" rx="6"/><rect x="348" y="0" width="46" height="46" rx="6"/>
       <rect x="0" y="58" width="46" height="46" rx="6"/><rect x="58" y="58" width="46" height="46" rx="6"/><rect x="116" y="58" width="46" height="46" rx="6"/><rect x="174" y="58" width="46" height="46" rx="6"/><rect x="232" y="58" width="46" height="46" rx="6"/><rect x="290" y="58" width="46" height="46" rx="6"/><rect x="348" y="58" width="46" height="46" rx="6"/>
       <rect x="0" y="116" width="46" height="46" rx="6"/><rect x="58" y="116" width="46" height="46" rx="6"/><rect x="116" y="116" width="46" height="46" rx="6"/><rect x="174" y="116" width="46" height="46" rx="6"/><rect x="232" y="116" width="46" height="46" rx="6"/><rect x="290" y="116" width="46" height="46" rx="6"/><rect x="348" y="116" width="46" height="46" rx="6"/>
@@ -68,7 +45,7 @@
       <rect x="0" y="290" width="46" height="46" rx="6"/><rect x="58" y="290" width="46" height="46" rx="6"/><rect x="116" y="290" width="46" height="46" rx="6"/><rect x="174" y="290" width="46" height="46" rx="6"/><rect x="232" y="290" width="46" height="46" rx="6"/><rect x="290" y="290" width="46" height="46" rx="6"/><rect x="348" y="290" width="46" height="46" rx="6"/>
     </g>
 
-    <g fill="url(#ftCell)">
+    <g fill="#243f8f">
       <rect x="58" y="0" width="46" height="46" rx="6"/>
       <rect x="232" y="58" width="46" height="46" rx="6"/>
       <rect x="0" y="116" width="46" height="46" rx="6"/>
@@ -76,7 +53,7 @@
       <rect x="348" y="232" width="46" height="46" rx="6"/>
       <rect x="116" y="290" width="46" height="46" rx="6"/>
     </g>
-    <g fill="url(#ftCellB)">
+    <g fill="#9c3e27">
       <rect x="290" y="116" width="46" height="46" rx="6"/>
       <rect x="58" y="232" width="46" height="46" rx="6"/>
       <rect x="232" y="290" width="46" height="46" rx="6"/>

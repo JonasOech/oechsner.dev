@@ -154,7 +154,8 @@
 		padding-right: var(--s-7);
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: 10px;
+		border-radius: 0;
+		border-top-color: var(--text);
 	}
 
 	/* KaTeX's display block already scrolls sideways under app.css (`.prose .katex-display`).
@@ -195,14 +196,13 @@
 		top: var(--s-3);
 		right: var(--s-3);
 		z-index: 1;
-		box-shadow: var(--shadow-1);
 		display: grid;
 		place-items: center;
 		width: 2rem;
 		height: 2rem;
 		padding: 0;
 		border: 1px solid var(--line);
-		border-radius: 6px;
+		border-radius: var(--radius);
 		background: var(--surface-active);
 		color: var(--text-muted);
 		cursor: pointer;
@@ -245,7 +245,7 @@
 		   open so the formula is measured against a width that does not come and go with the
 		   scrollbar. */
 		scrollbar-gutter: stable;
-		box-shadow: var(--shadow-4);
+		border-color: var(--text);
 		/* The whole point of maximising: KaTeX measures in em, so the formula grows with
 		   the plate instead of merely gaining white space around it. */
 		font-size: clamp(1.125rem, 3vw, 2rem);
@@ -263,7 +263,6 @@
 		padding: 0;
 		border: 0;
 		background: rgba(var(--bg-deep-rgb), 0.72);
-		backdrop-filter: blur(3px);
 		cursor: zoom-out;
 	}
 

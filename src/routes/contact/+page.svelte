@@ -16,7 +16,7 @@
 />
 
 <div class="container">
-	<Rail label="Get In Touch" id="contact" level={1} wide>
+	<Rail label="Get In Touch" id="contact" level={1}>
 		<!-- <p class="lede enter" style="--i: 0">
 			The fastest way to reach me is email.
 		</p> -->
@@ -52,23 +52,26 @@
 <AsciiWall />
 
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
-	}
-
 	.channels {
 		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
 	}
 
 	.channel {
 		display: grid;
-		gap: var(--s-2);
+		grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
+		gap: var(--s-2) var(--col-gap);
+		align-items: center;
 		min-width: 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.channel:first-child {
+		border-top: 0;
+	}
+
+	.channel:last-child {
+		border-bottom: 1px solid var(--line);
 	}
 
 	.channel dd {
@@ -80,20 +83,25 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		min-height: 44px;
+		min-height: 52px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1rem;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
+	.channel__link :global(svg) {
+		color: var(--accent);
+		flex: none;
+	}
+
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-decoration-color: transparent;
+		text-underline-offset: 0.22em;
+		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 		overflow-wrap: anywhere;
 	}
 
@@ -102,7 +110,7 @@
 			color: var(--accent);
 		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -112,7 +120,7 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
@@ -121,5 +129,13 @@
 		font-size: 0.8125rem;
 		color: var(--text-muted);
 		max-width: var(--measure);
+	}
+
+	@media (max-width: 599px) {
+		.channel {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+			padding-top: var(--s-3);
+		}
 	}
 </style>

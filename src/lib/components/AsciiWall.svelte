@@ -72,8 +72,8 @@
 		font-family: var(--font-mono);
 		font-size: 0.6875rem;
 		line-height: 1.2;
-		/* Fainter than --text-muted by a wide margin: this is texture, not meta text. */
-		color: rgba(var(--text-rgb), 0.32);
+		/* Printed fainter than any text on the page: this is texture, not meta text. */
+		color: rgba(var(--text-rgb), 0.2);
 		white-space: pre;
 		user-select: none;
 	}

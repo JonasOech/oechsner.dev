@@ -20,7 +20,7 @@
 />
 
 <div class="container">
-	<Rail label="Projects" id="projects">
+	<Rail label="Projects" id="projects" level={1}>
 		{#each projects as project (project.title)}
 			<article class="entry">
 				<h3 class="entry__title">{project.title}</h3>
@@ -116,18 +116,33 @@
 	.note {
 		margin-top: var(--s-4);
 		font-weight: 400;
-		font-style: italic;
 	}
 
 	.skills {
 		margin: 0;
 		display: grid;
-		gap: var(--s-5);
 	}
 
 	.skills__group {
 		display: grid;
-		gap: var(--s-3);
+		grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
+		gap: var(--s-3) var(--col-gap);
+		padding: var(--s-4) 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.skills__group:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+
+	.skills__group .label {
+		padding-top: 0.45rem;
+	}
+
+	@media (max-width: 599px) {
+		.skills__group {
+			grid-template-columns: minmax(0, 1fr);
+		}
 	}
 
 	.skills__items {

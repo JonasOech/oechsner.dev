@@ -1,47 +1,34 @@
 <script lang="ts">
-	import { formatDate, type Post } from '$lib/posts';
+	import type { Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
-
-	<div class="card__text">
-		<h3 class="card__title">{post.title}</h3>
-		{#if post.summary}
-			<p class="card__summary">{post.summary}</p>
+<!-- One row of the index, on the page's twelve columns: the facts hang in the first three,
+     the title and summary take the next seven, the thumbnail the last two. The whole row is
+     the link; the date is the ISO form on purpose, because it is the column that sorts. -->
+<a class="row" class:row--featured={featured} class:row--noMedia={!post.cover} href="/blog/{post.slug}">
+	<p class="row__meta meta">
+		<time datetime={post.date}>{post.date}</time>
+		<span class="row__read">{post.readingMinutes} min read</span>
+		<!-- Inside the guard: a post without a nerdyness rating leaves no empty line. -->
+		{#if post.nerdyness}
+			<Nerdyness level={post.nerdyness} />
 		{/if}
-		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
-			{post.readingMinutes} min read
-			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
-			     leave a dangling dot at the end of the line. -->
-			{#if post.nerdyness}
-				<span class="card__dot" aria-hidden="true">·</span>
-				<Nerdyness level={post.nerdyness} />
-			{/if}
-		</p>
+	</p>
+
+	<div class="row__text">
+		<h3 class="row__title">{post.title}</h3>
+		{#if post.summary}
+			<p class="row__summary">{post.summary}</p>
+		{/if}
 	</div>
 
-	{#if !featured && post.cover}
-		<div class="card__media">
+	{#if post.cover}
+		<div class="row__media">
 			<img
-				class="card__img"
+				class="row__img"
 				src={post.cover}
 				alt={post.coverAlt ?? ''}
 				width="380"
@@ -54,112 +41,126 @@
 </a>
 
 <style>
-	.card {
+	.row {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		column-gap: var(--col-gap);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+	.row__meta {
+		grid-column: 1 / 4;
+		display: grid;
+		gap: 0.2rem;
+		justify-items: start;
+		padding-top: 0.3rem;
 	}
 
-	.card--featured {
-		gap: var(--s-5);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
-	}
-
-	.card:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
-	}
-
-	.card__text {
+	.row__text {
+		grid-column: 4 / 11;
 		min-width: 0;
 	}
 
-	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
+	.row--noMedia .row__text {
+		grid-column: 4 / -1;
 	}
 
-	.card--featured .card__title {
-		font-size: 1.375rem;
-	}
-
-	.card__summary {
-		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
-	}
-
-	.card__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
-	}
-
-	.card__media {
-		overflow: hidden;
-		border-radius: 4px;
+	.row__media {
+		grid-column: 11 / -1;
 		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border: 1px solid var(--line);
+		background: var(--surface);
 	}
 
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
-	}
-
-	.card__img {
+	.row__img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
+	}
+
+	.row__title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		line-height: 1.3;
+		letter-spacing: -0.015em;
+		color: var(--text);
+		margin: 0 0 var(--s-2);
+		text-wrap: balance;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-decoration-color: transparent;
+		text-underline-offset: 0.2em;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			text-decoration-color var(--dur-fast) var(--ease-out);
+	}
+
+	.row__summary {
+		color: var(--text-secondary);
+		max-width: 60ch;
+		text-wrap: pretty;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.row:hover .row__title {
+			color: var(--accent);
+			text-decoration-color: currentColor;
+		}
+	}
+
+	.row:active .row__title {
+		color: var(--accent-dim);
+	}
+
+	.row:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
 	}
 
 	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+		.row__text {
+			grid-column: 4 / 10;
+		}
+		.row__media {
+			grid-column: 10 / -1;
 		}
 	}
 
+	/* One column: the facts become a single line above the title, and the thumbnail
+	   drops to the right of the text it belongs to. */
 	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
+		.row {
+			grid-template-columns: minmax(0, 1fr) 5.5rem;
+			row-gap: var(--s-2);
+			padding: var(--s-4) 0;
 		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
+		.row__meta {
+			grid-column: 1 / -1;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0 var(--s-4);
+			align-items: center;
+			padding-top: 0;
+		}
+		.row__text,
+		.row--noMedia .row__text {
+			grid-column: 1;
+			grid-row: 2;
+		}
+		.row__media {
+			grid-column: 2;
+			grid-row: 2;
+		}
+		.row--noMedia .row__text {
+			grid-column: 1 / -1;
+		}
+		.row__title {
+			font-size: 1.125rem;
 		}
 	}
 </style>

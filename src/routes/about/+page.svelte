@@ -20,8 +20,7 @@
 />
 
 <div class="container">
-	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
+	<Rail label="About" id="about" level={1}>
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
@@ -37,7 +36,7 @@
 				Download CV
 			</a>
 		</div>
-	</section>
+	</Rail>
 
 	<Rail label="Experience" id="experience">
 		{#each experience as job (job.title + job.period)}
@@ -91,28 +90,23 @@
 </div>
 
 <style>
-	.intro {
-		display: grid;
-		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+	.btn-row {
+		margin-top: var(--s-5);
 	}
 
 	.entry__org {
-		color: var(--text-secondary);
+		color: var(--text);
 		margin-bottom: var(--s-3);
 	}
 
 	.note {
 		margin-top: var(--s-4);
 		font-weight: 400;
-		font-style: italic;
 	}
 
 	.note--top {
 		margin-top: 0;
 		margin-bottom: var(--s-5);
-		font-style: normal;
 	}
 
 	.grades {
@@ -127,11 +121,11 @@
 		gap: var(--s-4);
 		align-items: baseline;
 		padding: var(--s-3) 0;
-		border-bottom: 1px solid var(--line);
+		border-top: 1px solid var(--line);
 	}
 
 	.grades__row:last-child {
-		border-bottom: 0;
+		border-bottom: 1px solid var(--line);
 	}
 
 	.grades dt {
@@ -143,12 +137,7 @@
 		margin: 0;
 		font-family: var(--font-mono);
 		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
 		color: var(--text);
-	}
-
-	@media (max-width: 767px) {
-		.intro {
-			padding-top: var(--s-6);
-		}
 	}
 </style>

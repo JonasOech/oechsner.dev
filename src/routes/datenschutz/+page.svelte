@@ -132,12 +132,11 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Website verwendet die Schriftarten „Schibsted Grotesk“ und „JetBrains Mono“.
+					Die Schriftdateien liegen auf dem Server dieser Website und werden von dort
+					zusammen mit den übrigen Seiteninhalten ausgeliefert. Es werden keine
+					Schriftarten von Servern Dritter nachgeladen, und zu diesem Zweck wird keine
+					Verbindung zu Google oder anderen Anbietern aufgebaut.
 				</p>
 			</section>
 
@@ -220,17 +219,17 @@
 		padding: 0;
 		font: inherit;
 		cursor: pointer;
-		color: var(--text);
+		color: var(--accent);
 		text-decoration: underline;
-		text-decoration-color: var(--accent-dim);
+		text-decoration-color: rgba(var(--accent-rgb), 0.4);
 		text-underline-offset: 3px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.legal__inline-btn:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			color: var(--accent-dim);
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -240,7 +239,7 @@
 
 	.legal__inline-btn:focus-visible {
 		outline: none;
-		border-radius: 2px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 

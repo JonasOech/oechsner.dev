@@ -41,7 +41,7 @@
 	   line of text beside it. */
 	.hw__quill {
 		display: block;
-		height: 3.75rem;
+		height: 3rem;
 		width: auto;
 		flex: none;
 	}
@@ -49,8 +49,8 @@
 	.hw__claim {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 500;
+		font-size: 0.875rem;
+		font-weight: 600;
 		line-height: 1.2;
 		letter-spacing: -0.005em;
 		color: var(--accent);

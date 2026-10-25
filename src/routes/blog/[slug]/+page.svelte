@@ -73,55 +73,65 @@
 	})}<\/script>`}
 </svelte:head>
 
-<!-- Three tracks, the outer two the same width: the post keeps the centred position it has
-     without an outline, and the left track is simply filled when there is one to show. The
-     right track stays empty on purpose — it is the counterweight that does the centring. -->
+<!-- Twelve columns. The margin (columns 1-3) holds the way back, the facts and the outline,
+     hung left like the rail labels elsewhere; the article takes columns 4-12 and sets its
+     prose at the reading measure from the left edge of that block. Below 900px the margin
+     collapses into a run of facts above the title. -->
 <div class="container post-layout">
-	{#if outline.length}
-		<PostOutline headings={outline} {activeId} />
-	{/if}
+	<aside class="post__margin" aria-label="About this post">
+		<a class="post__back" href="/">
+			<Icon name="arrow-left" />
+			All articles
+		</a>
+
+		<dl class="facts">
+			<div class="facts__item">
+				<dt class="label">Published</dt>
+				<dd><time datetime={post.date}>{formatDate(post.date)}</time></dd>
+			</div>
+			<div class="facts__item">
+				<dt class="label">Reading</dt>
+				<dd>{post.readingMinutes} min read</dd>
+			</div>
+			{#if post.nerdyness}
+				<div class="facts__item">
+					<dt class="label">Depth</dt>
+					<dd><Nerdyness level={post.nerdyness} /></dd>
+				</div>
+			{/if}
+			{#if post.tags.length}
+				<div class="facts__item facts__item--tags">
+					<dt class="label">Topics</dt>
+					<dd>
+						<div class="tag-row">
+							{#each post.tags as tag (tag)}
+								<span class="tag">{tag}</span>
+							{/each}
+						</div>
+					</dd>
+				</div>
+			{/if}
+		</dl>
+
+		<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
+		{#if post.ai === false}
+			<div class="post__human">
+				<HumanWritten />
+			</div>
+		{/if}
+
+		{#if outline.length}
+			<PostOutline headings={outline} {activeId} />
+		{/if}
+	</aside>
 
 	<article class="post">
 		<header class="post__header enter" style="--i: 0">
-			<a class="post__back" href="/">
-				<Icon name="arrow-left" />
-				All articles
-			</a>
-
 			<h1 class="post__title">{post.title}</h1>
 
 			{#if post.summary}
 				<p class="post__summary">{post.summary}</p>
 			{/if}
-
-			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
-			     the measure, and the badge claims the slack the two of them leave behind. -->
-			<div class="post__facts">
-				<div class="post__facts-main">
-					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
-						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
-						{#if post.nerdyness}
-							<span class="post__dot" aria-hidden="true">·</span>
-							<Nerdyness level={post.nerdyness} />
-						{/if}
-					</p>
-
-					{#if post.tags.length}
-						<div class="tag-row post__tags">
-							{#each post.tags as tag (tag)}
-								<span class="tag">{tag}</span>
-							{/each}
-						</div>
-					{/if}
-				</div>
-
-				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
-				{#if post.ai === false}
-					<HumanWritten />
-				{/if}
-			</div>
 		</header>
 
 		{#if post.cover}
@@ -167,205 +177,223 @@
 </div>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	/* Single column by default; the twelve columns take over at 900px. */
 	.post-layout {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		padding-top: var(--s-5);
 	}
 
-	@media (min-width: 1100px) {
-		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
-			grid-template-columns:
-				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
-				minmax(0, var(--outline-width));
-			justify-content: center;
-			column-gap: var(--s-5);
-		}
-	}
-
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
+		min-width: 0;
 		max-width: var(--measure-prose);
-		margin-inline: auto;
 	}
 
-	.post__header {
-		display: grid;
-		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+	.post__margin {
+		min-width: 0;
+		margin-bottom: var(--s-5);
+	}
+
+	@media (min-width: 900px) {
+		.post-layout {
+			grid-template-columns: repeat(12, minmax(0, 1fr));
+			column-gap: var(--col-gap);
+			padding-top: var(--s-7);
+		}
+
+		.post__margin {
+			grid-column: 1 / 4;
+			grid-row: 1;
+			margin-bottom: 0;
+			/* Stretches to the article's height, so the outline has room to stick in. */
+		}
+
+		.post {
+			grid-column: 4 / -1;
+			grid-row: 1;
+		}
+
+		.post__subscribe,
+		.post__nav {
+			grid-column: 4 / -1;
+		}
 	}
 
 	.post__back {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
 		min-height: 44px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
-		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
+			color: var(--accent);
 		}
 	}
 
 	.post__back:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
+	/* Left-hung metadata: a ruled list of label and value, one fact per hairline. */
+	.facts {
+		margin: var(--s-3) 0 0;
+		display: grid;
+		border-bottom: 1px solid var(--line);
+	}
+
+	.facts__item {
+		display: grid;
+		gap: 0.2rem;
+		padding: var(--s-3) 0;
+		border-top: 1px solid var(--line);
+	}
+
+	.facts__item:first-child {
+		border-top: 1px solid var(--text);
+	}
+
+	.facts dd {
+		margin: 0;
+		font-size: 0.875rem;
+		line-height: 1.4;
+		color: var(--text);
+		font-variant-numeric: tabular-nums lining-nums;
+	}
+
+	.post__human {
+		margin-top: var(--s-5);
+	}
+
+	.post__header {
+		display: grid;
+		gap: var(--s-4);
+		margin-bottom: var(--s-6);
+	}
+
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(1.875rem, 4.2vw, 2.5rem);
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: -0.025em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.1875rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
-	}
-
-	.post__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
-	}
-
-	.post__facts {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--s-5);
-		flex-wrap: wrap;
-	}
-
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
-	.post__facts-main {
-		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
-	}
-
-	.post__tags {
-		margin-top: var(--s-1);
+		text-wrap: pretty;
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
 		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__subscribe {
-		grid-column: 2;
 		width: 100%;
 		max-width: var(--measure-prose);
-		margin-inline: auto;
 		margin-top: var(--s-8);
 	}
 
 	.post__nav {
-		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		gap: var(--s-5);
+		margin-top: var(--s-8);
+		border-top: 1px solid var(--text);
 		max-width: var(--measure-prose);
-		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		align-content: start;
+		padding: var(--s-4) 0;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
 		text-align: right;
 		justify-items: end;
+		grid-column: 2;
+	}
+
+	.post__nav-title {
+		color: var(--text);
+		font-weight: 600;
+		line-height: 1.35;
+		letter-spacing: -0.01em;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-decoration-color: transparent;
+		text-underline-offset: 0.2em;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
+			text-decoration-color: currentColor;
 		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
-	.post__nav-title {
-		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+	@media (max-width: 899px) {
+		/* The margin folds into a compact run of facts above the title. */
+		.facts {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0 var(--s-6);
+			border-top: 1px solid var(--text);
+			margin-top: 0;
+		}
+		.facts__item,
+		.facts__item:first-child {
+			border-top: 0;
+			padding: var(--s-2) 0;
+		}
+		.facts__item--tags {
+			flex-basis: 100%;
+		}
+		.post__human {
+			margin-top: var(--s-3);
+		}
 	}
 
 	@media (max-width: 767px) {
-		.post {
-			padding-top: var(--s-6);
-		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: 0;
 		}
 		.post__nav-link--next {
 			text-align: left;
 			justify-items: start;
+			grid-column: 1;
+			border-top: 1px solid var(--line);
 		}
 	}
 </style>
