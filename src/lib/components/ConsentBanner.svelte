@@ -66,7 +66,7 @@
 		gap: var(--s-4) var(--s-6);
 		padding: var(--s-5);
 		border: 1px solid var(--line);
-		border-radius: 10px;
+		border-radius: 0;
 		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
 		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
 		   heavier one the "More" menu uses. */

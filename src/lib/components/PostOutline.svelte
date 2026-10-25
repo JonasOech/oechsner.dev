@@ -122,7 +122,7 @@
 		flex-direction: column;
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: 8px;
+		border-radius: 0;
 		box-shadow: var(--shadow-inset);
 		overflow: hidden;
 	}
@@ -162,14 +162,14 @@
 		flex: 1 1 auto;
 		height: 1px;
 		background: var(--line);
-		border-radius: 1px;
+		border-radius: 0;
 		overflow: hidden;
 	}
 
 	.outline__fill {
 		height: 100%;
 		background: var(--accent);
-		border-radius: 1px;
+		border-radius: 0;
 		transition: width 120ms var(--ease-out);
 	}
 
@@ -207,7 +207,7 @@
 		position: relative;
 		display: block;
 		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
+		border-radius: 0;
 		font-size: 0.8125rem;
 		line-height: 1.35;
 		color: var(--text-muted);
@@ -230,7 +230,7 @@
 		top: 3px;
 		bottom: 3px;
 		width: 2px;
-		border-radius: 1px;
+		border-radius: 0;
 		background: var(--accent);
 		transform: scaleY(0);
 		transition: transform var(--dur-base) var(--ease-out);
@@ -272,7 +272,7 @@
 		align-items: center;
 		gap: var(--s-2);
 		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
+		border-radius: 0;
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-decoration: none;

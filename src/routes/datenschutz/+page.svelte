@@ -240,7 +240,7 @@
 
 	.legal__inline-btn:focus-visible {
 		outline: none;
-		border-radius: 2px;
+		border-radius: 0;
 		box-shadow: var(--focus-ring);
 	}
 

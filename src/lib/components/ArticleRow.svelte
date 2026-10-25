@@ -2,164 +2,138 @@
 	import { formatDate, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
-	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
+	let { post }: { post: Post } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
-
-	<div class="card__text">
-		<h3 class="card__title">{post.title}</h3>
+<!-- One row of an `ls -l` listing: date, size (read time), then the name. The title is the
+     file name, the summary its first line. -->
+<a class="row" href="/blog/{post.slug}">
+	<time class="row__date" datetime={post.date}>{post.date}<span class="sr-only"> ({formatDate(post.date)})</span></time>
+	<span class="row__size">{post.readingMinutes}m</span>
+	<span class="row__text">
+		<span class="row__title">{post.title}</span>
 		{#if post.summary}
-			<p class="card__summary">{post.summary}</p>
+			<span class="row__summary">{post.summary}</span>
 		{/if}
-		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
-			{post.readingMinutes} min read
-			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
-			     leave a dangling dot at the end of the line. -->
+		<span class="row__meta">
+			{#each post.tags as tag (tag)}<span class="row__tag">{tag}</span>{/each}
 			{#if post.nerdyness}
-				<span class="card__dot" aria-hidden="true">·</span>
 				<Nerdyness level={post.nerdyness} />
 			{/if}
-		</p>
-	</div>
-
-	{#if !featured && post.cover}
-		<div class="card__media">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="380"
-				height="285"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
+		</span>
+	</span>
 </a>
 
 <style>
-	.card {
+	.row {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
-		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		grid-template-columns: 10ch 4ch minmax(0, 1fr);
+		column-gap: 2ch;
+		align-items: baseline;
+		padding: var(--s-3) 1ch;
+		margin-inline: -1ch;
+		border-bottom: 1px dashed var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+	.row:last-child {
+		border-bottom: 0;
 	}
 
-	.card--featured {
-		gap: var(--s-5);
+	.row__date,
+	.row__size {
+		font-size: 0.8125rem;
+		color: var(--text-muted);
+		font-variant-numeric: tabular-nums;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
+	.row__size {
+		text-align: right;
 	}
 
-	.card:active {
-		background: var(--surface-active);
-	}
-
-	.card:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
-	}
-
-	.card__text {
+	.row__text {
+		display: grid;
+		gap: 0.2rem;
 		min-width: 0;
 	}
 
-	.card__title {
-		font-size: 1.1875rem;
+	.row__title {
+		font-size: 0.9375rem;
 		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		line-height: 1.45;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
+		text-wrap: balance;
 	}
 
-	.card--featured .card__title {
-		font-size: 1.375rem;
-	}
-
-	.card__summary {
+	.row__summary {
+		font-size: 0.8125rem;
+		line-height: 1.6;
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
 	}
 
-	.card__dot {
-		margin-inline: 0.4em;
+	.row__meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0 1.5ch;
+		font-size: 0.75rem;
 		color: var(--text-muted);
 	}
 
-	.card__media {
+	.row__meta:empty {
+		display: none;
+	}
+
+	.row__tag::before {
+		content: '#';
+		color: var(--accent-dim);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.row:hover {
+			background: var(--surface-active);
+		}
+		.row:hover .row__title {
+			color: var(--accent);
+		}
+	}
+
+	.row:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+		background: var(--surface-active);
+	}
+
+	.row:focus-visible .row__title {
+		color: var(--accent);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
 		overflow: hidden;
-		border-radius: 4px;
-		aspect-ratio: 4 / 3;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
-	}
-
-	.card__img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+	@media (max-width: 599px) {
+		.row {
+			grid-template-columns: 1fr auto;
+			row-gap: 0.15rem;
 		}
-	}
 
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
+		.row__date {
+			grid-column: 1;
 		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
+
+		.row__size {
+			grid-column: 2;
+		}
+
+		.row__text {
+			grid-column: 1 / -1;
 		}
 	}
 </style>

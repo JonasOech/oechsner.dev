@@ -85,7 +85,7 @@
 		<header class="post__header enter" style="--i: 0">
 			<a class="post__back" href="/">
 				<Icon name="arrow-left" />
-				All articles
+				cd ../writing
 			</a>
 
 			<h1 class="post__title">{post.title}</h1>
@@ -149,7 +149,7 @@
 		<nav class="post__nav" aria-label="More articles">
 			{#if neighbours.prev}
 				<a class="post__nav-link" href="/blog/{neighbours.prev.slug}">
-					<span class="label">Newer</span>
+					<span class="label">&lt;&lt; newer</span>
 					<span class="post__nav-title">{neighbours.prev.title}</span>
 				</a>
 			{:else}
@@ -158,7 +158,7 @@
 
 			{#if neighbours.next}
 				<a class="post__nav-link post__nav-link--next" href="/blog/{neighbours.next.slug}">
-					<span class="label">Older</span>
+					<span class="label">older &gt;&gt;</span>
 					<span class="post__nav-title">{neighbours.next.title}</span>
 				</a>
 			{/if}
@@ -194,7 +194,7 @@
 	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		padding-top: var(--s-6);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -202,7 +202,7 @@
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__back {
@@ -210,27 +210,19 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--accent);
 		text-decoration: none;
-		padding: 0.5rem 0;
+		padding: 0.5rem 0.5ch;
+		margin-left: -0.5ch;
 		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
-		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
+			background: var(--accent);
+			color: var(--text-inverse);
 		}
 	}
 
@@ -245,21 +237,29 @@
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(1.5rem, 4vw, 2.25rem);
+		font-weight: 800;
+		line-height: 1.2;
+		letter-spacing: -0.03em;
+		color: var(--text-bright);
+	}
+
+	.post__title::before {
+		content: '# ';
+		color: var(--accent-dim);
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
+		font-size: 0.9375rem;
 		line-height: 1.7;
 		color: var(--text-secondary);
+		padding-left: 2ch;
+		border-left: 2px solid var(--line-strong);
 	}
 
 	.post__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
+		margin-inline: 0.6ch;
+		color: var(--line-strong);
 	}
 
 	.post__facts {
@@ -289,8 +289,8 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
+		border: 1px solid var(--line-strong);
+		padding: 4px;
 		margin-bottom: var(--s-8);
 	}
 
@@ -309,7 +309,7 @@
 		gap: var(--s-4);
 		margin-top: var(--s-9);
 		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		border-top: 1px dashed var(--line-strong);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -319,12 +319,8 @@
 		gap: var(--s-2);
 		padding: var(--s-4);
 		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
 		border: 1px solid transparent;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -334,8 +330,8 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--surface-active);
+			border-color: var(--line-strong);
 		}
 	}
 
