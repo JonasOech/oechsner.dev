@@ -94,7 +94,7 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-6);
 		max-width: var(--measure);
 	}
 
@@ -136,19 +136,20 @@
 
 	.grades dt {
 		color: var(--text-secondary);
-		font-size: 0.9375rem;
+		font-size: 1rem;
 	}
 
 	.grades dd {
 		margin: 0;
-		font-family: var(--font-mono);
+		font-family: var(--font-sans);
 		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums lining-nums;
 		color: var(--text);
 	}
 
-	@media (max-width: 767px) {
+	@media (min-width: 56em) {
 		.intro {
-			padding-top: var(--s-6);
+			padding-top: var(--s-9);
 		}
 	}
 </style>

@@ -76,11 +76,9 @@
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
-		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
 	}
 
 	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
@@ -88,12 +86,11 @@
 	.subscribe__mark {
 		display: grid;
 		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		width: 2.25rem;
+		height: 2.25rem;
+		color: var(--text-muted);
+		border: 1px solid var(--line-strong);
+		border-radius: var(--radius);
 	}
 
 	.subscribe__text {
@@ -103,8 +100,8 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
-		line-height: 1.6;
+		font-size: 1rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
@@ -125,17 +122,16 @@
 	}
 
 	.subscribe__links a {
-		color: var(--text-muted);
+		color: var(--accent);
 		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
+		text-decoration-color: rgba(var(--accent-rgb), 0.4);
 		text-underline-offset: 3px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.subscribe__links a:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -145,7 +141,7 @@
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 

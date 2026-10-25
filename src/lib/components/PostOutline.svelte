@@ -105,51 +105,40 @@
 </nav>
 
 <style>
-	/* The outline as a contained object rather than a bare list floating in the track:
-	   a bordered panel, sticky in the article's row, bled slightly toward the page edge
-	   so its padding does not eat further into the already-narrow 180px track. */
+	/* Marginalia, not a panel: a sticky list in the right margin, hung from a hairline.
+	   It only exists where the margin track does (see the post route). */
 	.outline {
-		grid-column: 1;
+		grid-column: 2;
 		grid-row: 1;
 		position: sticky;
 		align-self: start;
-		top: calc(var(--header-h) + var(--s-5));
-		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
-		max-height: calc(100dvh - var(--header-h) - var(--s-7));
-		display: flex;
+		top: var(--s-6);
+		margin-top: calc(var(--s-9) + 44px + var(--s-4));
+		max-height: calc(100dvh - var(--s-7));
+		display: none;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
-		overflow: hidden;
+		font-family: var(--font-sans);
 	}
 
-	@media (max-width: 1099px) {
+	@media (min-width: 72em) {
 		.outline {
-			display: none;
+			display: flex;
 		}
 	}
 
 	.outline__head {
 		flex: none;
-		padding: var(--s-4) var(--s-4) var(--s-3);
+		padding-bottom: var(--s-3);
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 400;
+		font-size: 0.6875rem;
+		font-weight: 500;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 var(--s-3);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
 	}
 
 	.outline__progress {
@@ -162,21 +151,19 @@
 		flex: 1 1 auto;
 		height: 1px;
 		background: var(--line);
-		border-radius: 1px;
 		overflow: hidden;
 	}
 
 	.outline__fill {
 		height: 100%;
-		background: var(--accent);
-		border-radius: 1px;
+		background: var(--text);
 		transition: width 120ms var(--ease-out);
 	}
 
 	.outline__readout {
 		flex: none;
 		font-size: 0.6875rem;
-		font-variant-numeric: tabular-nums;
+		font-variant-numeric: tabular-nums lining-nums;
 		color: var(--text-muted);
 		white-space: nowrap;
 	}
@@ -185,7 +172,6 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
-		padding: 0 var(--s-2) var(--s-2);
 		scrollbar-width: thin;
 	}
 
@@ -194,119 +180,89 @@
 		margin: 0;
 		padding: 0;
 		display: grid;
-		gap: 1px;
 	}
 
 	.outline__item--sub {
-		padding-left: var(--s-4);
+		padding-left: var(--s-3);
 	}
 
-	/* The lit-key row: a full-width hit area rather than a bare underlined link, so the
-	   active heading reads as a switched-on panel segment, not just coloured text. */
 	.outline__link {
 		position: relative;
 		display: block;
-		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
+		padding: 0.3rem 0 0.3rem var(--s-3);
+		border-left: 1px solid var(--line);
 		font-size: 0.8125rem;
-		line-height: 1.35;
+		line-height: 1.4;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition:
-			background-color var(--dur-fast) var(--ease-out),
-			color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__item--sub .outline__link {
 		font-size: 0.75rem;
-		padding-top: 0.32rem;
-		padding-bottom: 0.32rem;
-	}
-
-	.outline__link::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 3px;
-		bottom: 3px;
-		width: 2px;
-		border-radius: 1px;
-		background: var(--accent);
-		transform: scaleY(0);
-		transition: transform var(--dur-base) var(--ease-out);
 	}
 
 	.outline__link.is-active {
-		background: var(--accent-wash);
 		color: var(--text);
-	}
-
-	.outline__link.is-active::before {
-		transform: scaleY(1);
+		border-left-color: var(--text);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__link:not(.is-active):hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__link:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
+		border-radius: var(--radius);
 	}
 
 	.outline__foot {
 		flex: none;
-		border-top: 1px solid var(--line);
-		padding: var(--s-2);
+		padding-top: var(--s-3);
 	}
 
 	.outline__top {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition:
-			background-color var(--dur-fast) var(--ease-out),
-			color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__top svg {
 		flex: none;
-		width: 15px;
-		height: 15px;
+		width: 13px;
+		height: 13px;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__top:hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__top:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__top:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
+		border-radius: var(--radius);
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.outline__fill,
 		.outline__link,
-		.outline__link::before,
 		.outline__top {
 			transition: none;
 		}

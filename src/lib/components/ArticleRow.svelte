@@ -54,21 +54,21 @@
 </a>
 
 <style>
+	/* A row is a title, a standfirst, a line of facts and, if the post has one, a small
+	   cover at the right. Rows are divided by hairlines; the only hover is the title. */
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: minmax(0, 1fr) 5.5rem;
+		gap: var(--s-5);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+	}
+
+	.card:last-child {
+		border-bottom: 1px solid var(--line);
 	}
 
 	/* No cover image means no media column — never a solid block standing in for a photo. */
@@ -82,23 +82,15 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.card:hover .card__title {
+			color: var(--accent);
 		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		border-radius: var(--radius);
 	}
 
 	.card__text {
@@ -106,20 +98,22 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		font-size: 1.3125rem;
+		font-weight: 600;
+		line-height: 1.28;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
+		margin: 0 0 var(--s-2);
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.card--featured .card__title {
-		font-size: 1.375rem;
+		font-size: 1.5rem;
 	}
 
 	.card__summary {
+		font-size: 1rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
 		margin: 0 0 var(--s-3);
 	}
@@ -131,8 +125,10 @@
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
+		border: 1px solid var(--line);
+		border-radius: var(--radius);
 		aspect-ratio: 4 / 3;
+		margin-top: 0.3rem;
 	}
 
 	.card__media--wide {
@@ -144,22 +140,11 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (max-width: 1023px) {
+	@media (min-width: 40em) {
 		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
+			grid-template-columns: minmax(0, 1fr) 7.5rem;
 		}
 	}
 </style>

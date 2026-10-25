@@ -167,42 +167,42 @@
 </div>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	/* One column; at wide widths a margin track opens to its right for the outline. The
+	   column does not move when there is no outline — the margin is simply left empty. */
 	.post-layout {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
-	@media (min-width: 1100px) {
+	@media (min-width: 72em) {
 		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
-			grid-template-columns:
-				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
-				minmax(0, var(--outline-width));
-			justify-content: center;
-			column-gap: var(--s-5);
+			grid-template-columns: minmax(0, var(--col)) var(--margin-w);
+			column-gap: var(--s-6);
+			max-width: calc(var(--col) + var(--margin-w) + var(--s-6));
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
+	.post,
+	.post__subscribe,
+	.post__nav {
+		grid-column: 1;
+		min-width: 0;
+	}
+
 	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
+		padding-top: var(--s-6);
+	}
+
+	@media (min-width: 56em) {
+		.post {
+			padding-top: var(--s-9);
+		}
 	}
 
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__back {
@@ -210,24 +210,21 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		font-family: var(--font-sans);
+		font-size: 0.8125rem;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
 		min-height: 44px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
+		transition: transform var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			color: var(--accent);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
@@ -235,25 +232,25 @@
 	}
 
 	.post__back:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
+		font-size: clamp(1.875rem, 4.6vw, 2.5rem);
+		font-weight: 600;
+		line-height: 1.14;
 		letter-spacing: -0.02em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.1875rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
@@ -268,63 +265,45 @@
 		justify-content: space-between;
 		gap: var(--s-5);
 		flex-wrap: wrap;
+		padding-top: var(--s-4);
+		border-top: 1px solid var(--line);
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
+		gap: var(--s-3);
 		min-width: min(100%, 22rem);
 		flex: 1 1 22rem;
-	}
-
-	.post__tags {
-		margin-top: var(--s-1);
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
+		border-radius: var(--radius);
 		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__subscribe {
-		grid-column: 2;
 		width: 100%;
-		max-width: var(--measure-prose);
-		margin-inline: auto;
 		margin-top: var(--s-8);
 	}
 
 	.post__nav {
-		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
+		gap: var(--s-5);
+		margin-top: var(--s-8);
+		padding-top: var(--s-5);
 		border-top: 1px solid var(--line);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		align-content: start;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -332,33 +311,27 @@
 		justify-items: end;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
-	}
-
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		border-radius: var(--radius);
 	}
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-size: 1.0625rem;
+		font-weight: 600;
+		line-height: 1.35;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
+		}
 	}
 
 	@media (max-width: 767px) {
-		.post {
-			padding-top: var(--s-6);
-		}
 		.post__nav {
 			grid-template-columns: 1fr;
 			gap: var(--s-6);

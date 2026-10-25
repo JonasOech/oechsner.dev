@@ -14,7 +14,7 @@
       <stop offset="100%" stop-color="#d9603b" stop-opacity="0"/>
     </radialGradient>
     <pattern id="nbDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
+      <circle cx="1" cy="1" r="1" fill="#1f1d1a" opacity="0.05"/>
     </pattern>
 
     <!-- Bone horns, ember head: lit from the upper left like every other cover. -->
@@ -32,15 +32,12 @@
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="675" fill="#0e0f12"/>
-  <rect width="1200" height="675" fill="url(#nbDots)"/>
-  <rect width="1200" height="675" fill="url(#nbGlowA)"/>
-  <rect width="1200" height="675" fill="url(#nbGlowB)"/>
+  <rect width="1200" height="675" fill="#f4f1ea"/>
 
   <!-- The recipe as Cooking for Engineers draws it: ingredient cells on the left
        merging column by column until one cell is left. Three cells are lit to
        trace a single ingredient all the way to the finished dish. -->
-  <g fill="none" stroke="#34353d" stroke-width="2">
+  <g fill="none" stroke="#cbc4b3" stroke-width="2">
     <rect x="262" y="452" width="170" height="26" rx="4"/>
     <rect x="262" y="484" width="170" height="26" rx="4"/>
     <rect x="262" y="516" width="170" height="26" rx="4"/>
@@ -56,7 +53,7 @@
     <rect x="606" y="580" width="150" height="58" rx="4"/>
   </g>
   <!-- Short rules inside the ingredient cells stand in for their names. -->
-  <g stroke="#34353d" stroke-width="3" stroke-linecap="round">
+  <g stroke="#cbc4b3" stroke-width="3" stroke-linecap="round">
     <path d="M280 465h84"/>
     <path d="M280 529h96"/>
     <path d="M280 561h72"/>
@@ -75,7 +72,6 @@
 
   <!-- The bull. Horns are one crescent mirrored about the centre line so the
        silhouette stays symmetrical. -->
-  <circle cx="600" cy="272" r="164" fill="url(#nbCore)"/>
 
   <g fill="url(#nbHorn)">
     <path d="M534 216c-58-2-118 0-162-24-38-21-48-56-32-78 10-14 26-10 24 4-5 30 18 50 52 60 44 13 90 15 128 10z"/>
@@ -92,7 +88,7 @@
   <path fill="url(#nbSnout)" d="M566 348c12-6 56-6 68 0 1 18-5 30-14 38-6 6-11 9-20 9s-14-3-20-9c-9-8-15-20-14-38z"/>
 
   <!-- Eyes and nostrils are punched out of the mark, not drawn on top of it. -->
-  <g fill="#0e0f12">
+  <g fill="#f4f1ea">
     <path d="M552 268c10-6 22-6 30 2-8 8-22 8-30-2z"/>
     <path d="M648 268c-10-6-22-6-30 2 8 8 22 8 30-2z"/>
     <ellipse cx="587" cy="371" rx="6.5" ry="8"/>

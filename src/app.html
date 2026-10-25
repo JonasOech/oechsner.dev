@@ -7,6 +7,15 @@
 		<!-- No analytics tag here on purpose. gtag.js used to load from this document, which
 		     put it on the page before the visitor had any say; it is now injected by
 		     src/lib/consent.svelte.ts, and only after consent. -->
+		<!-- Theme: follow the system unless the footer control has stored a choice. Runs before
+		     first paint so a stored choice never flashes the other paper; without JS the
+		     stylesheet's prefers-color-scheme rules decide on their own. -->
+		<script>
+			try {
+				var t = localStorage.getItem('theme');
+				if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

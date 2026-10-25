@@ -1,90 +1,36 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md ("Two papers")
    Every colour in this project resolves to a variable declared in this block.
+   Fonts are self-hosted through @fontsource; nothing is requested from a third party.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '@fontsource-variable/source-serif-4/wght.css';
+@import '@fontsource-variable/source-serif-4/wght-italic.css';
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/jetbrains-mono/wght.css';
 
+/* -----------------------------------------------------------------------------
+   Tokens that do not change between the two papers.
+   -------------------------------------------------------------------------- */
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
-
-	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
-
-	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
-
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
-
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
-
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
-
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
-
-	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
-
-	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
-
 	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--font-serif: 'Source Serif 4 Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	/* Older component CSS still asks for the display face; on this site it is the serif. */
+	--font-display: var(--font-serif);
 
-	/* — Layout — */
-	--container: 1080px;
-	--measure: 62ch;
-	--measure-prose: 68ch;
-	--rail-width: 200px;
-	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
-	   and the post column has to keep its measure with two of these beside it. */
-	--outline-width: 180px;
-	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* — Layout: [index rail] [one reading column] [margin for the post outline] — */
+	--rail-w: 9.5rem;
+	--col: 38rem; /* ≈ 65ch of the 18px serif */
+	--margin-w: 13rem;
+	--gutter: 1.25rem;
+	--container: var(--col);
+	--measure: var(--col);
+	--measure-prose: var(--col);
+	--outline-width: var(--margin-w);
+	/* The index rail is not a bar, so there is no header to clear; this is just a little air. */
+	--header-h: 0rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -100,25 +46,182 @@
 	--s-11: 11rem;
 
 	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	--gap-hero: var(--s-9);
+	--gap-section: var(--s-8);
 
-	/* — Elevation — */
+	/* — Shape: hairlines and square corners; no elevation anywhere — */
+	--radius: 2px;
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: none;
+	--shadow-2: none;
+	--shadow-3: none;
+	--shadow-4: none;
+	--shadow-inset: none;
 
 	/* — Motion — */
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	--dur-fast: 160ms;
+	--dur-base: 220ms;
+	--dur-slow: 480ms;
+}
 
+/* -----------------------------------------------------------------------------
+   Paper one: soft white. The default, and what a visitor without a preference gets.
+   -------------------------------------------------------------------------- */
+:root {
+	color-scheme: light;
+
+	/* — Canvas — */
+	--bg: #fbf9f5;
+	--bg-rgb: 251, 249, 245;
+	--bg-deep: #f3f0e8;
+	--bg-deep-rgb: 243, 240, 232;
+	--surface: #f4f1ea;
+	--surface-rgb: 244, 241, 234;
+	--surface-hover: #eeeadf;
+	--surface-hover-rgb: 238, 234, 223;
+	--surface-active: #e7e2d4;
+	--surface-active-rgb: 231, 226, 212;
+
+	/* — Ink — */
+	--text: #1f1d1a;
+	--text-rgb: 31, 29, 26;
+	--text-secondary: #46423b;
+	--text-secondary-rgb: 70, 66, 59;
+	--text-muted: #6b665c;
+	--text-muted-rgb: 107, 102, 92;
+	--text-inverse: #fbf9f5;
+	--text-inverse-rgb: 251, 249, 245;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #46423b;
+	--text-pressed-rgb: 70, 66, 59;
+
+	/* — Structure — */
+	--line: #e4dfd3;
+	--line-rgb: 228, 223, 211;
+	--line-strong: #cbc4b3;
+	--line-strong-rgb: 203, 196, 179;
+
+	/* — The one link colour: a slate blue, signal only — */
+	--accent: #2a5985;
+	--accent-rgb: 42, 89, 133;
+	--accent-dim: #1d4268;
+	--accent-dim-rgb: 29, 66, 104;
+	--accent-wash: rgba(42, 89, 133, 0.08);
+
+	/* — Figure plate: diagrams drawn in dark ink sit on paper in both themes — */
+	--plate: #f4f1ea;
+
+	/* — Chart series (always read on --plate, so identical in both themes) — */
+	--series-a: #2a5985;
+	--series-b: #a65a2e;
+
+	/* — Feedback — */
+	--danger: #a5322d;
+	--danger-rgb: 165, 50, 45;
+	--success: #3b6a3a;
+	--success-rgb: 59, 106, 58;
+
+	/* — Focus — */
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+/* -----------------------------------------------------------------------------
+   Paper two: ink on warm charcoal. Followed from the system setting unless the
+   visitor has chosen; `data-theme` (set by the footer control) wins either way.
+   The block is repeated for the explicit choice because CSS cannot share a rule
+   between a media query and an attribute selector.
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme='light']) {
+		color-scheme: dark;
+
+		--bg: #1c1b19;
+		--bg-rgb: 28, 27, 25;
+		--bg-deep: #161513;
+		--bg-deep-rgb: 22, 21, 19;
+		--surface: #252321;
+		--surface-rgb: 37, 35, 33;
+		--surface-hover: #2c2a27;
+		--surface-hover-rgb: 44, 42, 39;
+		--surface-active: #35322e;
+		--surface-active-rgb: 53, 50, 46;
+
+		--text: #ece8df;
+		--text-rgb: 236, 232, 223;
+		--text-secondary: #c6c1b5;
+		--text-secondary-rgb: 198, 193, 181;
+		--text-muted: #9c9689;
+		--text-muted-rgb: 156, 150, 137;
+		--text-inverse: #1c1b19;
+		--text-inverse-rgb: 28, 27, 25;
+		--text-bright: #ffffff;
+		--text-bright-rgb: 255, 255, 255;
+		--text-pressed: #c6c1b5;
+		--text-pressed-rgb: 198, 193, 181;
+
+		--line: #35332e;
+		--line-rgb: 53, 51, 46;
+		--line-strong: #4d4a43;
+		--line-strong-rgb: 77, 74, 67;
+
+		--accent: #9bbde3;
+		--accent-rgb: 155, 189, 227;
+		--accent-dim: #c0d6ee;
+		--accent-dim-rgb: 192, 214, 238;
+		--accent-wash: rgba(155, 189, 227, 0.1);
+
+		--danger: #e48a84;
+		--danger-rgb: 228, 138, 132;
+		--success: #94c48f;
+		--success-rgb: 148, 196, 143;
+	}
+}
+
+:root[data-theme='dark'] {
 	color-scheme: dark;
+
+	--bg: #1c1b19;
+	--bg-rgb: 28, 27, 25;
+	--bg-deep: #161513;
+	--bg-deep-rgb: 22, 21, 19;
+	--surface: #252321;
+	--surface-rgb: 37, 35, 33;
+	--surface-hover: #2c2a27;
+	--surface-hover-rgb: 44, 42, 39;
+	--surface-active: #35322e;
+	--surface-active-rgb: 53, 50, 46;
+
+	--text: #ece8df;
+	--text-rgb: 236, 232, 223;
+	--text-secondary: #c6c1b5;
+	--text-secondary-rgb: 198, 193, 181;
+	--text-muted: #9c9689;
+	--text-muted-rgb: 156, 150, 137;
+	--text-inverse: #1c1b19;
+	--text-inverse-rgb: 28, 27, 25;
+	--text-bright: #ffffff;
+	--text-bright-rgb: 255, 255, 255;
+	--text-pressed: #c6c1b5;
+	--text-pressed-rgb: 198, 193, 181;
+
+	--line: #35332e;
+	--line-rgb: 53, 51, 46;
+	--line-strong: #4d4a43;
+	--line-strong-rgb: 77, 74, 67;
+
+	--accent: #9bbde3;
+	--accent-rgb: 155, 189, 227;
+	--accent-dim: #c0d6ee;
+	--accent-dim-rgb: 192, 214, 238;
+	--accent-wash: rgba(155, 189, 227, 0.1);
+
+	--danger: #e48a84;
+	--danger-rgb: 228, 138, 132;
+	--success: #94c48f;
+	--success-rgb: 148, 196, 143;
 }
 
 /* =============================================================================
@@ -133,57 +236,31 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
-	scroll-padding-top: calc(var(--header-h) + var(--s-5));
+	scroll-padding-top: var(--s-5);
 	-webkit-text-size-adjust: 100%;
+	background: var(--bg);
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
-	display: flex;
-	flex-direction: column;
-	min-height: 100dvh;
 	background: var(--bg);
-	color: var(--text-secondary);
-	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
+	color: var(--text);
+	font-family: var(--font-serif);
+	font-size: 1.0625rem;
+	line-height: 1.7;
+	font-optical-sizing: auto;
+	font-kerning: normal;
+	font-variant-numeric: oldstyle-nums proportional-nums;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
 }
 
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+@media (min-width: 40em) {
+	body {
+		font-size: 1.125rem;
+	}
 }
 
 h1,
@@ -193,7 +270,8 @@ h4,
 h5,
 h6 {
 	color: var(--text);
-	font-weight: 700;
+	font-family: var(--font-serif);
+	font-weight: 600;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -215,7 +293,7 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
+	background: rgba(var(--accent-rgb), 0.25);
 	color: var(--text);
 }
 
@@ -223,13 +301,21 @@ a {
    Layout primitives
    ========================================================================== */
 
+/* The reading column. Every route puts its content in one of these. */
 .container {
 	position: relative;
-	z-index: 1;
 	width: 100%;
-	max-width: var(--container);
-	margin-inline: auto;
+	max-width: calc(var(--col) + 2 * var(--gutter));
+	margin-inline: 0;
 	padding-inline: var(--gutter);
+}
+
+@media (min-width: 56em) {
+	/* The index rail already holds the page's left margin, so the column starts flush. */
+	.container {
+		max-width: var(--col);
+		padding-inline: 0;
+	}
 }
 
 .measure {
@@ -240,28 +326,26 @@ a {
 	margin-top: var(--gap-section);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
+/* A section label: a small tracked sans line above its content, over a hairline.
+   There is no label column — the site's left margin belongs to the index. */
 .rail {
-	display: grid;
-	grid-template-columns: var(--rail-width) minmax(0, 1fr);
-	gap: 0;
+	display: block;
+	border-top: 1px solid var(--line);
+	padding-top: var(--s-4);
 }
 
 .rail__label {
-	font-family: var(--font-display);
-	font-size: 0.8125rem;
-	font-weight: 400;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
-	margin: 0;
+	margin: 0 0 var(--s-5);
 }
 
 .rail__body {
-	max-width: var(--measure);
 	min-width: 0;
 }
 
@@ -281,47 +365,44 @@ a {
    ========================================================================== */
 
 .eyebrow {
-	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text-muted);
 	margin: 0;
 }
 
 .hero-title {
-	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-family: var(--font-serif);
+	font-size: clamp(2rem, 5.2vw, 2.875rem);
+	font-weight: 600;
+	line-height: 1.12;
+	letter-spacing: -0.018em;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
-	font-weight: 700;
-	line-height: 1.2;
-	letter-spacing: -0.01em;
+	font-size: clamp(1.75rem, 3.6vw, 2.25rem);
+	font-weight: 600;
+	line-height: 1.15;
+	letter-spacing: -0.015em;
 }
 
 .lede {
-	color: var(--text-secondary);
+	color: var(--text);
 	max-width: var(--measure);
 }
 
 .meta {
 	font-family: var(--font-sans);
-	font-size: 0.75rem;
-	font-weight: 700;
-	line-height: 1.4;
-	letter-spacing: 0.01em;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.005em;
+	font-variant-numeric: tabular-nums lining-nums;
 	color: var(--text-muted);
 	margin: 0;
 }
@@ -329,9 +410,9 @@ a {
 .label {
 	font-family: var(--font-sans);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 	color: var(--text-muted);
 	margin: 0;
@@ -347,7 +428,7 @@ a {
    Components
    ========================================================================== */
 
-/* — Buttons — */
+/* — Buttons: a hairline box with sans text; hover inverts. — */
 
 .btn {
 	display: inline-flex;
@@ -356,29 +437,27 @@ a {
 	gap: var(--s-2);
 	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 700;
+	font-weight: 500;
 	line-height: 1;
 	padding: 0.6875rem 1.125rem;
 	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	border-radius: var(--radius);
+	border: 1px solid var(--text);
+	background: transparent;
+	color: var(--text);
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
 		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
-		transform var(--dur-fast) var(--ease-out),
-		box-shadow var(--dur-fast) var(--ease-out);
+		color var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
 	width: 15px;
 	height: 15px;
 	flex: none;
-	transition: transform 220ms var(--ease-out);
 }
 
 .btn--primary {
@@ -387,39 +466,24 @@ a {
 }
 
 .btn--secondary {
-	background: var(--surface);
-	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	border-color: var(--line-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
-	}
-	.btn--primary:hover svg {
-		transform: translateX(3px);
+		background: transparent;
+		color: var(--text);
 	}
 	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
-	}
-	.btn--secondary:hover svg {
-		transform: translateY(2px);
+		border-color: var(--text);
 	}
 }
 
 .btn--primary:active {
-	transform: translateY(0);
 	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
 }
 
 .btn--secondary:active {
-	transform: translateY(0);
 	background: var(--surface-active);
 }
 
@@ -432,9 +496,7 @@ a {
 .btn[aria-disabled='true'] {
 	opacity: 0.45;
 	cursor: not-allowed;
-	transform: none;
 	pointer-events: none;
-	box-shadow: none;
 }
 
 .btn-row {
@@ -443,24 +505,22 @@ a {
 	gap: var(--s-3);
 }
 
-/* — Prose links — */
+/* — Links: the link colour with a hairline underline that thickens on hover — */
 
 .link {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-decoration-color: rgba(var(--accent-rgb), 0.4);
+	text-underline-offset: 0.2em;
 	transition:
-		background-size 280ms var(--ease-out),
+		text-decoration-color var(--dur-fast) var(--ease-out),
 		color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
-		color: var(--accent);
-		background-size: 100% 1px;
+		text-decoration-color: currentColor;
 	}
 }
 
@@ -470,43 +530,48 @@ a {
 
 .link:focus-visible {
 	outline: none;
-	border-radius: 2px;
+	border-radius: var(--radius);
 	box-shadow: var(--focus-ring);
 }
 
 .link[aria-disabled='true'] {
 	color: var(--text-muted);
 	pointer-events: none;
-	background-image: none;
+	text-decoration: none;
 }
 
-/* — Tags — */
+/* — Tags: lowercase sans in a hairline box — */
 
 .tag {
 	display: inline-block;
 	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-size: 0.75rem;
+	font-weight: 400;
 	line-height: 1;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+	letter-spacing: 0.01em;
 	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
-	color: var(--text-muted);
-	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: transparent;
+	color: var(--text-secondary);
+	border: 1px solid var(--line-strong);
 	text-decoration: none;
+	cursor: default;
 	transition:
 		color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out);
+		border-color var(--dur-fast) var(--ease-out),
+		background-color var(--dur-fast) var(--ease-out);
+}
+
+button.tag,
+a.tag {
+	cursor: pointer;
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
+	button.tag:hover,
+	a.tag:hover {
 		color: var(--accent);
-		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+		border-color: var(--accent);
 	}
 }
 
@@ -521,8 +586,8 @@ a {
 
 .tag[aria-pressed='true'] {
 	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--text);
+	border-color: var(--text);
 }
 
 .tag[aria-disabled='true'] {
@@ -539,7 +604,7 @@ a {
 /* — Timeline entries — */
 
 .entry {
-	padding: 0 0 2.25rem;
+	padding: 0 0 var(--s-6);
 }
 
 .entry:last-child {
@@ -548,11 +613,11 @@ a {
 
 .entry__title {
 	font-size: 1.1875rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1.35;
 	letter-spacing: -0.005em;
 	color: var(--text);
-	margin: 0 0 0.625rem;
+	margin: 0 0 var(--s-2);
 }
 
 .entry__body {
@@ -563,7 +628,7 @@ a {
 .entry__list {
 	margin: 0 0 var(--s-3);
 	padding-left: 1.1rem;
-	color: var(--text-secondary);
+	color: var(--text);
 }
 
 .entry__list li {
@@ -581,14 +646,12 @@ a {
 	font-family: var(--font-sans);
 	font-size: 0.9375rem;
 	font-weight: 400;
-	background: var(--surface);
+	background: transparent;
 	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius);
 	padding: 0.6875rem 0.875rem;
-	transition:
-		border-color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out);
+	transition: border-color var(--dur-fast) var(--ease-out);
 }
 
 .field::placeholder {
@@ -596,13 +659,12 @@ a {
 }
 
 .field:hover {
-	border-color: var(--line-strong);
+	border-color: var(--text-muted);
 }
 
 .field:focus {
 	outline: none;
-	border-color: var(--accent-dim);
-	background: var(--surface-hover);
+	border-color: var(--accent);
 }
 
 .field:focus-visible {
@@ -628,10 +690,10 @@ a {
 	padding: var(--s-3) var(--s-4);
 	background: var(--text);
 	color: var(--text-inverse);
+	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
-	box-shadow: var(--shadow-2);
+	font-weight: 500;
+	border-radius: var(--radius);
 	text-decoration: none;
 	transition: top var(--dur-base) var(--ease-out);
 }
@@ -641,13 +703,13 @@ a {
 }
 
 /* =============================================================================
-   Motion — L1 → low-L2, CSS only (DESIGN.md §7)
+   Motion — a short fade-and-rise on first paint, nothing else moves
    ========================================================================== */
 
 @keyframes rise {
 	from {
 		opacity: 0;
-		transform: translateY(14px);
+		transform: translateY(8px);
 	}
 	to {
 		opacity: 1;
@@ -658,12 +720,12 @@ a {
 .enter {
 	opacity: 0;
 	animation: rise var(--dur-slow) var(--ease-out) forwards;
-	animation-delay: calc(60ms + var(--i, 0) * 90ms);
+	animation-delay: calc(40ms + var(--i, 0) * 70ms);
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px);
+	transform: translateY(8px);
 	transition:
 		opacity var(--dur-slow) var(--ease-out),
 		transform var(--dur-slow) var(--ease-out);
@@ -675,7 +737,7 @@ a {
 }
 
 .reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
+	transition-delay: calc(var(--i, 0) * 50ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -704,78 +766,81 @@ a {
 .prose {
 	max-width: var(--measure-prose);
 	font-size: 1.0625rem;
-	line-height: 1.8;
-	color: var(--text-secondary);
+	line-height: 1.72;
+	color: var(--text);
+}
+
+@media (min-width: 40em) {
+	.prose {
+		font-size: 1.125rem;
+	}
 }
 
 .prose > * + * {
 	margin-top: var(--s-5);
 }
 
-/* Body copy is set justified (Blocksatz) rather than ragged-right. Justification
-   is about where the two margins land, not about where the column sits: the post
-   column is centred in its page (see the post route), but the text inside it is
-   still flush to both of its own edges rather than centred line by line, which is
-   what §9 actually forbids. `.intro__byline` on the home page sets the precedent.
-   Hyphenation is part of the same decision, not an extra: a 68ch column justified
-   without it opens rivers between words.
-
-   Short lines stay ragged, which is all CSS can actually promise. Under
-   `justify`, `text-align-last` resolves to the left edge, so a paragraph's final
-   line — and a one-line paragraph, which is nothing but a final line — is never
-   stretched to the measure. It is spelled out here rather than left to the
-   default because it is the behaviour being relied on. Below that there is no
-   per-line threshold in CSS; the case it cannot express is a column too narrow
-   to fit enough words per line, and that one is handled by viewport width in §9. */
+/* Body copy is flush-left, ragged-right, hyphenated. A 65ch serif column reads best
+   with the natural word spaces the typeface was drawn for; justification is not
+   used anywhere on this site. */
 .prose > p,
-.prose > blockquote p {
-	text-align: justify;
-	text-align-last: left;
+.prose > blockquote p,
+.prose li {
 	hyphens: auto;
-	/* A URL or a long identifier cannot break, and one sitting in a justified
-	   line stretches every space around it. Let it break instead. */
+	/* A URL or a long identifier cannot break, and would push the column wider. */
 	overflow-wrap: break-word;
 }
 
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
+	font-size: 1.5rem;
+	line-height: 1.25;
+	letter-spacing: -0.012em;
 	margin-top: var(--s-8);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	line-height: 1.4;
+	font-size: 1.1875rem;
+	line-height: 1.35;
 	margin-top: var(--s-7);
 }
 
 .prose h4 {
-	font-size: 1.0625rem;
-	font-weight: 600;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--text-muted);
 	line-height: 1.4;
 	margin-top: var(--s-6);
 }
 
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+	margin-top: var(--s-3);
+}
+
 .prose a {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition: color var(--dur-fast) var(--ease-out);
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-decoration-color: rgba(var(--accent-rgb), 0.4);
+	text-underline-offset: 0.2em;
+	transition:
+		text-decoration-color var(--dur-fast) var(--ease-out),
+		color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
-		color: var(--accent);
+		text-decoration-color: currentColor;
 	}
 }
 
 .prose a:focus-visible {
 	outline: none;
-	border-radius: 2px;
+	border-radius: var(--radius);
 	box-shadow: var(--focus-ring);
 }
 
@@ -794,13 +859,13 @@ a {
 
 .prose strong {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 650;
 }
 
 .prose blockquote {
 	margin-inline: 0;
 	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
+	border-left: 1px solid var(--line-strong);
 	color: var(--text-secondary);
 	font-style: italic;
 }
@@ -813,7 +878,7 @@ a {
 
 .prose img,
 .prose video {
-	border-radius: 6px;
+	border-radius: var(--radius);
 	border: 1px solid var(--line);
 }
 
@@ -823,25 +888,25 @@ a {
 
 .prose figcaption {
 	margin-top: var(--s-3);
+	font-family: var(--font-sans);
 	font-size: 0.8125rem;
+	line-height: 1.55;
 	color: var(--text-muted);
 }
 
 /* Citations come from the `citations` plugin in svelte.config.js. A paragraph can
-   carry several, so they trade the accent underline every other link wears for a
-   faint dotted one: present, but quieter than a link the reader should follow. */
+   carry several, so they trade the link underline for a faint dotted one. */
 .prose a.cite {
-	background-image: none;
+	color: var(--text);
 	text-decoration: underline dotted var(--text-muted);
 	text-underline-offset: 0.2em;
 }
 
-/* The bibliography the plugin appends. APA sets it with a hanging indent and no
-   numbering, and it is reference material, so a step down from the body copy. */
+/* The bibliography the plugin appends. Reference material, so a step down. */
 .prose .references {
 	list-style: none;
 	padding-left: 0;
-	font-size: 0.875rem;
+	font-size: 0.9375rem;
 	line-height: 1.6;
 }
 
@@ -850,7 +915,7 @@ a {
 	text-indent: -1.5em;
 	/* DOIs and URLs are single unbreakable words otherwise. */
 	overflow-wrap: anywhere;
-	border-radius: 3px;
+	border-radius: var(--radius);
 	transition: background-color var(--dur-fast) var(--ease-out);
 }
 
@@ -863,8 +928,7 @@ a {
 	font-family: var(--font-mono);
 	font-size: 0.8125em;
 	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: 3px;
+	border-radius: var(--radius);
 	padding: 0.1em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
@@ -874,16 +938,15 @@ a {
 	font-family: var(--font-mono);
 	font-size: 0.8125rem;
 	line-height: 1.65;
-	background: var(--bg-deep);
-	border: 1px solid var(--line);
-	border-radius: 6px;
+	background: var(--surface);
+	border-radius: var(--radius);
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
 	/* Scrolling alone does not hold that promise: a scroll box still reports its content's
 	   width as an intrinsic minimum, and the article around it is sized shrink-to-fit, so a
-	   long line used to stretch the whole column — header and body copy with it — past the
-	   viewport of a phone. Containment keeps the width the column's business. */
+	   long line used to stretch the whole column past the viewport of a phone. Containment
+	   keeps the width the column's business. */
 	contain: inline-size;
 	color: var(--text-secondary);
 }
@@ -903,15 +966,10 @@ a {
 	contain: inline-size;
 }
 
-/* Math (KaTeX, rendered at build time — see svelte.config.js).
-   The prose defaults actively fight it: 1.8 line-height pulls fractions and radicals off
-   their baseline, and the secondary text colour leaves equations washed out beside the
-   sentences they sit in. Display math gets the same scroll treatment as wide tables. */
+/* Math (KaTeX, rendered at build time — see svelte.config.js). */
 .prose .katex {
 	line-height: 1.2;
 	color: var(--text);
-	/* The justified paragraph's `text-align-last: left` is inherited, and on KaTeX's one-line
-	   rows it overrides the `text-align: center` KaTeX uses for fractions, limits and accents. */
 	text-align-last: auto;
 }
 
@@ -925,8 +983,7 @@ a {
 /* KaTeX centres the equation inside `.katex-display`, which quietly breaks once it is wider
    than the column: the left-hand overflow of centred content sits outside the scroll origin
    and cannot be reached. Shrink-wrapping the equation and centring it with auto margins
-   instead keeps short formulas centred while anchoring long ones at the left edge, where
-   scrolling can actually get to them. */
+   instead keeps short formulas centred while anchoring long ones at the left edge. */
 .prose .katex-display > .katex {
 	width: fit-content;
 	margin-inline: auto;
@@ -936,22 +993,25 @@ a {
 .prose table {
 	width: 100%;
 	border-collapse: collapse;
-	font-size: 0.9375rem;
+	font-family: var(--font-sans);
+	font-size: 0.875rem;
+	font-variant-numeric: tabular-nums lining-nums;
 }
 
 .prose th,
 .prose td {
 	text-align: left;
-	padding: var(--s-3) var(--s-4);
+	padding: var(--s-3) var(--s-4) var(--s-3) 0;
 	border-bottom: 1px solid var(--line);
 }
 
 .prose th {
-	color: var(--text);
-	font-weight: 700;
-	font-size: 0.75rem;
-	letter-spacing: 0.08em;
+	color: var(--text-muted);
+	font-weight: 500;
+	font-size: 0.6875rem;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
+	border-bottom-color: var(--line-strong);
 }
 
 /* A transposed table puts its labels in the first column, where a two-word
@@ -961,9 +1021,7 @@ a {
 }
 
 /* A row of figures inside a table. The six drawings share one viewBox, so the
-   only way they stay at a common scale is to size them by height — the global
-   `img { height: auto }` would instead stretch each to its own cell's width,
-   which the surrounding text lengths, not the drawings, decide. */
+   only way they stay at a common scale is to size them by height. */
 .prose td.cell-fig img {
 	height: 120px;
 	width: auto;
@@ -1015,7 +1073,7 @@ a {
 .prose .token.attr-value,
 .prose .token.keyword {
 	color: var(--text);
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .prose .token.function,
@@ -1026,7 +1084,7 @@ a {
 .prose .token.regex,
 .prose .token.important,
 .prose .token.variable {
-	color: var(--accent-dim);
+	color: var(--danger);
 }
 
 /* =============================================================================
@@ -1035,7 +1093,8 @@ a {
    The widget components in `$lib/components/rpm` were written against a
    different palette. Rather than rewrite every rule inside them, the names they
    use are re-declared here on `.prose` and pointed at this file's variables, so
-   the components still hardcode no colour of their own.
+   the components still hardcode no colour of their own. The two chart series
+   are drawn on a paper plate in both themes, so they use fixed, plate-safe hues.
    ========================================================================== */
 
 .prose {
@@ -1047,8 +1106,8 @@ a {
 	--axis: var(--line-strong);
 	--chip: var(--surface-active);
 	--panel-bg: var(--plate);
-	--series-1: var(--accent);
-	--series-2: var(--series-cool);
+	--series-1: var(--series-a);
+	--series-2: var(--series-b);
 }
 
 /* — The shell every interactive figure sits in — */
@@ -1058,7 +1117,7 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: var(--radius);
 }
 
 .prose .widget > figcaption {
@@ -1069,7 +1128,6 @@ a {
 
 .prose .widget h4 {
 	margin-top: 0;
-	font-weight: 600;
 }
 
 .prose .widget input {
@@ -1082,32 +1140,32 @@ a {
 .prose .rpm-btn {
 	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 600;
+	font-weight: 500;
 	line-height: 1.4;
 	padding: 0.4rem 0.85rem;
-	border-radius: 6px;
-	border: 1px solid transparent;
-	background: var(--accent);
+	border-radius: var(--radius);
+	border: 1px solid var(--text);
+	background: var(--text);
 	color: var(--text-inverse);
 	cursor: pointer;
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out);
+		color var(--dur-fast) var(--ease-out);
 }
 
 .prose .rpm-btn.ghost {
-	background: var(--surface-active);
-	border-color: var(--line);
+	background: transparent;
+	border-color: var(--line-strong);
 	color: var(--text);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose .rpm-btn:hover {
-		background: var(--accent-dim);
+		background: transparent;
+		color: var(--text);
 	}
 	.prose .rpm-btn.ghost:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
+		border-color: var(--text);
 	}
 }
 
@@ -1117,7 +1175,7 @@ a {
 }
 
 /* — Static diagrams. These are dark-ink figures with no background of their
-     own, so they get a light plate instead of floating on the dark page. — */
+     own, so they get a paper plate instead of floating on the charcoal page. — */
 
 .prose figure.plain img {
 	width: 100%;
@@ -1125,10 +1183,7 @@ a {
 	padding: var(--s-4);
 }
 
-/* — A pair of figures that only mean something read together. `auto-fit` is what
-     keeps them in one row: inside a 68ch measure two flex items with a basis wide
-     enough to be legible add up to more than the column and wrap to a stack
-     instead. The tracks give way on their own once the measure itself is narrow. — */
+/* — A pair of figures that only mean something read together. — */
 
 .prose .fig-row {
 	display: grid;
@@ -1137,15 +1192,15 @@ a {
 	align-items: start;
 }
 
-/* — Aside callout — */
+/* — Aside callout: a hairline rule at the left, nothing else — */
 
 .prose .note {
-	padding: var(--s-4) var(--s-5);
-	background: var(--surface);
-	border: 1px solid var(--line);
-	border-left: 3px solid var(--series-cool);
-	border-radius: 8px;
+	padding: var(--s-1) 0 var(--s-1) var(--s-5);
+	border-left: 1px solid var(--accent);
+	font-family: var(--font-sans);
 	font-size: 0.9375rem;
+	line-height: 1.65;
+	color: var(--text-secondary);
 }
 
 .prose .note > * + * {
@@ -1153,57 +1208,24 @@ a {
 }
 
 /* =============================================================================
-   Responsive (DESIGN.md §9)
+   Responsive
    ========================================================================== */
 
 @media (max-width: 1023px) {
 	:root {
-		--gap-hero: var(--s-9);
-		--gap-section: var(--s-8);
-	}
-
-	/* Rail collapses: label sits above its content, keeping its tracking. */
-	.rail {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.rail__label {
-		padding-top: 0;
-		margin-bottom: var(--s-4);
-	}
-
-	.rail__body {
-		max-width: none;
+		--gap-hero: var(--s-8);
+		--gap-section: var(--s-7);
 	}
 }
 
 @media (max-width: 767px) {
 	:root {
-		--gap-hero: var(--s-8);
+		--gap-hero: var(--s-7);
 		--gap-section: var(--s-7);
-	}
-
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
 	}
 }
 
 @media (max-width: 479px) {
-	/* Phone measure drops to roughly 40 characters, and justification tears at
-	   that width: too few words per line, so the spaces that absorb the slack
-	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
-	   on, since it still earns its keep on a narrow column. */
-	.prose > p,
-	.prose > blockquote p {
-		text-align: left;
-	}
-
 	.btn-row {
 		flex-direction: column;
 		align-items: stretch;
@@ -1216,9 +1238,8 @@ a {
 
 /* Coarse pointers get larger hit areas without changing the visual weight.
    Only the *interactive* tags need the 44px floor — `span.tag` (skills, post tags)
-   is a label, not a control, and would look bloated at that height.
-   Inline links inside a sentence are exempt from the target-size rule
-   (WCAG 2.5.8, "Inline" exception) and are deliberately left at text size. */
+   is a label, not a control. Inline links inside a sentence are exempt from the
+   target-size rule (WCAG 2.5.8, "Inline" exception). */
 @media (pointer: coarse) {
 	button.tag,
 	a.tag {

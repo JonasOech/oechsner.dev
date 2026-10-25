@@ -149,8 +149,9 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
+		font-family: var(--font-sans);
+		font-size: 0.8125rem;
+		font-weight: 600;
 		line-height: 1.4;
 		color: var(--text);
 	}
@@ -175,8 +176,8 @@
 
 	.legal__dl dt {
 		color: var(--text-muted);
+		font-family: var(--font-sans);
 		font-size: 0.8125rem;
-		font-weight: 700;
 	}
 
 	.legal__dl dd {

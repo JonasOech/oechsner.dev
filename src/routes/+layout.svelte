@@ -10,10 +10,10 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<!-- Must match --bg in app.css (one per paper); a meta attribute cannot reference a CSS
+	     variable. The footer's theme control rewrites them when the visitor overrides the system. -->
+	<meta name="theme-color" content="#fbf9f5" media="(prefers-color-scheme: light)" />
+	<meta name="theme-color" content="#1c1b19" media="(prefers-color-scheme: dark)" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>
@@ -23,18 +23,49 @@
      bottom of the viewport, so its position here costs the layout nothing. -->
 <ConsentBanner />
 
-<Header />
+<div class="shell">
+	<Header />
 
-<main id="main" tabindex="-1">
-	{@render children()}
-</main>
+	<div class="stage">
+		<main id="main" tabindex="-1">
+			{@render children()}
+		</main>
 
-<Footer />
+		<Footer />
+	</div>
+</div>
 
 <style>
+	.shell {
+		display: flex;
+		flex-direction: column;
+		min-height: 100dvh;
+	}
+
+	.stage {
+		display: flex;
+		flex-direction: column;
+		flex: 1 0 auto;
+		min-width: 0;
+	}
+
 	main {
 		display: block;
 		flex: 1 0 auto;
 		outline: none;
+		min-width: 0;
+	}
+
+	/* [index rail] [reading column + margin], centred as one composition: the column sits a
+	   little left of the page's middle and the margin to its right holds the post outline
+	   when there is room for it. */
+	@media (min-width: 56em) {
+		.shell {
+			display: grid;
+			grid-template-columns: var(--rail-w) minmax(0, calc(var(--col) + var(--margin-w) + var(--s-6)));
+			column-gap: var(--s-8);
+			justify-content: center;
+			align-items: stretch;
+		}
 	}
 </style>

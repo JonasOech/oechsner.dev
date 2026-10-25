@@ -2,7 +2,6 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
-	import AsciiWall from '$lib/components/AsciiWall.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -49,20 +48,12 @@
 	</Rail>
 </div>
 
-<AsciiWall />
-
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
-	}
-
 	.channels {
 		margin: 0;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		gap: var(--s-5) var(--s-6);
 	}
 
 	.channel {
@@ -83,17 +74,17 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1.0625rem;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-decoration-color: var(--line-strong);
+		text-underline-offset: 0.25em;
+		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 		overflow-wrap: anywhere;
 	}
 
@@ -102,7 +93,7 @@
 			color: var(--accent);
 		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -112,12 +103,13 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
 		margin-top: var(--s-4);
+		font-family: var(--font-sans);
 		font-size: 0.8125rem;
 		color: var(--text-muted);
 		max-width: var(--measure);
