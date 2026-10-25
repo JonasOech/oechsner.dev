@@ -1,336 +1,296 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
-
-	let sentinel: HTMLElement;
-	let scrolled = $state(false);
+	import Icon from '$lib/components/Icon.svelte';
+	import { nav, site, contacts, feeds } from '$lib/data/site';
+	import { trackFeed } from '$lib/track';
 
 	/**
-	 * `nav[0]` (Writing) is the site's root and stays on the bar at every width; the rest
-	 * fold behind "More" once the row would otherwise break onto two lines.
+	 * The left column of the split page. At 64em and wider it is a fixed full-height rail
+	 * carrying the name, a one-line description, the nav and the contact links; below that
+	 * it is an ordinary header at the top of the page (name, then nav on one wrapping row).
+	 *
+	 * On post pages the outline is drawn into the rail's empty middle. It stays in the
+	 * article's own markup (so it prerenders and needs no script) and is positioned over the
+	 * column with `position: fixed`, which is why the rail trims its description there.
 	 */
-	const [primary, ...collapsible] = nav;
-
-	/**
-	 * Below this the four labels no longer fit on one line — see DESIGN.md §9. Kept in `em`
-	 * so it tracks the label widths under text-only zoom rather than the raw viewport, and
-	 * duplicated in the stylesheet's media query: the two have to move together.
-	 */
-	const COLLAPSE_QUERY = '(max-width: 35em)';
-
-	let moreOpen = $state(false);
-	let moreEl: HTMLElement;
-	let moreButton: HTMLButtonElement;
-
-	/**
-	 * Header scroll state via a 1px sentinel at the top of the document rather than a
-	 * `scroll` listener — no per-frame work (DESIGN.md §7).
-	 */
-	$effect(() => {
-		if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				scrolled = !entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	});
-
-	// Widening past the breakpoint puts the collapsed links back on the bar, so the
-	// disclosure state they belonged to has to go with them.
-	$effect(() => {
-		const mq = window.matchMedia(COLLAPSE_QUERY);
-		const sync = () => {
-			if (!mq.matches) moreOpen = false;
-		};
-		mq.addEventListener('change', sync);
-		return () => mq.removeEventListener('change', sync);
-	});
-
-	// Clicking the entry for the current page does not navigate, so the links close the
-	// menu themselves as well.
-	afterNavigate(() => {
-		moreOpen = false;
-	});
-
-	$effect(() => {
-		if (!moreOpen) return;
-		const onPointerDown = (event: PointerEvent) => {
-			if (!moreEl.contains(event.target as Node)) moreOpen = false;
-		};
-		document.addEventListener('pointerdown', onPointerDown);
-		return () => document.removeEventListener('pointerdown', onPointerDown);
-	});
-
-	function onWindowKeydown(event: KeyboardEvent) {
-		if (event.key !== 'Escape' || !moreOpen) return;
-		moreOpen = false;
-		moreButton.focus();
-	}
-
-	function onMoreFocusout(event: FocusEvent) {
-		if (!moreEl.contains(event.relatedTarget as Node | null)) moreOpen = false;
-	}
-
 	function isCurrent(href: string): boolean {
 		return href === '/' ? page.url.pathname === '/' : page.url.pathname.startsWith(href);
 	}
 
-	const moreHoldsCurrent = $derived(collapsible.some((item) => isCurrent(item.href)));
+	const isPost = $derived(page.url.pathname.startsWith('/blog/'));
+
+	/** The three channels worth a permanent place in the rail; the university address stays on /contact. */
+	const railContacts = contacts.filter((c) => c.primary || c.icon !== 'mail');
 </script>
 
-<svelte:window onkeydown={onWindowKeydown} />
-
-<div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
-
-<header class="header" data-scrolled={scrolled}>
-	<nav class="container nav" aria-label="Primary">
-		<a
-			class="nav__link"
-			href={primary.href}
-			aria-current={isCurrent(primary.href) ? 'page' : undefined}
-		>
-			{primary.label}
-		</a>
-
-		<!-- `display: contents` above the breakpoint, so these links sit directly in the
-		     nav row and only become a dropdown once the bar runs out of width. -->
-		<div
-			class="more"
-			data-open={moreOpen}
-			bind:this={moreEl}
-			onfocusout={onMoreFocusout}
-		>
-			<button
-				class="nav__link more__button"
-				type="button"
-				bind:this={moreButton}
-				aria-expanded={moreOpen}
-				aria-controls="nav-more"
-				data-current={moreHoldsCurrent ? 'true' : undefined}
-				onclick={() => (moreOpen = !moreOpen)}
-			>
-				More
-				<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-					<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-				</svg>
-			</button>
-
-			<div class="more__panel" id="nav-more">
-				{#each collapsible as item (item.href)}
-					<a
-						class="nav__link"
-						href={item.href}
-						aria-current={isCurrent(item.href) ? 'page' : undefined}
-						onclick={() => (moreOpen = false)}
-					>
-						{item.label}
-					</a>
-				{/each}
-			</div>
+<header class="side" data-post={isPost}>
+	<div class="side__inner">
+		<div class="side__id">
+			<a class="side__name" href="/">{site.name}</a>
+			<p class="side__desc">{site.description}</p>
 		</div>
-	</nav>
+
+		<nav class="side__nav" aria-label="Primary">
+			{#each nav as item (item.href)}
+				<a
+					class="side__link"
+					href={item.href}
+					aria-current={isCurrent(item.href) ? 'page' : undefined}
+				>
+					{item.label}
+				</a>
+			{/each}
+		</nav>
+
+		<ul class="side__contact" aria-label="Contact">
+			{#each railContacts as channel (channel.href)}
+				<li>
+					<a
+						class="side__contact-link"
+						href={channel.href}
+						target={channel.href.startsWith('http') ? '_blank' : undefined}
+						rel={channel.href.startsWith('http') ? 'noreferrer noopener' : undefined}
+					>
+						<Icon name={channel.icon} size={14} />
+						{channel.label}
+					</a>
+				</li>
+			{/each}
+			<li>
+				<a
+					class="side__contact-link"
+					href={feeds.rss}
+					type="application/rss+xml"
+					data-sveltekit-reload
+					onclick={() => trackFeed('open-rss', 'side-rail')}
+				>
+					<Icon name="rss" size={14} />
+					RSS
+				</a>
+			</li>
+		</ul>
+	</div>
 </header>
 
 <style>
-	.sentinel {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
+	/* — Collapsed (default): a plain top header — */
+	.side {
+		border-bottom: 1px solid var(--line);
 	}
 
-	.header {
-		position: sticky;
-		top: 0;
-		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
-	}
-
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
-	}
-
-	.nav {
+	.side__inner {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0 var(--s-5);
+		padding: var(--s-4) var(--gutter) var(--s-2);
 	}
 
-	.nav__link {
+	.side__id {
+		display: block;
+	}
+
+	.side__name {
+		font-family: var(--font-display);
+		font-variation-settings: var(--display-settings);
+		font-size: 1.25rem;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+		line-height: 1.2;
+		color: var(--text);
+		text-decoration: none;
+		display: inline-block;
+		padding-block: 0.5rem;
+	}
+
+	.side__desc,
+	.side__contact {
+		display: none;
+	}
+
+	.side__nav {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 var(--s-5);
+	}
+
+	.side__link {
+		position: relative;
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		line-height: 1;
-		letter-spacing: 0.11em;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
+		line-height: 1;
 		color: var(--text-muted);
 		text-decoration: none;
-		white-space: nowrap;
-		position: relative;
-		padding: 0.5rem 0.125rem;
+		padding: 0.875rem 0;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	.nav__link::after {
+	/* Collapsed: the current page is marked by a hairline underneath its label. */
+	.side__link::before {
 		content: '';
 		position: absolute;
 		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
+		right: 0;
+		bottom: 0.5rem;
 		height: 1px;
-		background: currentColor;
+		background: var(--accent);
 		transform: scaleX(0);
-		transform-origin: right;
+		transform-origin: left;
 		transition: transform var(--dur-base) var(--ease-out);
+	}
+
+	.side__link[aria-current='page'] {
+		color: var(--text);
+	}
+
+	.side__link[aria-current='page']::before {
+		transform: scaleX(1);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.nav__link:hover {
-			color: var(--text-secondary);
+		.side__link:hover {
+			color: var(--text);
 		}
-		.nav__link:hover::after {
+		.side__link:hover::before {
 			transform: scaleX(1);
-			transform-origin: left;
 		}
 	}
 
-	.nav__link:active {
-		color: var(--text);
-	}
-
-	.nav__link[aria-current='page'],
-	.nav__link[data-current='true'] {
-		color: var(--text);
-	}
-
-	.nav__link:focus-visible {
+	.side__link:focus-visible,
+	.side__name:focus-visible,
+	.side__contact-link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
-	/* Wide: the wrapper and its panel dissolve, leaving the links as plain flex items. */
-	.more,
-	.more__panel {
-		display: contents;
-	}
-
-	/* Two-class selectors throughout the disclosure, so the `pointer: coarse` block
-	   further down cannot resurrect the button on a wide touch screen. */
-	.nav .more__button {
-		display: none;
-		background: none;
-		border: 0;
-		cursor: pointer;
-		align-items: center;
-		gap: 0.3em;
-	}
-
-	.more__chevron {
-		width: 0.75em;
-		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		transition: transform var(--dur-base) var(--ease-out);
-	}
-
-	.more[data-open='true'] .more__chevron {
-		transform: rotate(180deg);
-	}
-
-	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
-	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
-	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
-		.nav {
-			flex-wrap: nowrap;
-		}
-
-		.nav .more {
-			display: block;
-			position: relative;
-		}
-
-		.nav .more__button {
-			display: inline-flex;
-		}
-
-		.nav .more__panel {
-			display: grid;
-			position: absolute;
-			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
-			min-width: max-content;
-			max-width: calc(100vw - 2 * var(--gutter));
-			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
-		}
-
-		.nav .more:not([data-open='true']) .more__panel {
-			display: none;
-		}
-
-		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
-		}
-
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
-		}
-	}
-
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
-		.nav__link {
+		.side__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
+			padding-block: 0;
+		}
+		.side__link::before {
+			bottom: 0.625rem;
+		}
+	}
+
+	/* — Split (64em and up): the fixed left column — */
+	@media (min-width: 64em) {
+		.side {
+			position: sticky;
+			top: 0;
+			height: 100dvh;
+			border-bottom: 0;
+			border-right: 1px solid var(--line);
+		}
+
+		.side__inner {
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+			align-items: stretch;
+			justify-content: flex-start;
+			gap: var(--s-7);
+			padding: var(--s-8) var(--s-6) var(--s-6);
+			overflow-y: auto;
+		}
+
+		.side__name {
+			font-size: 1.5rem;
+			padding-block: 0;
+		}
+
+		.side__desc {
+			display: block;
+			margin-top: var(--s-3);
+			font-size: 0.875rem;
+			line-height: 1.6;
+			color: var(--text-muted);
+			max-width: 26ch;
+			text-wrap: pretty;
+		}
+
+		/* The outline needs the middle of the rail on a post, so the description steps
+		   aside and the nav tightens. */
+		.side[data-post='true'] .side__desc {
+			display: none;
+		}
+
+		.side[data-post='true'] .side__inner {
+			gap: var(--s-5);
+			padding-top: var(--s-6);
+		}
+
+		.side__nav {
+			flex-direction: column;
+			gap: 0;
+		}
+
+		.side__link {
+			font-size: 0.8125rem;
+			letter-spacing: 0.1em;
+			padding: 0.5rem 0 0.5rem 1.75rem;
+		}
+
+		/* A short rule slides in ahead of the current page. */
+		.side__link::before {
+			left: 0;
+			right: auto;
+			bottom: auto;
+			top: calc(50% - 0.5px);
+			width: 1.125rem;
+			transform: scaleX(0);
+		}
+
+		.side__contact {
+			display: grid;
+			gap: 0;
+			list-style: none;
+			margin: auto 0 0;
+			padding: var(--s-4) 0 0;
+			border-top: 1px solid var(--line);
+		}
+
+		.side__contact-link {
+			display: inline-flex;
+			align-items: center;
+			gap: var(--s-2);
+			font-size: 0.8125rem;
+			line-height: 1;
+			color: var(--text-secondary);
+			text-decoration: none;
+			padding: 0.5rem 0;
+			transition: color var(--dur-fast) var(--ease-out);
+		}
+
+		.side__contact-link :global(svg) {
+			color: var(--text-muted);
+			transition: color var(--dur-fast) var(--ease-out);
+		}
+
+		@media (hover: hover) and (pointer: fine) {
+			.side__contact-link:hover,
+			.side__contact-link:hover :global(svg) {
+				color: var(--accent);
+			}
+		}
+
+		/* Short windows: the rail would scroll, so drop to the essentials. */
+		@media (max-height: 40rem) {
+			.side__desc {
+				display: none;
+			}
+			.side__inner {
+				gap: var(--s-5);
+				padding-top: var(--s-6);
+			}
 		}
 	}
 </style>

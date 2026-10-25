@@ -17,7 +17,7 @@
 export const FEED_ACTIONS = ['copy-url', 'open-rss', 'open-atom'] as const;
 
 /** Where it was pressed — the same offer is made on three different surfaces. */
-export const FEED_SURFACES = ['post-footer', 'site-footer', 'home-intro'] as const;
+export const FEED_SURFACES = ['post-footer', 'site-footer', 'home-intro', 'side-rail'] as const;
 
 export type FeedAction = (typeof FEED_ACTIONS)[number];
 export type FeedSurface = (typeof FEED_SURFACES)[number];

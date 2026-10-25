@@ -94,8 +94,17 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+		padding-top: var(--s-7);
+		max-width: 40rem;
+	}
+
+	/* The opening paragraphs are the page's statement, so they are set as text, not UI. */
+	.intro .lede {
+		font-family: var(--font-display);
+		font-size: 1.375rem;
+		line-height: 1.55;
+		color: var(--text);
+		max-width: none;
 	}
 
 	.entry__org {
@@ -141,14 +150,18 @@
 
 	.grades dd {
 		margin: 0;
-		font-family: var(--font-mono);
+		font-family: var(--font-sans);
 		font-size: 0.875rem;
+		font-variant-numeric: tabular-nums;
 		color: var(--text);
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
+		}
+		.intro .lede {
+			font-size: 1.25rem;
 		}
 	}
 </style>

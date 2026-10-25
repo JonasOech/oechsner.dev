@@ -31,11 +31,10 @@
 <style>
 	.error {
 		display: grid;
-		justify-items: center;
-		text-align: center;
-		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-10);
+		justify-items: start;
+		gap: var(--s-4);
+		padding-top: var(--s-9);
+		padding-bottom: var(--s-8);
 	}
 
 	.lede {
@@ -44,7 +43,7 @@
 
 	@media (max-width: 767px) {
 		.error {
-			padding-top: var(--s-8);
+			padding-top: var(--s-6);
 		}
 	}
 </style>

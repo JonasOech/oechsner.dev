@@ -11,9 +11,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<meta name="theme-color" content="#fbfaf7" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>
@@ -23,18 +21,23 @@
      bottom of the viewport, so its position here costs the layout nothing. -->
 <ConsentBanner />
 
-<Header />
+<!-- The split page: `Header` is the fixed left column (a top bar below 64em), `.stage` is
+     the column that scrolls. Both live in app.css. -->
+<div class="shell">
+	<Header />
 
-<main id="main" tabindex="-1">
-	{@render children()}
-</main>
+	<div class="stage">
+		<main id="main" tabindex="-1">
+			{@render children()}
+		</main>
 
-<Footer />
+		<Footer />
+	</div>
+</div>
 
 <style>
 	main {
 		display: block;
-		flex: 1 0 auto;
 		outline: none;
 	}
 </style>

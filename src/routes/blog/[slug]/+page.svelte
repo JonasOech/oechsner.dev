@@ -167,42 +167,24 @@
 </div>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	/* One column. The outline is not a track of this grid any more: it is drawn into the
+	   rail on the left of the page (see PostOutline), so the article simply centres in the
+	   scrolling stage. */
 	.post-layout {
 		display: grid;
+		grid-template-columns: minmax(0, var(--measure-prose));
+		justify-content: center;
 	}
 
-	@media (min-width: 1100px) {
-		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
-			grid-template-columns:
-				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
-				minmax(0, var(--outline-width));
-			justify-content: center;
-			column-gap: var(--s-5);
-		}
-	}
-
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
+		padding-top: var(--s-8);
+		min-width: 0;
 	}
 
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__back {
@@ -210,50 +192,46 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
 		min-height: 44px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
-		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
+			color: var(--accent);
 		}
 	}
 
 	.post__back:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
+		font-family: var(--font-display);
+		font-variation-settings: var(--display-settings);
+		font-size: clamp(2rem, 4.6vw, 2.875rem);
+		font-weight: 500;
+		line-height: 1.12;
 		letter-spacing: -0.02em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-style: italic;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
@@ -262,69 +240,52 @@
 		color: var(--text-muted);
 	}
 
+	/* Meta, tags and the laurel sit on a ruled strip under the title — the post's marginalia. */
 	.post__facts {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: var(--s-5);
 		flex-wrap: wrap;
+		padding-top: var(--s-4);
+		border-top: 1px solid var(--line);
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
-	}
-
-	.post__tags {
-		margin-top: var(--s-1);
+		gap: var(--s-3);
+		min-width: min(100%, 20rem);
+		flex: 1 1 20rem;
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
 		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		background: var(--plate);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__subscribe {
-		grid-column: 2;
 		width: 100%;
-		max-width: var(--measure-prose);
-		margin-inline: auto;
 		margin-top: var(--s-8);
 	}
 
 	.post__nav {
-		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
+		gap: var(--s-5);
+		margin-top: var(--s-8);
+		padding-top: var(--s-5);
 		border-top: 1px solid var(--line);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		align-content: start;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -332,36 +293,34 @@
 		justify-items: end;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
-	}
-
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.post__nav-title {
+		font-family: var(--font-display);
+		font-variation-settings: var(--display-settings);
+		font-size: 1.125rem;
+		font-weight: 500;
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		line-height: 1.3;
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	@media (max-width: 767px) {
+	@media (hover: hover) and (pointer: fine) {
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
+		}
+	}
+
+	@media (max-width: 47.99em) {
 		.post {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;

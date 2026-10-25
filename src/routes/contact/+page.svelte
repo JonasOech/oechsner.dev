@@ -2,7 +2,6 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
-	import AsciiWall from '$lib/components/AsciiWall.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -48,8 +47,6 @@
 		</p>
 	</Rail>
 </div>
-
-<AsciiWall />
 
 <style>
 	.lede {

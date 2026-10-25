@@ -105,51 +105,46 @@
 </nav>
 
 <style>
-	/* The outline as a contained object rather than a bare list floating in the track:
-	   a bordered panel, sticky in the article's row, bled slightly toward the page edge
-	   so its padding does not eat further into the already-narrow 180px track. */
+	/* Collapsed layout: there is no rail to hold it, and a long outline above the article
+	   would bury the title. The headings are reachable by scrolling, as before. */
 	.outline {
-		grid-column: 1;
-		grid-row: 1;
-		position: sticky;
-		align-self: start;
-		top: calc(var(--header-h) + var(--s-5));
-		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
-		max-height: calc(100dvh - var(--header-h) - var(--s-7));
-		display: flex;
-		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
-		overflow: hidden;
+		display: none;
 	}
 
-	@media (max-width: 1099px) {
+	/* Split layout: the outline is painted into the rail, under the nav and above the
+	   contact links. It lives in the article's markup, so it prerenders and works without
+	   script, and `position: fixed` lines it up with the rail's own padding. The offsets
+	   mirror the rail's stack (name, nav, contact) and are the one place the two
+	   components know about each other. */
+	@media (min-width: 64em) and (min-height: 34rem) {
 		.outline {
-			display: none;
+			display: flex;
+			flex-direction: column;
+			position: fixed;
+			z-index: 2;
+			left: 0;
+			top: 16.5rem;
+			bottom: 10.5rem;
+			width: var(--side-width);
+			padding: 0 var(--s-6);
+			min-height: 0;
 		}
 	}
 
 	.outline__head {
 		flex: none;
-		padding: var(--s-4) var(--s-4) var(--s-3);
+		padding-bottom: var(--s-3);
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 400;
+		font-family: var(--font-sans);
+		font-size: 0.6875rem;
+		font-weight: 600;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
-		margin: 0 0 var(--s-3);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		margin: 0 0 var(--s-2);
 	}
 
 	.outline__progress {
@@ -162,14 +157,12 @@
 		flex: 1 1 auto;
 		height: 1px;
 		background: var(--line);
-		border-radius: 1px;
 		overflow: hidden;
 	}
 
 	.outline__fill {
 		height: 100%;
 		background: var(--accent);
-		border-radius: 1px;
 		transition: width 120ms var(--ease-out);
 	}
 
@@ -185,75 +178,55 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
-		padding: 0 var(--s-2) var(--s-2);
 		scrollbar-width: thin;
+		scrollbar-color: var(--line-strong) transparent;
 	}
 
 	.outline__list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
-		display: grid;
-		gap: 1px;
+		border-left: 1px solid var(--line);
 	}
 
 	.outline__item--sub {
-		padding-left: var(--s-4);
+		padding-left: var(--s-3);
 	}
 
-	/* The lit-key row: a full-width hit area rather than a bare underlined link, so the
-	   active heading reads as a switched-on panel segment, not just coloured text. */
+	/* The current section is marked by a green hairline laid over the list's own rule. */
 	.outline__link {
 		position: relative;
 		display: block;
-		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
+		margin-left: -1px;
+		padding: 0.3rem 0 0.3rem var(--s-3);
+		border-left: 1px solid transparent;
 		font-size: 0.8125rem;
-		line-height: 1.35;
+		line-height: 1.4;
 		color: var(--text-muted);
 		text-decoration: none;
 		transition:
-			background-color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out),
 			color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__item--sub .outline__link {
-		font-size: 0.75rem;
-		padding-top: 0.32rem;
-		padding-bottom: 0.32rem;
-	}
-
-	.outline__link::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 3px;
-		bottom: 3px;
-		width: 2px;
-		border-radius: 1px;
-		background: var(--accent);
-		transform: scaleY(0);
-		transition: transform var(--dur-base) var(--ease-out);
+		font-size: 0.78125rem;
 	}
 
 	.outline__link.is-active {
-		background: var(--accent-wash);
 		color: var(--text);
-	}
-
-	.outline__link.is-active::before {
-		transform: scaleY(1);
+		border-left-color: var(--accent);
+		font-weight: 500;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__link:not(.is-active):hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__link:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__link:focus-visible {
@@ -263,39 +236,34 @@
 
 	.outline__foot {
 		flex: none;
-		border-top: 1px solid var(--line);
-		padding: var(--s-2);
+		padding-top: var(--s-3);
 	}
 
 	.outline__top {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
+		padding: 0.25rem 0;
 		font-size: 0.75rem;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition:
-			background-color var(--dur-fast) var(--ease-out),
-			color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__top svg {
 		flex: none;
-		width: 15px;
-		height: 15px;
+		width: 14px;
+		height: 14px;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__top:hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__top:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__top:focus-visible {
@@ -306,7 +274,6 @@
 	@media (prefers-reduced-motion: reduce) {
 		.outline__fill,
 		.outline__link,
-		.outline__link::before,
 		.outline__top {
 			transition: none;
 		}

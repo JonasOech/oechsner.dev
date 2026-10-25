@@ -1,90 +1,93 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md ("Split page")
    Every colour in this project resolves to a variable declared in this block.
+   Fonts are self-hosted through @fontsource-variable; nothing is requested from a
+   third party.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource-variable/jetbrains-mono/wght.css';
 
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	/* — Paper — */
+	--bg: #fbfaf7;
+	--bg-rgb: 251, 250, 247;
+	/* Code wells and the hover wash share the surface tone: paper one step darker. */
+	--bg-deep: #f3f1ec;
+	--bg-deep-rgb: 243, 241, 236;
+	--surface: #f3f1ec;
+	--surface-rgb: 243, 241, 236;
+	--surface-hover: #ece9e2;
+	--surface-hover-rgb: 236, 233, 226;
+	--surface-active: #e8e5dd;
+	--surface-active-rgb: 232, 229, 221;
 
 	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	--text: #17181a;
+	--text-rgb: 23, 24, 26;
+	--text-secondary: #34373b;
+	--text-secondary-rgb: 52, 55, 59;
+	--text-muted: #5c5f63;
+	--text-muted-rgb: 92, 95, 99;
+	--text-inverse: #fbfaf7;
+	--text-inverse-rgb: 251, 250, 247;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #2c2e31;
+	--text-pressed-rgb: 44, 46, 49;
 
-	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	/* — Structure: hairlines only — */
+	--line: #dedad0;
+	--line-rgb: 222, 218, 208;
+	--line-strong: #8f8b7e;
+	--line-strong-rgb: 143, 139, 126;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Accent: one deep green, for signal only — */
+	--accent: #1b5e4b;
+	--accent-rgb: 27, 94, 75;
+	--accent-dim: #134a3a;
+	--accent-dim-rgb: 19, 74, 58;
+	--accent-wash: rgba(27, 94, 75, 0.07);
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Figure plate: the page is already paper, so the plate is a shade lighter. — */
+	--plate: #ffffff;
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
-
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series: the green, and an ink blue as the second voice — */
+	--series-cool: #2f5f8a;
+	--series-cool-rgb: 47, 95, 138;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #a02828;
+	--danger-rgb: 160, 40, 40;
+	--success: #2a6b3a;
+	--success-rgb: 42, 107, 58;
 
 	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
 
 	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--font-display: 'Newsreader Variable', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+	--font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	/* Newsreader's optical-size axis raises stroke contrast as the size grows. Titles pin it
+	   to a text-size master so the serif stays sturdy and low-contrast at every size. */
+	--display-settings: 'opsz' 18;
 
 	/* — Layout — */
-	--container: 1080px;
+	--side-width: 19rem;
+	--stage-max: 58rem;
+	--container: 58rem;
 	--measure: 62ch;
-	--measure-prose: 68ch;
-	--rail-width: 200px;
-	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
-	   and the post column has to keep its measure with two of these beside it. */
-	--outline-width: 180px;
-	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* In rem, not ch: the prose is a larger serif than its container's sans, and `ch` would
+	   resolve against the wrong face. 37rem is roughly 65 characters of 19px Newsreader. */
+	--measure-prose: 37rem;
+	--rail-width: 8.5rem;
+	--gutter: clamp(1.25rem, 5vw, 3.5rem);
+	/* Only the top bar of the collapsed layout is sticky-free; the split layout has no
+	   header to clear, so anchors need just a little air. */
+	--header-h: 0rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -97,28 +100,31 @@
 	--s-8: 4rem;
 	--s-9: 6rem;
 	--s-10: 8rem;
-	--s-11: 11rem;
+	--s-11: 10rem;
 
 	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	--gap-hero: var(--s-9);
+	--gap-section: var(--s-9);
 
-	/* — Elevation — */
+	/* — Elevation: none. The tokens stay so older rules resolve, and all are a no-op. — */
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: 0 0 0 0 transparent;
+	--shadow-2: 0 0 0 0 transparent;
+	--shadow-3: 0 0 0 0 transparent;
+	--shadow-4: 0 0 0 0 transparent;
+	--shadow-inset: 0 0 0 0 transparent;
+
+	/* — Shape — */
+	--radius: 2px;
 
 	/* — Motion — */
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	--dur-fast: 150ms;
+	--dur-base: 220ms;
+	--dur-slow: 480ms;
 
-	color-scheme: dark;
+	color-scheme: light;
 }
 
 /* =============================================================================
@@ -133,57 +139,23 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
-	scroll-padding-top: calc(var(--header-h) + var(--s-5));
+	scroll-padding-top: var(--s-6);
 	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
-	display: flex;
-	flex-direction: column;
 	min-height: 100dvh;
 	background: var(--bg);
 	color: var(--text-secondary);
 	font-family: var(--font-sans);
 	font-size: 0.9375rem;
-	line-height: 1.75;
+	line-height: 1.7;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
+	font-feature-settings: 'cv11', 'ss03';
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -193,7 +165,7 @@ h4,
 h5,
 h6 {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 600;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -215,8 +187,45 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
+	background: rgba(var(--accent-rgb), 0.2);
 	color: var(--text);
+}
+
+/* =============================================================================
+   The split shell — a fixed left column and a scrolling right column.
+   Below 64em the column is a plain top header and the stage is the whole page.
+   ========================================================================== */
+
+.shell {
+	display: block;
+}
+
+.stage {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 100dvh;
+}
+
+.stage > main {
+	flex: 1 0 auto;
+}
+
+@media (min-width: 64em) {
+	.shell {
+		display: grid;
+		grid-template-columns: var(--side-width) minmax(0, 1fr);
+		align-items: start;
+	}
+
+	html {
+		scroll-padding-top: var(--s-7);
+	}
+
+	:root {
+		--gap-hero: var(--s-10);
+		--gap-section: var(--s-10);
+	}
 }
 
 /* =============================================================================
@@ -225,7 +234,6 @@ a {
 
 .container {
 	position: relative;
-	z-index: 1;
 	width: 100%;
 	max-width: var(--container);
 	margin-inline: auto;
@@ -240,23 +248,24 @@ a {
 	margin-top: var(--gap-section);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
+/* The rail: a small italic label in its own margin column, with the content beside it.
+   The label is the only place the serif italic appears outside running text. */
 .rail {
 	display: grid;
 	grid-template-columns: var(--rail-width) minmax(0, 1fr);
-	gap: 0;
+	gap: 0 var(--s-5);
+	border-top: 1px solid var(--line);
+	padding-top: var(--s-5);
 }
 
 .rail__label {
 	font-family: var(--font-display);
-	font-size: 0.8125rem;
+	font-variation-settings: var(--display-settings);
+	font-size: 1rem;
+	font-style: italic;
 	font-weight: 400;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
 	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
 	margin: 0;
 }
 
@@ -280,35 +289,36 @@ a {
    Typography helpers
    ========================================================================== */
 
+/* Tracked small caps for kickers and meta. Accent is reserved for the kicker, which is
+   the one place the page announces something. */
 .eyebrow {
-	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--accent);
 	margin: 0;
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-variation-settings: var(--display-settings);
+	font-size: clamp(2.25rem, 5.4vw, 3.5rem);
+	font-weight: 500;
+	line-height: 1.08;
+	letter-spacing: -0.018em;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-variation-settings: var(--display-settings);
+	font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+	font-weight: 500;
 	line-height: 1.2;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.012em;
 }
 
 .lede {
@@ -319,9 +329,10 @@ a {
 .meta {
 	font-family: var(--font-sans);
 	font-size: 0.75rem;
-	font-weight: 700;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.01em;
+	letter-spacing: 0.02em;
+	font-variant-numeric: tabular-nums;
 	color: var(--text-muted);
 	margin: 0;
 }
@@ -329,9 +340,9 @@ a {
 .label {
 	font-family: var(--font-sans);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
+	letter-spacing: 0.12em;
 	text-transform: uppercase;
 	color: var(--text-muted);
 	margin: 0;
@@ -347,7 +358,7 @@ a {
    Components
    ========================================================================== */
 
-/* — Buttons — */
+/* — Buttons: rectangles with a hairline, inverted on hover — */
 
 .btn {
 	display: inline-flex;
@@ -356,29 +367,25 @@ a {
 	gap: var(--s-2);
 	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1;
 	padding: 0.6875rem 1.125rem;
 	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	border-radius: var(--radius);
+	border: 1px solid var(--text);
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
 		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
-		transform var(--dur-fast) var(--ease-out),
-		box-shadow var(--dur-fast) var(--ease-out);
+		color var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
 	width: 15px;
 	height: 15px;
 	flex: none;
-	transition: transform 220ms var(--ease-out);
 }
 
 .btn--primary {
@@ -387,39 +394,28 @@ a {
 }
 
 .btn--secondary {
-	background: var(--surface);
+	background: transparent;
 	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	border-color: var(--line-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
-	}
-	.btn--primary:hover svg {
-		transform: translateX(3px);
+		background: var(--accent);
+		border-color: var(--accent);
 	}
 	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
-	}
-	.btn--secondary:hover svg {
-		transform: translateY(2px);
+		border-color: var(--accent);
+		color: var(--accent);
 	}
 }
 
 .btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
+	background: var(--accent-dim);
+	border-color: var(--accent-dim);
 }
 
 .btn--secondary:active {
-	transform: translateY(0);
 	background: var(--surface-active);
 }
 
@@ -432,9 +428,7 @@ a {
 .btn[aria-disabled='true'] {
 	opacity: 0.45;
 	cursor: not-allowed;
-	transform: none;
 	pointer-events: none;
-	box-shadow: none;
 }
 
 .btn-row {
@@ -443,24 +437,23 @@ a {
 	gap: var(--s-3);
 }
 
-/* — Prose links — */
+/* — Prose links: ink with a hairline underline that turns green — */
 
 .link {
 	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+	text-decoration-color: var(--line-strong);
 	transition:
-		background-size 280ms var(--ease-out),
+		text-decoration-color var(--dur-fast) var(--ease-out),
 		color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
 		color: var(--accent);
-		background-size: 100% 1px;
+		text-decoration-color: var(--accent);
 	}
 }
 
@@ -477,22 +470,21 @@ a {
 .link[aria-disabled='true'] {
 	color: var(--text-muted);
 	pointer-events: none;
-	background-image: none;
 }
 
-/* — Tags — */
+/* — Tags: tracked small caps inside a hairline, no fill — */
 
 .tag {
 	display: inline-block;
 	font-family: var(--font-sans);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
+	border-radius: var(--radius);
+	background: transparent;
 	color: var(--text-muted);
 	border: 1px solid var(--line);
 	text-decoration: none;
@@ -503,11 +495,15 @@ a {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
+	button.tag:hover,
+	a.tag:hover {
 		color: var(--accent);
-		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+		border-color: var(--accent);
 	}
+}
+
+button.tag {
+	cursor: pointer;
 }
 
 .tag:active {
@@ -519,10 +515,11 @@ a {
 	box-shadow: var(--focus-ring);
 }
 
+/* The pressed filter inverts to ink: a state, so it is allowed a fill. */
 .tag[aria-pressed='true'] {
 	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--text);
+	border-color: var(--text);
 }
 
 .tag[aria-disabled='true'] {
@@ -547,12 +544,14 @@ a {
 }
 
 .entry__title {
-	font-size: 1.1875rem;
-	font-weight: 700;
-	line-height: 1.35;
+	font-family: var(--font-display);
+	font-variation-settings: var(--display-settings);
+	font-size: 1.25rem;
+	font-weight: 500;
+	line-height: 1.3;
 	letter-spacing: -0.005em;
 	color: var(--text);
-	margin: 0 0 0.625rem;
+	margin: 0 0 0.5rem;
 }
 
 .entry__body {
@@ -581,14 +580,12 @@ a {
 	font-family: var(--font-sans);
 	font-size: 0.9375rem;
 	font-weight: 400;
-	background: var(--surface);
+	background: var(--bg);
 	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--radius);
 	padding: 0.6875rem 0.875rem;
-	transition:
-		border-color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out);
+	transition: border-color var(--dur-fast) var(--ease-out);
 }
 
 .field::placeholder {
@@ -596,13 +593,12 @@ a {
 }
 
 .field:hover {
-	border-color: var(--line-strong);
+	border-color: var(--text-muted);
 }
 
 .field:focus {
 	outline: none;
-	border-color: var(--accent-dim);
-	background: var(--surface-hover);
+	border-color: var(--accent);
 }
 
 .field:focus-visible {
@@ -629,9 +625,8 @@ a {
 	background: var(--text);
 	color: var(--text-inverse);
 	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
-	box-shadow: var(--shadow-2);
+	font-weight: 600;
+	border-radius: var(--radius);
 	text-decoration: none;
 	transition: top var(--dur-base) var(--ease-out);
 }
@@ -641,13 +636,13 @@ a {
 }
 
 /* =============================================================================
-   Motion — L1 → low-L2, CSS only (DESIGN.md §7)
+   Motion — a short fade and nothing else, CSS only
    ========================================================================== */
 
 @keyframes rise {
 	from {
 		opacity: 0;
-		transform: translateY(14px);
+		transform: translateY(6px);
 	}
 	to {
 		opacity: 1;
@@ -658,12 +653,12 @@ a {
 .enter {
 	opacity: 0;
 	animation: rise var(--dur-slow) var(--ease-out) forwards;
-	animation-delay: calc(60ms + var(--i, 0) * 90ms);
+	animation-delay: calc(40ms + var(--i, 0) * 60ms);
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px);
+	transform: translateY(8px);
 	transition:
 		opacity var(--dur-slow) var(--ease-out),
 		transform var(--dur-slow) var(--ease-out);
@@ -675,7 +670,7 @@ a {
 }
 
 .reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
+	transition-delay: calc(var(--i, 0) * 50ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -697,15 +692,27 @@ a {
 	}
 }
 
+
 /* =============================================================================
    Prose (blog post bodies) — every colour still comes from a variable
    ========================================================================== */
 
+/* Running text is set in the serif at a text optical size: the paper register. Everything
+   that is interface (meta, tags, captions, figures) stays in the sans. */
 .prose {
 	max-width: var(--measure-prose);
-	font-size: 1.0625rem;
-	line-height: 1.8;
+	font-family: var(--font-display);
+	font-size: 1.1875rem;
+	line-height: 1.7;
 	color: var(--text-secondary);
+}
+
+.prose figcaption,
+.prose table,
+.prose .references,
+.prose .widget,
+.prose .note {
+	font-family: var(--font-sans);
 }
 
 .prose > * + * {
@@ -737,21 +744,29 @@ a {
 	overflow-wrap: break-word;
 }
 
+.prose h2,
+.prose h3 {
+	font-family: var(--font-display);
+	font-variation-settings: var(--display-settings);
+	font-weight: 500;
+}
+
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
+	font-size: 1.75rem;
+	line-height: 1.2;
+	letter-spacing: -0.015em;
 	margin-top: var(--s-8);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	line-height: 1.4;
+	font-size: 1.3125rem;
+	line-height: 1.3;
 	margin-top: var(--s-7);
 }
 
 .prose h4 {
-	font-size: 1.0625rem;
+	font-family: var(--font-sans);
+	font-size: 0.9375rem;
 	font-weight: 600;
 	line-height: 1.4;
 	margin-top: var(--s-6);
@@ -759,11 +774,10 @@ a {
 
 .prose a {
 	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.22em;
+	text-decoration-color: var(--accent);
 	transition: color var(--dur-fast) var(--ease-out);
 }
 
@@ -794,13 +808,13 @@ a {
 
 .prose strong {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 600;
 }
 
 .prose blockquote {
 	margin-inline: 0;
 	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
+	border-left: 1px solid var(--line-strong);
 	color: var(--text-secondary);
 	font-style: italic;
 }
@@ -813,7 +827,7 @@ a {
 
 .prose img,
 .prose video {
-	border-radius: 6px;
+	border-radius: 2px;
 	border: 1px solid var(--line);
 }
 
@@ -850,7 +864,7 @@ a {
 	text-indent: -1.5em;
 	/* DOIs and URLs are single unbreakable words otherwise. */
 	overflow-wrap: anywhere;
-	border-radius: 3px;
+	border-radius: 2px;
 	transition: background-color var(--dur-fast) var(--ease-out);
 }
 
@@ -864,7 +878,7 @@ a {
 	font-size: 0.8125em;
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 3px;
+	border-radius: 2px;
 	padding: 0.1em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
@@ -876,7 +890,7 @@ a {
 	line-height: 1.65;
 	background: var(--bg-deep);
 	border: 1px solid var(--line);
-	border-radius: 6px;
+	border-radius: 2px;
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -948,7 +962,7 @@ a {
 
 .prose th {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 0.75rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -1002,7 +1016,7 @@ a {
 .prose .token.char,
 .prose .token.builtin,
 .prose .token.inserted {
-	color: var(--success);
+	color: var(--series-cool);
 }
 
 .prose .token.operator,
@@ -1058,7 +1072,7 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: 2px;
 }
 
 .prose .widget > figcaption {
@@ -1085,7 +1099,7 @@ a {
 	font-weight: 600;
 	line-height: 1.4;
 	padding: 0.4rem 0.85rem;
-	border-radius: 6px;
+	border-radius: 2px;
 	border: 1px solid transparent;
 	background: var(--accent);
 	color: var(--text-inverse);
@@ -1144,7 +1158,7 @@ a {
 	background: var(--surface);
 	border: 1px solid var(--line);
 	border-left: 3px solid var(--series-cool);
-	border-radius: 8px;
+	border-radius: 2px;
 	font-size: 0.9375rem;
 }
 
@@ -1153,23 +1167,27 @@ a {
 }
 
 /* =============================================================================
-   Responsive (DESIGN.md §9)
+   Responsive
    ========================================================================== */
 
-@media (max-width: 1023px) {
+@media (max-width: 63.99em) {
 	:root {
+		--rail-width: 7rem;
 		--gap-hero: var(--s-9);
 		--gap-section: var(--s-8);
 	}
+}
 
-	/* Rail collapses: label sits above its content, keeping its tracking. */
-	.rail {
-		grid-template-columns: minmax(0, 1fr);
+@media (max-width: 47.99em) {
+	:root {
+		--gap-hero: var(--s-8);
+		--gap-section: var(--s-7);
 	}
 
-	.rail__label {
-		padding-top: 0;
-		margin-bottom: var(--s-4);
+	/* Label above its content once the margin column no longer pays for itself. */
+	.rail {
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: var(--s-3);
 	}
 
 	.rail__body {
@@ -1177,31 +1195,16 @@ a {
 	}
 }
 
-@media (max-width: 767px) {
-	:root {
-		--gap-hero: var(--s-8);
-		--gap-section: var(--s-7);
-	}
-
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
-	}
-}
-
 @media (max-width: 479px) {
-	/* Phone measure drops to roughly 40 characters, and justification tears at
-	   that width: too few words per line, so the spaces that absorb the slack
-	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
-	   on, since it still earns its keep on a narrow column. */
+	/* Phone measure drops to roughly 40 characters, and justification tears at that
+	   width: ragged-right below this tier, hyphenation stays on. */
 	.prose > p,
 	.prose > blockquote p {
 		text-align: left;
+	}
+
+	.prose {
+		font-size: 1.125rem;
 	}
 
 	.btn-row {
@@ -1215,10 +1218,7 @@ a {
 }
 
 /* Coarse pointers get larger hit areas without changing the visual weight.
-   Only the *interactive* tags need the 44px floor — `span.tag` (skills, post tags)
-   is a label, not a control, and would look bloated at that height.
-   Inline links inside a sentence are exempt from the target-size rule
-   (WCAG 2.5.8, "Inline" exception) and are deliberately left at text size. */
+   Only interactive tags need the 44px floor; `span.tag` is a label. */
 @media (pointer: coarse) {
 	button.tag,
 	a.tag {
@@ -1228,3 +1228,4 @@ a {
 		padding: 0 0.75rem;
 	}
 }
+

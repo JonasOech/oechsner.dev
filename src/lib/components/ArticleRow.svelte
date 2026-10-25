@@ -54,51 +54,36 @@
 </a>
 
 <style>
+	/* A row in a ruled list: hairline above, title in the serif, thumbnail at the far edge.
+	   Hover and focus only turn the title green. */
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: minmax(0, 1fr) 8.5rem;
+		gap: var(--s-5);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
+	.card:last-child {
+		border-bottom: 1px solid var(--line);
+	}
+
+	/* No cover image means no media column. */
 	.card--noMedia,
 	.card--featured {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.card--featured {
-		gap: var(--s-5);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
+		gap: var(--s-4);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
@@ -106,22 +91,42 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		font-family: var(--font-display);
+		font-variation-settings: var(--display-settings);
+		font-size: 1.375rem;
+		font-weight: 500;
+		line-height: 1.25;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
+		margin: 0 0 var(--s-2);
+		text-decoration: underline;
+		text-decoration-color: transparent;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			text-decoration-color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.card:hover .card__title {
+			color: var(--accent);
+			text-decoration-color: var(--accent);
+		}
+	}
+
+	.card:focus-visible .card__title {
+		color: var(--accent);
 	}
 
 	.card--featured .card__title {
-		font-size: 1.375rem;
+		font-size: 1.625rem;
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
 		margin: 0 0 var(--s-3);
+		max-width: 56ch;
 	}
 
 	.card__dot {
@@ -131,8 +136,9 @@
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
+		border: 1px solid var(--line);
 		aspect-ratio: 4 / 3;
+		background: var(--plate);
 	}
 
 	.card__media--wide {
@@ -144,20 +150,20 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (max-width: 1023px) {
+	@media (max-width: 47.99em) {
 		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+			grid-template-columns: minmax(0, 1fr) 6rem;
+			gap: var(--s-4);
 		}
 	}
 
-	@media (max-width: 767px) {
+	@media (max-width: 29.99em) {
+		/* Thumbnail drops below the text at full width. */
 		.card {
 			grid-template-columns: minmax(0, 1fr);
 		}
-		/* Thumbnail drops below the text at full width. */
 		.card__media {
 			aspect-ratio: 16 / 9;
 		}
