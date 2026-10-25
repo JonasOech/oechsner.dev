@@ -17,9 +17,7 @@
 
 <div class="container">
 	<Rail label="Get In Touch" id="contact" level={1} wide>
-		<!-- <p class="lede enter" style="--i: 0">
-			The fastest way to reach me is email.
-		</p> -->
+		<p class="lede">The fastest way to reach me is email. Elsewhere works too.</p>
 
 		<dl class="channels">
 			{#each contacts as channel (channel.href)}
@@ -53,22 +51,27 @@
 
 <style>
 	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-5);
 	}
 
 	.channels {
 		margin: 0;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		gap: var(--s-4);
 	}
 
 	.channel {
 		display: grid;
 		gap: var(--s-2);
 		min-width: 0;
+		padding: var(--s-5);
+		border-radius: var(--r-lg);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		box-shadow: var(--shadow-glass);
 	}
 
 	.channel dd {
@@ -112,7 +115,7 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--r-sm);
 		box-shadow: var(--focus-ring);
 	}
 

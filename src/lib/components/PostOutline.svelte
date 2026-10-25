@@ -120,10 +120,12 @@
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		background: var(--glass);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--r-lg);
+		box-shadow: var(--shadow-glass);
 		overflow: hidden;
 	}
 
@@ -141,9 +143,9 @@
 	.outline__label {
 		font-family: var(--font-display);
 		font-size: 0.75rem;
-		font-weight: 400;
+		font-weight: 500;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 var(--s-3);

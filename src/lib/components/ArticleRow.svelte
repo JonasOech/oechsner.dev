@@ -54,74 +54,78 @@
 </a>
 
 <style>
+	/* A frosted card. The cover, when there is one, sits on top as a rounded window. */
 	.card {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
-		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-4);
+		padding: var(--s-4);
+		border-radius: var(--r-lg);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		box-shadow: var(--shadow-glass);
 		text-decoration: none;
 		color: inherit;
 		transition:
 			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
-	}
-
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.card--featured {
-		gap: var(--s-5);
+			border-color 220ms var(--ease-out),
+			transform 220ms var(--ease-out),
+			box-shadow 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--glass-hover);
+			border-color: var(--glass-edge);
+			transform: translateY(-3px);
+			box-shadow: var(--shadow-glass), 0 18px 48px rgba(var(--violet-rgb), 0.16);
 		}
 		.card:hover .card__img {
-			transform: scale(1.03);
+			transform: scale(1.04);
+		}
+		.card:hover .card__title {
+			color: var(--accent);
 		}
 	}
 
 	.card:active {
-		background: var(--surface-active);
+		background: var(--glass-strong);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
 		min-width: 0;
+		display: grid;
+		align-content: start;
+		gap: var(--s-2);
+		padding: var(--s-1) var(--s-2) var(--s-2);
+		flex: 1;
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		font-size: 1.25rem;
+		font-weight: 500;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
+		margin: 0;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.card--featured .card__title {
-		font-size: 1.375rem;
+		font-size: 1.5rem;
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+		font-weight: 300;
+		margin: 0;
 	}
 
 	.card__dot {
@@ -129,15 +133,12 @@
 		color: var(--text-muted);
 	}
 
+	/* Cover first, whichever way the markup orders it. */
 	.card__media {
-		overflow: hidden;
-		border-radius: 4px;
-		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
 		order: -1;
+		overflow: hidden;
+		border-radius: var(--r-md);
+		aspect-ratio: 16 / 9;
 	}
 
 	.card__img {
@@ -145,21 +146,5 @@
 		height: 100%;
 		object-fit: cover;
 		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
-		}
 	}
 </style>

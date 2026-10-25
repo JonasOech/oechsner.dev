@@ -77,10 +77,12 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		background: var(--glass);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		border: 1px solid var(--glass-border);
+		border-radius: var(--r-xl);
+		box-shadow: var(--shadow-glass);
 	}
 
 	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
@@ -90,7 +92,7 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
+		border-radius: 50%;
 		color: var(--accent);
 		background: var(--accent-wash);
 		border: 1px solid rgba(var(--accent-rgb), 0.25);

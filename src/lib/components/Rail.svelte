@@ -3,8 +3,7 @@
 	import { reveal } from '$lib/actions/reveal';
 
 	/**
-	 * A labelled section: letterspaced serif rail label on the left, narrow content
-	 * measure on the right. Collapses to label-above-content below 1024px.
+	 * A labelled section: glass pill label above a frosted content panel.
 	 *
 	 * `level` picks the heading rank — pass 1 when this rail is the page's own title
 	 * (Contact), leave it at 2 for sections within a page.
@@ -32,7 +31,14 @@
 </section>
 
 <style>
+	/* A wide section brings its own cards (the home page's post grid, the contact tiles),
+	   so it skips the shared glass panel. */
 	.rail__body--wide {
-		max-width: none;
+		padding: 0;
+		background: none;
+		border: 0;
+		box-shadow: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
 	}
 </style>

@@ -94,8 +94,15 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+		margin-top: var(--s-7);
+		padding: var(--s-6);
+		max-width: calc(var(--measure) + 2 * var(--s-6));
+		border-radius: var(--r-xl);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		box-shadow: var(--shadow-glass);
 	}
 
 	.entry__org {
@@ -148,7 +155,9 @@
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
+			margin-top: var(--s-5);
+			padding: var(--s-5);
+			border-radius: var(--r-lg);
 		}
 	}
 </style>

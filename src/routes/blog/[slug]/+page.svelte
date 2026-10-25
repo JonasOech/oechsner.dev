@@ -194,7 +194,7 @@
 	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		padding-top: var(--s-7);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -202,7 +202,7 @@
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-6);
 	}
 
 	.post__back {
@@ -210,15 +210,21 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+		color: var(--text-secondary);
 		text-decoration: none;
-		padding: 0.5rem 0;
+		padding: 0.5rem 1.1rem 0.5rem 0.9rem;
 		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
+		border-radius: var(--r-pill);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(14px);
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	.post__back :global(svg) {
@@ -228,6 +234,7 @@
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
 			color: var(--text);
+			background: var(--glass-hover);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
@@ -240,19 +247,23 @@
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
 		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-weight: 300;
+		line-height: 1.12;
+		letter-spacing: -0.025em;
+		background: var(--grad-text);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
+		font-size: 1.1875rem;
+		font-weight: 300;
 		line-height: 1.7;
 		color: var(--text-secondary);
 	}
@@ -289,9 +300,24 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		border-radius: var(--r-xl);
+		border: 1px solid var(--glass-border);
+		box-shadow: var(--shadow-3);
+		margin-bottom: var(--s-6);
+	}
+
+	/* The article body is one frosted sheet. Text inside it is --text-secondary at 300 weight
+	   or heavier over a dark-tinted glass, which keeps body contrast above AA wherever
+	   the aurora happens to sit behind it. */
+	.post__body {
+		padding: var(--s-6) var(--s-6);
+		max-width: none;
+		border-radius: var(--r-xl);
+		background: var(--glass-tint);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		border: 1px solid var(--glass-border);
+		box-shadow: var(--shadow-glass);
 	}
 
 	.post__subscribe {
@@ -308,8 +334,6 @@
 		grid-template-columns: 1fr 1fr;
 		gap: var(--s-4);
 		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -317,14 +341,17 @@
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		padding: var(--s-5);
+		border-radius: var(--r-lg);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 		text-decoration: none;
 		transition:
 			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+			border-color 220ms var(--ease-out),
+			transform 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -334,34 +361,41 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--glass-hover);
+			border-color: var(--glass-edge);
+			transform: translateY(-2px);
 		}
 	}
 
 	.post__nav-link:active {
-		background: var(--surface-active);
+		background: var(--glass-strong);
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
+		font-weight: 500;
 		line-height: 1.4;
 	}
 
 	@media (max-width: 767px) {
 		.post {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
+		}
+		.post__body {
+			padding: var(--s-5) var(--s-4);
+			border-radius: var(--r-lg);
+		}
+		.post__cover {
+			border-radius: var(--r-lg);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-4);
 		}
 		.post__nav-link--next {
 			text-align: left;

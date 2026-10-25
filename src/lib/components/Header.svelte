@@ -88,7 +88,7 @@
 <div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
 
 <header class="header" data-scrolled={scrolled}>
-	<nav class="container nav" aria-label="Primary">
+	<nav class="nav" aria-label="Primary">
 		<a
 			class="nav__link"
 			href={primary.href}
@@ -146,84 +146,87 @@
 		pointer-events: none;
 	}
 
+	/* The bar itself is invisible and click-through; only the pill inside it is a surface. */
 	.header {
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
-	}
-
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		padding: var(--s-3) var(--gutter) 0;
+		pointer-events: none;
 	}
 
 	.nav {
+		pointer-events: auto;
 		display: flex;
+		align-items: center;
 		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		gap: var(--s-1);
+		width: fit-content;
+		max-width: 100%;
+		margin-inline: auto;
+		padding: var(--s-1);
+		border-radius: var(--r-pill);
+		background: var(--glass);
+		border: 1px solid var(--glass-border);
+		-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+		backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+		box-shadow: var(--shadow-glass);
+		transition:
+			background-color var(--dur-base) var(--ease-out),
+			box-shadow var(--dur-base) var(--ease-out);
+	}
+
+	/* Once the page has scrolled under it the pill takes a darker tint, so the labels keep
+	   their contrast over whatever prose or card is passing behind. */
+	.header[data-scrolled='true'] .nav {
+		background: var(--glass-tint);
+		box-shadow: var(--shadow-3), inset 0 1px 0 rgba(var(--text-bright-rgb), 0.16);
+	}
+
+	@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+		.nav {
+			background: var(--surface);
+		}
 	}
 
 	.nav__link {
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.875rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		letter-spacing: 0.03em;
+		color: var(--text-secondary);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		padding: 0.8rem 1.15rem;
+		border-radius: var(--r-pill);
+		border: 1px solid transparent;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			color: var(--text);
+			background: var(--glass-hover);
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		background: var(--glass-strong);
 	}
 
 	.nav__link[aria-current='page'],
 	.nav__link[data-current='true'] {
-		color: var(--text);
+		color: var(--text-inverse);
+		background: var(--grad-accent);
+		box-shadow: 0 4px 16px rgba(var(--violet-rgb), 0.35);
 	}
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -238,17 +241,18 @@
 	.nav .more__button {
 		display: none;
 		background: none;
-		border: 0;
 		cursor: pointer;
 		align-items: center;
 		gap: 0.3em;
 	}
 
+	.nav .more__button[data-current='true'] {
+		background: var(--grad-accent);
+	}
+
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transition: transform var(--dur-base) var(--ease-out);
@@ -261,9 +265,6 @@
 	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
 	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
 	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
 		.nav {
 			flex-wrap: nowrap;
 		}
@@ -281,24 +282,20 @@
 			display: grid;
 			position: absolute;
 			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
+			top: calc(100% + var(--s-3));
+			right: 0;
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
 			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
+			gap: var(--s-1);
+			background: var(--glass-tint);
+			-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+			backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+			border: 1px solid var(--glass-border);
+			border-radius: var(--r-lg);
+			box-shadow: var(--shadow-4), inset 0 1px 0 rgba(var(--text-bright-rgb), 0.16);
 		}
 
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
 		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
 			.nav .more__panel {
 				background: var(--surface);
@@ -310,27 +307,22 @@
 		}
 
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
+			padding: 0.8rem var(--s-5);
 			text-align: center;
 			justify-content: center;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
+		.nav__link {
+			padding-inline: 1rem;
 		}
 	}
 
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
+		/* An explicit floor — line-height is 1 here, so padding alone misses the 44px target. */
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
 		}
 	}
 </style>
