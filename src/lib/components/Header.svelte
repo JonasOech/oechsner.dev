@@ -13,11 +13,11 @@
 	const [primary, ...collapsible] = nav;
 
 	/**
-	 * Below this the four labels no longer fit on one line — see DESIGN.md §9. Kept in `em`
+	 * Below this the tabs no longer fit on one line — see DESIGN.md §9. Kept in `em`
 	 * so it tracks the label widths under text-only zoom rather than the raw viewport, and
 	 * duplicated in the stylesheet's media query: the two have to move together.
 	 */
-	const COLLAPSE_QUERY = '(max-width: 35em)';
+	const COLLAPSE_QUERY = '(max-width: 40em)';
 
 	let moreOpen = $state(false);
 	let moreEl: HTMLElement;
@@ -89,48 +89,52 @@
 
 <header class="header" data-scrolled={scrolled}>
 	<nav class="container nav" aria-label="Primary">
-		<a
-			class="nav__link"
-			href={primary.href}
-			aria-current={isCurrent(primary.href) ? 'page' : undefined}
-		>
-			{primary.label}
-		</a>
+		<span class="brand" aria-hidden="true">oechsner.dev</span>
 
-		<!-- `display: contents` above the breakpoint, so these links sit directly in the
-		     nav row and only become a dropdown once the bar runs out of width. -->
-		<div
-			class="more"
-			data-open={moreOpen}
-			bind:this={moreEl}
-			onfocusout={onMoreFocusout}
-		>
-			<button
-				class="nav__link more__button"
-				type="button"
-				bind:this={moreButton}
-				aria-expanded={moreOpen}
-				aria-controls="nav-more"
-				data-current={moreHoldsCurrent ? 'true' : undefined}
-				onclick={() => (moreOpen = !moreOpen)}
+		<div class="tabs">
+			<a
+				class="nav__link"
+				href={primary.href}
+				aria-current={isCurrent(primary.href) ? 'page' : undefined}
 			>
-				More
-				<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-					<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-				</svg>
-			</button>
+				{primary.label}
+			</a>
 
-			<div class="more__panel" id="nav-more">
-				{#each collapsible as item (item.href)}
-					<a
-						class="nav__link"
-						href={item.href}
-						aria-current={isCurrent(item.href) ? 'page' : undefined}
-						onclick={() => (moreOpen = false)}
-					>
-						{item.label}
-					</a>
-				{/each}
+			<!-- `display: contents` above the breakpoint, so these links sit directly in the
+			     tab row and only become a dropdown once the bar runs out of width. -->
+			<div
+				class="more"
+				data-open={moreOpen}
+				bind:this={moreEl}
+				onfocusout={onMoreFocusout}
+			>
+				<button
+					class="nav__link more__button"
+					type="button"
+					bind:this={moreButton}
+					aria-expanded={moreOpen}
+					aria-controls="nav-more"
+					data-current={moreHoldsCurrent ? 'true' : undefined}
+					onclick={() => (moreOpen = !moreOpen)}
+				>
+					More
+					<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+						<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+					</svg>
+				</button>
+
+				<div class="more__panel" id="nav-more">
+					{#each collapsible as item (item.href)}
+						<a
+							class="nav__link"
+							href={item.href}
+							aria-current={isCurrent(item.href) ? 'page' : undefined}
+							onclick={() => (moreOpen = false)}
+						>
+							{item.label}
+						</a>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</nav>
@@ -146,69 +150,68 @@
 		pointer-events: none;
 	}
 
+	/* The index bar: tabs hang from one baseline rule, like the cut edges of a bound
+	   notebook's index. Solid paper; no blur, no shadow. */
 	.header {
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
-	}
-
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		background: var(--bg);
+		border-bottom: 1px solid var(--line-strong);
 	}
 
 	.nav {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--s-4);
+		padding-top: var(--s-3);
+	}
+
+	.brand {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+		padding-bottom: 0.7rem;
+		white-space: nowrap;
+	}
+
+	.tabs {
+		display: flex;
+		align-items: flex-end;
+		gap: 0.25rem;
+		/* The baseline rule runs under the tabs; the current one sits over it. */
+		margin-bottom: -1px;
 	}
 
 	.nav__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
 		white-space: nowrap;
-		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		display: inline-flex;
+		align-items: center;
+		min-height: 2.25rem;
+		padding: 0 0.875rem;
+		background: var(--surface-hover);
+		border: 1px solid var(--line-strong);
+		border-radius: 3px 3px 0 0;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			color: var(--accent);
+			background: var(--bg);
 		}
 	}
 
@@ -216,15 +219,20 @@
 		color: var(--text);
 	}
 
+	/* The open page: paper-coloured, joined to the leaf below, topped with a pen stroke. */
 	.nav__link[aria-current='page'],
 	.nav__link[data-current='true'] {
 		color: var(--text);
+		background: var(--bg);
+		border-bottom-color: var(--bg);
+		box-shadow: inset 0 2px 0 var(--accent);
 	}
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
+		position: relative;
+		z-index: 1;
 	}
 
 	/* Wide: the wrapper and its panel dissolve, leaving the links as plain flex items. */
@@ -237,8 +245,6 @@
 	   further down cannot resurrect the button on a wide touch screen. */
 	.nav .more__button {
 		display: none;
-		background: none;
-		border: 0;
 		cursor: pointer;
 		align-items: center;
 		gap: 0.3em;
@@ -247,8 +253,6 @@
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transition: transform var(--dur-base) var(--ease-out);
@@ -258,12 +262,9 @@
 		transform: rotate(180deg);
 	}
 
-	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
-	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
-	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
+	/* `em`, not `px`, so text-only zoom collapses the bar instead of overflowing it.
+	   Mirrored by COLLAPSE_QUERY above. */
+	@media (max-width: 40em) {
 		.nav {
 			flex-wrap: nowrap;
 		}
@@ -281,56 +282,51 @@
 			display: grid;
 			position: absolute;
 			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
+			top: calc(100% + 1px);
+			right: 0;
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
-			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			padding: var(--s-1);
+			background: var(--bg);
+			border: 1px solid var(--line-strong);
+			border-radius: 2px;
+			box-shadow: var(--shadow-2);
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
 			display: none;
 		}
 
+		/* Inside the dropdown the links are plain rows, not tabs. */
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
+			background: transparent;
+			border: 0;
+			border-radius: 2px;
+			min-height: 2.5rem;
+			box-shadow: none;
+			justify-content: flex-start;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
+		.more__panel .nav__link[aria-current='page'] {
+			color: var(--accent);
+			background: var(--accent-wash);
+		}
+	}
+
+	@media (max-width: 26em) {
+		.brand {
+			display: none;
+		}
+
+		.nav {
+			justify-content: flex-end;
 		}
 	}
 
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
+		/* An explicit 44px floor on the tab. */
 		.nav__link {
-			display: inline-flex;
-			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
 		}
 	}
 </style>

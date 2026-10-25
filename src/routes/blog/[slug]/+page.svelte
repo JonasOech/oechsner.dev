@@ -6,6 +6,7 @@
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
+	import { entryNumber } from '$lib/entry';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
 	// Math is rendered to static HTML at build time, so posts only need KaTeX's stylesheet —
@@ -88,6 +89,13 @@
 				All articles
 			</a>
 
+			<!-- The entry header, as at the top of a notebook page: number on the left, date
+			     on the right, ruled underneath. -->
+			<p class="post__entry meta">
+				<span class="post__entry-no">Entry {entryNumber(post.slug)}</span>
+				<time datetime={post.date}>{post.date}</time>
+			</p>
+
 			<h1 class="post__title">{post.title}</h1>
 
 			{#if post.summary}
@@ -99,7 +107,7 @@
 			<div class="post__facts">
 				<div class="post__facts-main">
 					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
+						{formatDate(post.date)}
 						<span class="post__dot" aria-hidden="true">·</span>
 						{post.readingMinutes} min read
 						{#if post.nerdyness}
@@ -210,9 +218,10 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -227,7 +236,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			color: var(--accent);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
@@ -245,15 +254,32 @@
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(2rem, 4.6vw, 2.875rem);
+		font-weight: 600;
+		line-height: 1.12;
+		letter-spacing: -0.022em;
+	}
+
+	/* Notebook page header: entry number and date either side of a ruled line. */
+	.post__entry {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--s-4);
+		padding-bottom: var(--s-2);
+		border-bottom: 1px solid var(--line-strong);
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+	}
+
+	.post__entry-no {
+		color: var(--accent);
+		font-weight: 500;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.25rem;
+		font-style: italic;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
@@ -289,8 +315,10 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
+		border-radius: 2px;
+		border: 1px solid var(--line-strong);
+		padding: 6px;
+		background: var(--plate);
 		margin-bottom: var(--s-8);
 	}
 
@@ -319,7 +347,7 @@
 		gap: var(--s-2);
 		padding: var(--s-4);
 		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
+		border-radius: 2px;
 		border: 1px solid transparent;
 		text-decoration: none;
 		transition:
@@ -334,8 +362,8 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--accent-wash);
+			border-color: var(--line-strong);
 		}
 	}
 

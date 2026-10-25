@@ -51,7 +51,7 @@
 		position: relative;
 		z-index: 0;
 		overflow: hidden;
-		height: clamp(13rem, 36vw, 24rem);
+		height: clamp(9rem, 24vw, 16rem);
 		margin-top: var(--s-9);
 		pointer-events: none;
 		/* Mask gradients are alpha-only — the colour is never painted, so this literal
@@ -73,15 +73,20 @@
 		font-size: 0.6875rem;
 		line-height: 1.2;
 		/* Fainter than --text-muted by a wide margin: this is texture, not meta text. */
-		color: rgba(var(--text-rgb), 0.32);
+		color: rgba(var(--text-rgb), 0.16);
 		white-space: pre;
 		user-select: none;
 	}
 
 	.wall__credit {
 		margin: var(--s-4) 0 0;
-		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
 		color: var(--text-muted);
+	}
+
+	.wall__credit a {
+		color: inherit;
 	}
 
 	@media (max-width: 640px) {

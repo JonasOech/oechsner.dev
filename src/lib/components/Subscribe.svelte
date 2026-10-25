@@ -77,9 +77,9 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
+		background: transparent;
+		border: 1px solid var(--line-strong);
+		border-radius: 2px;
 		box-shadow: var(--shadow-inset);
 	}
 
@@ -90,7 +90,7 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
+		border-radius: 2px;
 		color: var(--accent);
 		background: var(--accent-wash);
 		border: 1px solid rgba(var(--accent-rgb), 0.25);

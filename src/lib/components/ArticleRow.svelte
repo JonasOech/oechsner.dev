@@ -1,24 +1,18 @@
 <script lang="ts">
-	import { formatDate, type Post } from '$lib/posts';
+	import type { Post } from '$lib/posts';
+	import { entryNumber } from '$lib/entry';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
+<!-- One line of the index: entry number and date in the margin, the title on the ruled
+     line, a small mounted thumbnail at the far edge. -->
 <a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
+	<p class="card__ref meta">
+		<span class="card__no">No.&nbsp;{entryNumber(post.slug)}</span>
+		<time datetime={post.date}>{post.date}</time>
+	</p>
 
 	<div class="card__text">
 		<h3 class="card__title">{post.title}</h3>
@@ -26,8 +20,6 @@
 			<p class="card__summary">{post.summary}</p>
 		{/if}
 		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
 			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
 			     leave a dangling dot at the end of the line. -->
@@ -38,7 +30,7 @@
 		</p>
 	</div>
 
-	{#if !featured && post.cover}
+	{#if post.cover}
 		<div class="card__media">
 			<img
 				class="card__img"
@@ -56,49 +48,47 @@
 <style>
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: 7.5rem minmax(0, 1fr) 150px;
+		column-gap: var(--s-5);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line-strong);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+		transition: background-color var(--dur-fast) var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+	.card--noMedia {
+		grid-template-columns: 7.5rem minmax(0, 1fr);
 	}
 
-	.card--featured {
-		gap: var(--s-5);
+	.card__ref {
+		display: grid;
+		gap: 0.15rem;
+		padding-top: 0.35rem;
+	}
+
+	.card__no {
+		color: var(--accent);
+		font-weight: 500;
+		letter-spacing: 0.06em;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
+		.card:hover .card__title {
+			color: var(--accent);
+			text-decoration: underline;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 0.2em;
+		}
 		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--accent-wash);
 		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
@@ -106,60 +96,67 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.card--featured .card__title {
 		font-size: 1.375rem;
+		font-weight: 600;
+		line-height: 1.25;
+		letter-spacing: -0.012em;
+		color: var(--text);
+		margin: 0 0 var(--s-2);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
+		font-size: 1rem;
+		line-height: 1.6;
 		margin: 0 0 var(--s-3);
 	}
 
 	.card__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
 	}
 
+	/* A photo-corner mount: paper-white margin and a pencil border round the thumbnail. */
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
 		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
+		border: 1px solid var(--line-strong);
+		border-radius: 2px;
+		padding: 3px;
+		background: var(--plate);
 	}
 
 	.card__img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
 	@media (max-width: 1023px) {
 		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+			grid-template-columns: 6.5rem minmax(0, 1fr) 120px;
+		}
+		.card--noMedia {
+			grid-template-columns: 6.5rem minmax(0, 1fr);
 		}
 	}
 
-	@media (max-width: 767px) {
-		.card {
+	/* Phone: the margin reference becomes a header line above the title. */
+	@media (max-width: 639px) {
+		.card,
+		.card--noMedia {
 			grid-template-columns: minmax(0, 1fr);
+			row-gap: var(--s-2);
 		}
-		/* Thumbnail drops below the text at full width. */
+		.card__ref {
+			display: flex;
+			gap: var(--s-4);
+			padding-top: 0;
+		}
 		.card__media {
 			aspect-ratio: 16 / 9;
+			order: 3;
+			margin-top: var(--s-2);
 		}
 	}
 </style>

@@ -27,7 +27,7 @@
 
 		<p class="footer__copy">
 			© {site.startYear === year ? year : `${site.startYear}–${year}`}
-			{site.name} - 
+			{site.name} -
 			<a class="footer__legal-link" href="/impressum">Impressum</a>
 			<span aria-hidden="true">·</span>
 			<a class="footer__legal-link" href="/datenschutz">Datenschutz</a>
@@ -47,44 +47,43 @@
 </footer>
 
 <style>
+	/* The last page of the notebook: a double rule, then the colophon in mono. */
 	.footer {
 		position: relative;
 		z-index: 1;
 		margin-top: var(--gap-hero);
-		padding-block: var(--s-8) var(--s-7);
-		background: var(--bg-deep);
-		border-top: 1px solid var(--line);
+		padding-block: var(--s-6) var(--s-7);
+		background: var(--bg);
+		border-top: 1px solid var(--line-strong);
+		box-shadow: inset 0 3px 0 var(--bg), inset 0 4px 0 var(--line);
 	}
 
 	.footer__inner {
 		display: grid;
-		justify-items: center;
-		gap: var(--s-5);
-		text-align: center;
+		justify-items: start;
+		gap: var(--s-3);
+		padding-top: var(--s-3);
 	}
 
 	.footer__nav {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-5);
+		gap: var(--s-1) var(--s-5);
 	}
 
 	.footer__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0.125rem;
+		padding: 0.5rem 0;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	/* The icon takes the accent so the feed is findable at a glance; the label stays in
-	   step with the other footer links. */
 	.footer__feed {
 		display: inline-flex;
 		align-items: center;
@@ -92,33 +91,28 @@
 	}
 
 	.footer__feed :global(svg) {
-		color: var(--accent-dim);
-		transition: color var(--dur-fast) var(--ease-out);
+		color: var(--accent);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__link:hover {
-			color: var(--text);
-		}
-		.footer__feed:hover :global(svg) {
 			color: var(--accent);
 		}
 	}
 
 	.footer__link:active {
-		color: var(--text-secondary);
+		color: var(--text);
 	}
 
 	.footer__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.footer__copy {
-		font-family: var(--font-sans);
+		font-family: var(--font-mono);
 		font-size: 0.75rem;
-		font-weight: 700;
 		color: var(--text-muted);
 		margin: 0;
 	}
@@ -130,9 +124,8 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		font-family: var(--font-sans);
+		font-family: var(--font-mono);
 		font-size: 0.75rem;
-		font-weight: 700;
 		color: var(--text-muted);
 		text-decoration: underline;
 		text-decoration-color: var(--line-strong);
@@ -144,18 +137,18 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__legal-link:hover {
-			color: var(--text);
-			text-decoration-color: var(--text);
+			color: var(--accent);
+			text-decoration-color: var(--accent);
 		}
 	}
 
 	.footer__legal-link:active {
-		color: var(--text-secondary);
+		color: var(--text);
 	}
 
 	.footer__legal-link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -169,9 +162,10 @@
 	}
 
 	.footer__colophon {
-		font-size: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
 		color: var(--text-muted);
-		max-width: 46ch;
+		max-width: 52ch;
 		line-height: 1.6;
 		margin: 0;
 	}

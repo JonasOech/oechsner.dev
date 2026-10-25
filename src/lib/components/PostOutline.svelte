@@ -115,15 +115,11 @@
 		align-self: start;
 		top: calc(var(--header-h) + var(--s-5));
 		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
+		width: 100%;
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		background: transparent;
 		overflow: hidden;
 	}
 
@@ -135,15 +131,15 @@
 
 	.outline__head {
 		flex: none;
-		padding: var(--s-4) var(--s-4) var(--s-3);
+		padding: 0 0 var(--s-3);
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 400;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 var(--s-3);
@@ -175,6 +171,7 @@
 
 	.outline__readout {
 		flex: none;
+		font-family: var(--font-mono);
 		font-size: 0.6875rem;
 		font-variant-numeric: tabular-nums;
 		color: var(--text-muted);
@@ -185,7 +182,7 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
-		padding: 0 var(--s-2) var(--s-2);
+		padding: 0 0 var(--s-2);
 		scrollbar-width: thin;
 	}
 
@@ -206,9 +203,9 @@
 	.outline__link {
 		position: relative;
 		display: block;
-		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
-		font-size: 0.8125rem;
+		padding: 0.4rem var(--s-2) 0.4rem var(--s-3);
+		border-radius: 2px;
+		font-size: 0.875rem;
 		line-height: 1.35;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -218,7 +215,7 @@
 	}
 
 	.outline__item--sub .outline__link {
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
 		padding-top: 0.32rem;
 		padding-bottom: 0.32rem;
 	}
@@ -227,8 +224,8 @@
 		content: '';
 		position: absolute;
 		left: 0;
-		top: 3px;
-		bottom: 3px;
+		top: 2px;
+		bottom: 2px;
 		width: 2px;
 		border-radius: 1px;
 		background: var(--accent);
@@ -264,16 +261,17 @@
 	.outline__foot {
 		flex: none;
 		border-top: 1px solid var(--line);
-		padding: var(--s-2);
+		padding: var(--s-2) 0 0;
 	}
 
 	.outline__top {
 		display: flex;
 		align-items: center;
 		gap: var(--s-2);
-		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
-		font-size: 0.75rem;
+		padding: 0.5rem var(--s-3);
+		border-radius: 2px;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
 		color: var(--text-muted);
 		text-decoration: none;
 		transition:
