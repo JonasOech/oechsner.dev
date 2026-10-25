@@ -94,8 +94,9 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-7);
 		max-width: var(--measure);
+		font-size: 1.1875rem;
 	}
 
 	.entry__org {
@@ -136,13 +137,13 @@
 
 	.grades dt {
 		color: var(--text-secondary);
-		font-size: 0.9375rem;
+		font-size: 1.0625rem;
 	}
 
 	.grades dd {
 		margin: 0;
 		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-size: 0.8125rem;
 		color: var(--text);
 	}
 

@@ -8,40 +8,49 @@
 </script>
 
 <footer class="footer">
-	<div class="container footer__inner">
-		<nav class="footer__nav" aria-label="Footer">
-			{#each footerNav as item (item.href)}
-				<a class="footer__link" href={item.href}>{item.label}</a>
-			{/each}
-			<a
-				class="footer__link footer__feed"
-				href={feeds.rss}
-				type="application/rss+xml"
-				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'site-footer')}
-			>
-				<Icon name="rss" size={13} />
-				RSS
-			</a>
-		</nav>
+	<div class="container">
+		<div class="footer__grid">
+			<div class="footer__colophon">
+				<p class="footer__name">{site.name}</p>
+				<p class="footer__note">
+					Set in Newsreader and JetBrains Mono, both self-hosted. Deployed with SvelteKit on
+					Cloudflare Pages. Built with AI.
+				</p>
+			</div>
+
+			<nav class="footer__col" aria-label="Footer">
+				<p class="label">Sections</p>
+				{#each footerNav as item (item.href)}
+					<a class="footer__link" href={item.href}>{item.label}</a>
+				{/each}
+				<a
+					class="footer__link footer__feed"
+					href={feeds.rss}
+					type="application/rss+xml"
+					data-sveltekit-reload
+					onclick={() => trackFeed('open-rss', 'site-footer')}
+				>
+					<Icon name="rss" size={13} />
+					RSS
+				</a>
+			</nav>
+
+			<div class="footer__col">
+				<p class="label">Legal</p>
+				<a class="footer__link" href="/impressum">Impressum</a>
+				<a class="footer__link" href="/datenschutz">Datenschutz</a>
+				<!-- Withdrawing consent has to be as easy as giving it (Art. 7 Abs. 3 DSGVO), so
+				     the banner is one press away from every page. A button rather than a link:
+				     it changes state here, it does not go anywhere. -->
+				<button type="button" class="footer__link" onclick={reopenConsent}>
+					Cookie settings
+				</button>
+			</div>
+		</div>
 
 		<p class="footer__copy">
 			© {site.startYear === year ? year : `${site.startYear}–${year}`}
-			{site.name} - 
-			<a class="footer__legal-link" href="/impressum">Impressum</a>
-			<span aria-hidden="true">·</span>
-			<a class="footer__legal-link" href="/datenschutz">Datenschutz</a>
-			<span aria-hidden="true">·</span>
-			<!-- Withdrawing consent has to be as easy as giving it (Art. 7 Abs. 3 DSGVO), so
-			     the banner is one press away from every page. A button rather than a link:
-			     it changes state here, it does not go anywhere. -->
-			<button type="button" class="footer__legal-link" onclick={reopenConsent}>
-				Cookie settings
-			</button>
-		</p>
-
-		<p class="footer__colophon">
-			Deployed with SvelteKit on Cloudflare Pages. Built with AI.
+			{site.name}
 		</p>
 	</div>
 </footer>
@@ -51,40 +60,62 @@
 		position: relative;
 		z-index: 1;
 		margin-top: var(--gap-hero);
-		padding-block: var(--s-8) var(--s-7);
-		background: var(--bg-deep);
-		border-top: 1px solid var(--line);
+		padding-block: var(--s-6) var(--s-6);
+		border-top: 1px solid var(--line-strong);
 	}
 
-	.footer__inner {
+	.footer__grid {
 		display: grid;
-		justify-items: center;
-		gap: var(--s-5);
-		text-align: center;
+		grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr);
+		gap: var(--s-6) var(--s-7);
+		padding-bottom: var(--s-6);
+		border-bottom: 1px solid var(--line);
 	}
 
-	.footer__nav {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-5);
+	.footer__name {
+		font-size: 1.25rem;
+		font-weight: 500;
+		line-height: 1.2;
+		color: var(--text);
+		margin: 0 0 var(--s-2);
+	}
+
+	.footer__note {
+		font-size: 0.9375rem;
+		font-style: italic;
+		line-height: 1.55;
+		color: var(--text-muted);
+		max-width: 40ch;
+		margin: 0;
+	}
+
+	.footer__col {
+		display: grid;
+		align-content: start;
+		justify-items: start;
+		gap: 0.125rem;
+	}
+
+	.footer__col .label {
+		margin-bottom: var(--s-2);
 	}
 
 	.footer__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		appearance: none;
+		background: none;
+		border: 0;
+		cursor: pointer;
+		font-family: var(--font-serif);
+		font-size: 1.0625rem;
+		font-weight: 400;
+		line-height: 1.3;
+		color: var(--text-secondary);
 		text-decoration: none;
-		padding: 0.5rem 0.125rem;
+		padding: 0.25rem 0;
+		text-align: left;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	/* The icon takes the accent so the feed is findable at a glance; the label stays in
-	   step with the other footer links. */
 	.footer__feed {
 		display: inline-flex;
 		align-items: center;
@@ -92,88 +123,23 @@
 	}
 
 	.footer__feed :global(svg) {
-		color: var(--accent-dim);
-		transition: color var(--dur-fast) var(--ease-out);
+		color: var(--accent);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__link:hover {
-			color: var(--text);
-		}
-		.footer__feed:hover :global(svg) {
 			color: var(--accent);
 		}
 	}
 
 	.footer__link:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.footer__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
-	}
-
-	.footer__copy {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
-		margin: 0;
-	}
-
-	.footer__legal-link {
-		/* The button shares the anchors' styling exactly, so the three read as one row of
-		   equals — a `button` inherits none of it, hence the explicit reset. */
-		appearance: none;
-		background: none;
-		border: none;
-		cursor: pointer;
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
-		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
-		text-underline-offset: 3px;
-		padding: 0.5rem 0.125rem;
-		display: inline-block;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.footer__legal-link:hover {
-			color: var(--text);
-			text-decoration-color: var(--text);
-		}
-	}
-
-	.footer__legal-link:active {
-		color: var(--text-secondary);
-	}
-
-	.footer__legal-link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
-	}
-
-	@media (pointer: coarse) {
-		.footer__legal-link {
-			display: inline-flex;
-			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
-		}
-	}
-
-	.footer__colophon {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		max-width: 46ch;
-		line-height: 1.6;
-		margin: 0;
 	}
 
 	@media (pointer: coarse) {
@@ -181,7 +147,25 @@
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
+		}
+	}
+
+	.footer__copy {
+		margin: var(--s-4) 0 0;
+		font-size: 0.9375rem;
+		font-variant-caps: all-small-caps;
+		letter-spacing: var(--caps-tracking);
+		font-variant-numeric: tabular-nums lining-nums;
+		color: var(--text-muted);
+	}
+
+	@media (max-width: 767px) {
+		.footer__grid {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		}
+
+		.footer__colophon {
+			grid-column: 1 / -1;
 		}
 	}
 </style>

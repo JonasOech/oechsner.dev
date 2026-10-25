@@ -1,25 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="A hangman gallows beside a six-letter word with two letters still blank, above a decision tree whose highlighted branch picks out the matching German word">
   <defs>
     <radialGradient id="hmGlowA" cx="14%" cy="10%" r="70%">
-      <stop offset="0%" stop-color="#566c94" stop-opacity="0.42"/>
-      <stop offset="100%" stop-color="#566c94" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#4f7a9e" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#4f7a9e" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="hmGlowB" cx="86%" cy="94%" r="65%">
-      <stop offset="0%" stop-color="#b06c2e" stop-opacity="0.40"/>
-      <stop offset="100%" stop-color="#b06c2e" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#7b1e2b" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#7b1e2b" stop-opacity="0"/>
     </radialGradient>
     <pattern id="hmDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
+      <circle cx="1" cy="1" r="1" fill="#1c1a17" opacity="0.05"/>
     </pattern>
   </defs>
 
-  <rect width="1200" height="675" fill="#0e0f12"/>
-  <rect width="1200" height="675" fill="url(#hmDots)"/>
-  <rect width="1200" height="675" fill="url(#hmGlowA)"/>
-  <rect width="1200" height="675" fill="url(#hmGlowB)"/>
+  <rect width="1200" height="675" fill="#f6f1e7"/>
 
   <!-- The gallows. Everything sits on one ground line at y=264, shared with the word. -->
-  <g stroke="#a3a4ac" stroke-width="3" fill="none" stroke-linecap="round">
+  <g stroke="#3b3731" stroke-width="3" fill="none" stroke-linecap="round">
     <path d="M254 264H424"/>
     <path d="M282 264V90"/>
     <path d="M282 90h102"/>
@@ -27,23 +24,23 @@
   </g>
 
   <!-- Two wrong guesses, two parts drawn. -->
-  <g stroke="#e5484d" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+  <g stroke="#a3262f" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
     <circle cx="384" cy="136" r="20"/>
     <path d="M384 156v52"/>
   </g>
 
   <!-- The four guesses still in hand. -->
-  <g stroke="#a3a4ac" stroke-width="3" fill="none" stroke-linecap="round"
+  <g stroke="#3b3731" stroke-width="3" fill="none" stroke-linecap="round"
      stroke-dasharray="5 8" opacity="0.18">
     <path d="M384 170L356 196M384 170L412 196"/>
     <path d="M384 208L358 246M384 208L410 246"/>
   </g>
 
   <!-- The word: S C H _ _ E -->
-  <g stroke="#a3a4ac" stroke-width="3" stroke-linecap="round">
+  <g stroke="#3b3731" stroke-width="3" stroke-linecap="round">
     <path d="M470 264h62M548 264h62M626 264h62M704 264h62M782 264h62M860 264h62"/>
   </g>
-  <g font-family="ui-monospace, Menlo, monospace" font-size="52" fill="#f4f4f6"
+  <g font-family="ui-monospace, Menlo, monospace" font-size="52" fill="#1c1a17"
      text-anchor="middle">
     <text x="501" y="252">S</text>
     <text x="579" y="252">C</text>
@@ -53,36 +50,36 @@
 
   <!-- The tree that resolves the two blanks. Each node asks after one letter;
        the highlighted path is the one the revealed pattern allows. -->
-  <g stroke="#34353d" stroke-width="2" fill="none">
+  <g stroke="#b8ae98" stroke-width="2" fill="none">
     <path d="M600 344L400 420M600 344L800 420"/>
     <path d="M400 464L300 540M400 464L500 540"/>
     <path d="M800 464L700 540M800 464L900 540"/>
   </g>
-  <g stroke="#e0a85c" stroke-width="3" fill="none">
+  <g stroke="#7b1e2b" stroke-width="3" fill="none">
     <path d="M600 344L400 420M400 464L500 540"/>
   </g>
 
-  <g fill="#0a0b0d" stroke="#a3a4ac" stroke-width="2">
+  <g fill="#ebe4d4" stroke="#3b3731" stroke-width="2">
     <rect x="762" y="420" width="76" height="44" rx="6"/>
     <rect x="245" y="540" width="110" height="40" rx="6"/>
     <rect x="645" y="540" width="110" height="40" rx="6"/>
     <rect x="845" y="540" width="110" height="40" rx="6"/>
   </g>
-  <g fill="#0a0b0d" stroke="#e0a85c" stroke-width="2">
+  <g fill="#ebe4d4" stroke="#7b1e2b" stroke-width="2">
     <rect x="562" y="300" width="76" height="44" rx="6"/>
     <rect x="362" y="420" width="76" height="44" rx="6"/>
     <rect x="445" y="540" width="110" height="40" rx="6"/>
   </g>
 
   <g font-family="ui-monospace, Menlo, monospace" font-size="22" text-anchor="middle">
-    <text x="600" y="330" fill="#e0a85c">L?</text>
-    <text x="400" y="450" fill="#e0a85c">A?</text>
-    <text x="800" y="450" fill="#a3a4ac">T?</text>
+    <text x="600" y="330" fill="#7b1e2b">L?</text>
+    <text x="400" y="450" fill="#7b1e2b">A?</text>
+    <text x="800" y="450" fill="#3b3731">T?</text>
   </g>
   <g font-family="ui-monospace, Menlo, monospace" font-size="15" letter-spacing="1"
-     text-anchor="middle" fill="#6d6e77">
+     text-anchor="middle" fill="#8b8271">
     <text x="300" y="565">SCHALE</text>
-    <text x="500" y="565" fill="#e0a85c">SCHULE</text>
+    <text x="500" y="565" fill="#7b1e2b">SCHULE</text>
     <text x="700" y="565">SCHOTE</text>
     <text x="900" y="565">SCHAFE</text>
   </g>

@@ -65,13 +65,12 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-6);
 		padding: var(--s-5);
-		border: 1px solid var(--line);
-		border-radius: 10px;
+		border: 1px solid var(--line-strong);
+		border-radius: 2px;
 		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
 		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
 		   heavier one the "More" menu uses. */
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
+		background: var(--bg);
 		box-shadow: var(--shadow-4);
 		animation: consent-rise var(--dur-base) var(--ease-out) both;
 	}

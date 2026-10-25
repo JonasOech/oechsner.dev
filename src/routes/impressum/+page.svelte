@@ -149,8 +149,8 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
+		font-size: 1.1875rem;
+		font-weight: 600;
 		line-height: 1.4;
 		color: var(--text);
 	}
@@ -175,8 +175,10 @@
 
 	.legal__dl dt {
 		color: var(--text-muted);
-		font-size: 0.8125rem;
-		font-weight: 700;
+		font-size: 0.9375rem;
+		font-weight: 500;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.09em;
 	}
 
 	.legal__dl dd {
@@ -186,7 +188,7 @@
 
 	.legal__updated {
 		margin-top: var(--s-2);
-		font-size: 0.8125rem;
+		font-size: 0.9375rem;
 		color: var(--text-muted);
 	}
 

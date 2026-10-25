@@ -71,29 +71,21 @@
 </aside>
 
 <style>
+	/* An end-of-article note, ruled above and below like a newspaper house ad: no fill,
+	   no card. */
 	.subscribe {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
-		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		padding-block: var(--s-5);
+		border-block: 1px solid var(--line-strong);
 	}
 
-	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
-	   site's ordinary surface, so it reads as part of the post's ending, not an advert. */
 	.subscribe__mark {
 		display: grid;
 		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 8px;
 		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
 	}
 
 	.subscribe__text {
@@ -103,8 +95,8 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
-		line-height: 1.6;
+		font-size: 1rem;
+		line-height: 1.5;
 		color: var(--text-secondary);
 	}
 
@@ -145,7 +137,7 @@
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -153,7 +145,6 @@
 		.subscribe {
 			grid-template-columns: auto minmax(0, 1fr);
 		}
-
 		.subscribe__actions {
 			grid-column: 1 / -1;
 			grid-template-columns: auto auto;

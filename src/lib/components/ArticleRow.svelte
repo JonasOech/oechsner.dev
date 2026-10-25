@@ -54,51 +54,41 @@
 </a>
 
 <style>
+	/* A column item in the archive: hairline above, headline, summary, byline, and a small
+	   cover to the side. No card, no fill — hover shifts the headline to oxblood. */
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: minmax(0, 1fr) 128px;
+		gap: var(--s-5);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding-block: var(--s-4) var(--s-5);
+		border-top: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
 	.card--noMedia,
 	.card--featured {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.card--featured {
-		gap: var(--s-5);
+		gap: var(--s-4);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
+		.card:hover .card__title {
+			color: var(--accent);
 		}
 	}
 
-	.card:active {
-		background: var(--surface-active);
+	.card:active .card__title {
+		color: var(--accent-dim);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
@@ -106,32 +96,39 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		font-size: 1.4375rem;
+		font-weight: 500;
+		line-height: 1.2;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
+		margin: 0 0 var(--s-2);
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.card--featured .card__title {
-		font-size: 1.375rem;
+		font-size: 1.75rem;
 	}
 
 	.card__summary {
+		font-size: 1rem;
+		line-height: 1.5;
 		color: var(--text-secondary);
 		margin: 0 0 var(--s-3);
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.card__dot {
-		margin-inline: 0.4em;
+		margin-inline: 0.35em;
 		color: var(--text-muted);
 	}
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
+		border: 1px solid var(--line);
 		aspect-ratio: 4 / 3;
 	}
 
@@ -144,22 +141,12 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (max-width: 1023px) {
+	@media (max-width: 479px) {
 		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
+			grid-template-columns: minmax(0, 1fr) 96px;
+			gap: var(--s-4);
 		}
 	}
 </style>

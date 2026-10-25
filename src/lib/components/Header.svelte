@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
-
-	let sentinel: HTMLElement;
-	let scrolled = $state(false);
+	import { nav, site } from '$lib/data/site';
 
 	/**
 	 * `nav[0]` (Writing) is the site's root and stays on the bar at every width; the rest
@@ -13,32 +10,15 @@
 	const [primary, ...collapsible] = nav;
 
 	/**
-	 * Below this the four labels no longer fit on one line — see DESIGN.md §9. Kept in `em`
+	 * Below this the four labels no longer fit on one line — see DESIGN.md. Kept in `em`
 	 * so it tracks the label widths under text-only zoom rather than the raw viewport, and
 	 * duplicated in the stylesheet's media query: the two have to move together.
 	 */
-	const COLLAPSE_QUERY = '(max-width: 35em)';
+	const COLLAPSE_QUERY = '(max-width: 19em)';
 
 	let moreOpen = $state(false);
 	let moreEl: HTMLElement;
 	let moreButton: HTMLButtonElement;
-
-	/**
-	 * Header scroll state via a 1px sentinel at the top of the document rather than a
-	 * `scroll` listener — no per-frame work (DESIGN.md §7).
-	 */
-	$effect(() => {
-		if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				scrolled = !entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	});
 
 	// Widening past the breakpoint puts the collapsed links back on the bar, so the
 	// disclosure state they belonged to has to go with them.
@@ -85,10 +65,14 @@
 
 <svelte:window onkeydown={onWindowKeydown} />
 
-<div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
-
-<header class="header" data-scrolled={scrolled}>
-	<nav class="container nav" aria-label="Primary">
+<header class="masthead">
+	<div class="container">
+		<div class="masthead__title">
+			<p class="masthead__dateline masthead__dateline--left">Bamberg &amp; Dublin</p>
+			<a class="masthead__name" href="/" aria-label="{site.name}, home">{site.name}</a>
+			<p class="masthead__dateline masthead__dateline--right">Est. {site.startYear}</p>
+		</div>
+		<nav class="nav" aria-label="Primary">
 		<a
 			class="nav__link"
 			href={primary.href}
@@ -133,87 +117,108 @@
 				{/each}
 			</div>
 		</div>
-	</nav>
+		</nav>
+	</div>
 </header>
 
 <style>
-	.sentinel {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
+	/* The masthead is a printed nameplate: dateline left, name centred, dateline right,
+	   then one ruled strip of section links. It scrolls away with the page. */
+	.masthead {
+		position: relative;
+		z-index: 5;
+		padding-top: var(--s-5);
 	}
 
-	.header {
-		position: sticky;
-		top: 0;
-		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+	.masthead__title {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		align-items: baseline;
+		gap: var(--s-4);
+		padding-bottom: var(--s-3);
 	}
 
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+	.masthead__name {
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 2.4vw, 1.875rem);
+		font-weight: 500;
+		line-height: 1.1;
+		letter-spacing: -0.005em;
+		color: var(--text);
+		text-decoration: none;
+		white-space: nowrap;
+		border-radius: 2px;
 	}
 
+	.masthead__name:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.masthead__name:hover {
+			color: var(--accent);
+		}
+	}
+
+	.masthead__dateline {
+		margin: 0;
+		font-size: 0.9375rem;
+		font-variant-caps: all-small-caps;
+		letter-spacing: var(--caps-tracking);
+		color: var(--text-muted);
+	}
+
+	.masthead__dateline--right {
+		text-align: right;
+		font-variant-numeric: tabular-nums lining-nums;
+	}
+
+	/* The ruled strip: hairlines above and below, spanning the content width. */
 	.nav {
 		display: flex;
 		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		gap: 2rem;
+		border-block: 1px solid var(--line-strong);
+		padding-block: 0.125rem;
 	}
 
 	.nav__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-serif);
+		font-size: 1.0625rem;
+		font-weight: 500;
+		font-variant-caps: all-small-caps;
 		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		letter-spacing: 0.1em;
 		color: var(--text-muted);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
+		padding: 0.625rem 0.125rem;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
+	/* The current section carries a single oxblood hairline; hover only shifts colour. */
 	.nav__link::after {
 		content: '';
 		position: absolute;
 		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
+		right: 0;
+		bottom: 0.375rem;
 		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		background: var(--accent);
+		opacity: 0;
+		transition: opacity var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			color: var(--accent);
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		color: var(--accent-dim);
 	}
 
 	.nav__link[aria-current='page'],
@@ -221,9 +226,14 @@
 		color: var(--text);
 	}
 
+	.nav__link[aria-current='page']::after,
+	.nav__link[data-current='true']::after {
+		opacity: 1;
+	}
+
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -247,8 +257,6 @@
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		transition: transform var(--dur-base) var(--ease-out);
@@ -258,12 +266,9 @@
 		transform: rotate(180deg);
 	}
 
-	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
-	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
-	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
+	/* `em`, not `px`: this tracks the label widths, so text-only zoom collapses the bar
+	   instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
+	@media (max-width: 19em) {
 		.nav {
 			flex-wrap: nowrap;
 		}
@@ -287,22 +292,9 @@
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
 			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			background: var(--bg);
+			border: 1px solid var(--line-strong);
+			border-radius: 2px;
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -311,26 +303,40 @@
 
 		.more__panel .nav__link {
 			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
 			text-align: center;
 			justify-content: center;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
 		.more__panel .nav__link::after {
 			content: none;
 		}
 	}
 
+	@media (max-width: 599px) {
+		.masthead__dateline {
+			display: none;
+		}
+
+		.masthead__title {
+			grid-template-columns: minmax(0, 1fr);
+			justify-items: center;
+		}
+
+		.nav {
+			gap: 1.25rem;
+		}
+	}
+
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
+			padding: 0 0.375rem;
+		}
+
+		.nav__link::after {
+			bottom: 0.625rem;
 		}
 	}
 </style>

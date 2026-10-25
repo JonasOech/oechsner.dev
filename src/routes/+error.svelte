@@ -40,6 +40,8 @@
 
 	.lede {
 		max-width: 46ch;
+		font-style: italic;
+		font-size: 1.1875rem;
 	}
 
 	@media (max-width: 767px) {

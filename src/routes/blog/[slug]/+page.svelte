@@ -88,25 +88,31 @@
 				All articles
 			</a>
 
+			{#if post.tags.length}
+				<p class="eyebrow post__kicker">{post.tags[0]}</p>
+			{/if}
+
 			<h1 class="post__title">{post.title}</h1>
 
 			{#if post.summary}
 				<p class="post__summary">{post.summary}</p>
 			{/if}
 
-			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
-			     the measure, and the badge claims the slack the two of them leave behind. -->
-			<div class="post__facts">
-				<div class="post__facts-main">
-					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
-						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
-						{#if post.nerdyness}
-							<span class="post__dot" aria-hidden="true">·</span>
-							<Nerdyness level={post.nerdyness} />
-						{/if}
-					</p>
+			<p class="meta post__byline">
+				By {site.name}
+				<span class="post__dot" aria-hidden="true">·</span>
+				<time datetime={post.date}>{formatDate(post.date)}</time>
+				<span class="post__dot" aria-hidden="true">·</span>
+				{post.readingMinutes} min read
+			</p>
+
+			<!-- Marginalia: beside the text on wide screens, a quiet row under the byline
+			     on narrow ones. -->
+			{#if post.nerdyness || post.tags.length || post.ai === false}
+				<aside class="post__margin" aria-label="About this article">
+					{#if post.nerdyness}
+						<p class="meta post__margin-row"><Nerdyness level={post.nerdyness} /></p>
+					{/if}
 
 					{#if post.tags.length}
 						<div class="tag-row post__tags">
@@ -115,13 +121,13 @@
 							{/each}
 						</div>
 					{/if}
-				</div>
 
-				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
-				{#if post.ai === false}
-					<HumanWritten />
-				{/if}
-			</div>
+					<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
+					{#if post.ai === false}
+						<HumanWritten />
+					{/if}
+				</aside>
+			{/if}
 		</header>
 
 		{#if post.cover}
@@ -168,130 +174,128 @@
 
 <style>
 	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	   children does the centring; above it, the explicit tracks take over. */
 	.post-layout {
 		display: grid;
 	}
 
 	@media (min-width: 1100px) {
 		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
+			/* The two flanking tracks are equal, so the text lands on the page's centre line
+			   whether or not an outline was rendered. The left holds the outline, the right
+			   the marginalia. */
 			grid-template-columns:
 				minmax(0, var(--outline-width))
 				minmax(0, var(--measure-prose))
 				minmax(0, var(--outline-width));
 			justify-content: center;
-			column-gap: var(--s-5);
+			column-gap: var(--s-6);
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		position: relative;
+		padding-top: var(--s-7);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
 
 	.post__header {
 		display: grid;
-		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		gap: var(--s-3);
+		margin-bottom: var(--s-6);
 	}
 
 	.post__back {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		justify-self: start;
+		font-size: 1.0625rem;
+		font-weight: 500;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.09em;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
 		min-height: 44px;
+		margin-bottom: var(--s-2);
 		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
-		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
+			color: var(--accent);
 		}
 	}
 
 	.post__back:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(2.125rem, 5vw, 3.125rem);
+		font-weight: 500;
+		line-height: 1.08;
+		letter-spacing: -0.018em;
 	}
 
+	/* The standfirst. */
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.3125rem;
+		font-style: italic;
+		line-height: 1.45;
 		color: var(--text-secondary);
 	}
 
+	.post__byline {
+		padding-top: var(--s-3);
+		margin-top: var(--s-2);
+		border-top: 1px solid var(--line);
+	}
+
 	.post__dot {
-		margin-inline: 0.4em;
+		margin-inline: 0.35em;
 		color: var(--text-muted);
 	}
 
-	.post__facts {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--s-5);
-		flex-wrap: wrap;
-	}
-
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
-	.post__facts-main {
+	/* Narrow: marginalia sit as a quiet row under the byline. Wide: they hang in the right
+	   track beside the headline. */
+	.post__margin {
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
+		gap: var(--s-3);
+		justify-items: start;
+		margin-top: var(--s-2);
 	}
 
-	.post__tags {
-		margin-top: var(--s-1);
+	.post__margin-row {
+		display: block;
+	}
+
+	@media (min-width: 1100px) {
+		.post__margin {
+			position: absolute;
+			left: calc(100% + var(--s-6));
+			top: calc(var(--s-7) + 44px + var(--s-2) + var(--s-3));
+			width: var(--outline-width);
+			margin-top: 0;
+			padding-top: var(--s-3);
+			border-top: 1px solid var(--line-strong);
+		}
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
 		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
 	}
 
 	.post__subscribe {
@@ -306,25 +310,20 @@
 		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		gap: var(--s-5);
+		margin-top: var(--s-8);
+		padding-top: var(--s-4);
+		border-top: 1px solid var(--line-strong);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
+		width: 100%;
 	}
 
 	.post__nav-link {
 		display: grid;
-		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		gap: var(--s-1);
+		align-content: start;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -332,36 +331,32 @@
 		justify-items: end;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
-	}
-
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-size: 1.1875rem;
+		font-weight: 500;
+		line-height: 1.3;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
+		}
 	}
 
 	@media (max-width: 767px) {
 		.post {
-			padding-top: var(--s-6);
+			padding-top: var(--s-4);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;
