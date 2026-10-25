@@ -65,13 +65,13 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-6);
 		padding: var(--s-5);
-		border: 1px solid var(--line);
-		border-radius: 10px;
+		border: 4px solid var(--ink);
+		border-radius: 0;
 		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
 		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
 		   heavier one the "More" menu uses. */
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
+		background: var(--yellow);
+
 		box-shadow: var(--shadow-4);
 		animation: consent-rise var(--dur-base) var(--ease-out) both;
 	}
@@ -117,6 +117,14 @@
 	.consent__actions .btn {
 		min-width: 7rem;
 		justify-content: center;
+		background: var(--surface);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.consent__actions .btn:hover {
+			background: var(--ink);
+			color: var(--text-inverse);
+		}
 	}
 
 	@media (max-width: 767px) {

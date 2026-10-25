@@ -153,8 +153,8 @@
 		   control. Formula and note share the narrower box, so both stay on one centre line. */
 		padding-right: var(--s-7);
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
+		border: 3px solid var(--ink);
+		border-radius: 0;
 	}
 
 	/* KaTeX's display block already scrolls sideways under app.css (`.prose .katex-display`).
@@ -201,10 +201,10 @@
 		width: 2rem;
 		height: 2rem;
 		padding: 0;
-		border: 1px solid var(--line);
-		border-radius: 6px;
-		background: var(--surface-active);
-		color: var(--text-muted);
+		border: 2px solid var(--ink);
+		border-radius: 0;
+		background: var(--yellow);
+		color: var(--ink);
 		cursor: pointer;
 		transition:
 			color var(--dur-fast) var(--ease-out),

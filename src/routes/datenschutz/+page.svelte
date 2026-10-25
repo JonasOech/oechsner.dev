@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import Rail from '$lib/components/Rail.svelte';
+	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { impressum, privacy, site } from '$lib/data/site';
 	import { GA_MEASUREMENT_ID, reopenConsent } from '$lib/consent.svelte';
 
@@ -36,8 +36,10 @@
 	description="Datenschutzerklärung nach Art. 13 DSGVO für oechsner.dev — Hosting, Reichweitenmessung und Einwilligung."
 />
 
-<div class="container">
-	<Rail label="Datenschutz" id="datenschutz" level={1}>
+<PageTitle title="Datenschutz" kicker="Datenschutzerklärung" tone="red" />
+
+<div class="container legal-wrap">
+	<div id="datenschutz">
 		<div class="legal" lang="de">
 			<section>
 				<h2 class="legal__h">Verantwortlicher</h2>
@@ -132,12 +134,10 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Schriftarten „Jost“ und „JetBrains Mono“ werden von diesem Server selbst
+					ausgeliefert (lokal eingebunden über das Paket Fontsource). Es findet kein Abruf
+					bei Google oder einem anderen Drittanbieter statt, und dabei wird keine
+					IP-Adresse an Dritte übertragen.
 				</p>
 			</section>
 
@@ -175,10 +175,14 @@
 
 			<p class="legal__updated">Stand: {formattedDate}</p>
 		</div>
-	</Rail>
+	</div>
 </div>
 
 <style>
+	.legal-wrap {
+		padding-top: var(--s-8);
+	}
+
 	.legal {
 		display: grid;
 		gap: var(--s-7);
@@ -193,10 +197,14 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
-		line-height: 1.4;
+		font-size: 1.1875rem;
+		font-weight: 800;
+		line-height: 1.3;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
 		color: var(--text);
+		padding-top: var(--s-3);
+		border-top: var(--rule-w) solid var(--ink);
 	}
 
 	.legal p {
@@ -222,7 +230,9 @@
 		cursor: pointer;
 		color: var(--text);
 		text-decoration: underline;
-		text-decoration-color: var(--accent-dim);
+		font-weight: 700;
+		text-decoration-thickness: 2px;
+		text-decoration-color: var(--accent);
 		text-underline-offset: 3px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}

@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
+	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { site, cvPath } from '$lib/data/site';
 	import {
 		about,
@@ -19,7 +20,9 @@
 	description="Jonas Öchsner — applied computer science at Universität Bamberg, machine learning and data-protection engineering at LIfBi, ERASMUS at TU Dublin from September 2026."
 />
 
-<div class="container">
+<PageTitle title="Projects" kicker="Things I have built" tone="red" />
+
+<div class="container section-first">
 	<Rail label="Projects" id="projects">
 		{#each projects as project (project.title)}
 			<article class="entry">
@@ -85,6 +88,11 @@
 </div>
 
 <style>
+	/* The first rail sits close under the poster header. */
+	.section-first :global(.rail:first-child) {
+		margin-top: var(--s-8);
+	}
+
 	.entry__stack {
 		margin: 0 0 var(--s-3);
 	}

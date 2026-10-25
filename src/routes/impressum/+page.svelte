@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import Rail from '$lib/components/Rail.svelte';
+	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { impressum, site } from '$lib/data/site';
 
 	/**
@@ -30,8 +30,10 @@
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
-<div class="container">
-	<Rail label="Impressum" id="impressum" level={1}>
+<PageTitle title="Impressum" kicker="Anbieterkennzeichnung" tone="blue" />
+
+<div class="container legal-wrap">
+	<div id="impressum">
 		<div class="legal" lang="de">
 			<section>
 				<h2 class="legal__h">Angaben gemäß § 5 DDG</h2>
@@ -131,10 +133,14 @@
 
 			<p class="legal__updated">Stand: {formattedDate}</p>
 		</div>
-	</Rail>
+	</div>
 </div>
 
 <style>
+	.legal-wrap {
+		padding-top: var(--s-8);
+	}
+
 	.legal {
 		display: grid;
 		gap: var(--s-7);
@@ -149,10 +155,14 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
-		line-height: 1.4;
+		font-size: 1.1875rem;
+		font-weight: 800;
+		line-height: 1.3;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
 		color: var(--text);
+		padding-top: var(--s-3);
+		border-top: var(--rule-w) solid var(--ink);
 	}
 
 	.legal address {

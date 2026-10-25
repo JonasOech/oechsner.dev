@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
+	import { nav, site } from '$lib/data/site';
 
 	let sentinel: HTMLElement;
 	let scrolled = $state(false);
@@ -89,8 +89,17 @@
 
 <header class="header" data-scrolled={scrolled}>
 	<nav class="container nav" aria-label="Primary">
+		<a class="brand" href="/" aria-label="{site.shortName} — home">
+			<svg class="brand__mark" viewBox="0 0 36 36" aria-hidden="true" focusable="false">
+				<circle cx="10" cy="11" r="8" fill="var(--red)" stroke="var(--ink)" stroke-width="3" />
+				<rect x="16" y="4" width="16" height="16" fill="var(--yellow)" stroke="var(--ink)" stroke-width="3" />
+				<polygon points="6,33 18,15 30,33" fill="var(--blue)" stroke="var(--ink)" stroke-width="3" />
+			</svg>
+			<span class="brand__name">{site.shortName}</span>
+		</a>
+
 		<a
-			class="nav__link"
+			class="nav__link nav__link--first"
 			href={primary.href}
 			aria-current={isCurrent(primary.href) ? 'page' : undefined}
 		>
@@ -150,80 +159,97 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+		background: var(--bg);
+		border-bottom: var(--rule-w) solid var(--ink);
+		transition: box-shadow var(--dur-base) var(--ease-out);
 	}
 
+	/* Once the page has moved, the bar lifts off it on a hard yellow edge. */
 	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		box-shadow: 0 6px 0 var(--yellow);
 	}
 
 	.nav {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: center;
+		justify-content: flex-end;
+		gap: var(--s-1);
+		min-height: calc(var(--header-h) - var(--rule-w));
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-3);
+		margin-right: auto;
+		color: var(--text);
+		text-decoration: none;
+		min-height: 44px;
+	}
+
+	.brand__mark {
+		width: 2.25rem;
+		height: 2.25rem;
+		flex: none;
+		transition: transform var(--dur-base) var(--ease-out);
+	}
+
+	.brand__name {
+		font-size: 1.125rem;
+		font-weight: 800;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		line-height: 1;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.brand:hover .brand__mark {
+			transform: rotate(-12deg);
+		}
+	}
+
+	.brand:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
 	}
 
 	.nav__link {
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.875rem;
+		font-weight: 800;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text);
 		text-decoration: none;
 		white-space: nowrap;
-		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		padding: 0.75rem 0.875rem;
+		border: 3px solid transparent;
+		background: transparent;
+		transition:
+			background-color var(--dur-fast) var(--ease-out),
+			color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			background: var(--yellow);
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		background: var(--red);
+		color: var(--text-inverse);
 	}
 
 	.nav__link[aria-current='page'],
 	.nav__link[data-current='true'] {
-		color: var(--text);
+		background: var(--ink);
+		color: var(--text-inverse);
 	}
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -237,20 +263,17 @@
 	   further down cannot resurrect the button on a wide touch screen. */
 	.nav .more__button {
 		display: none;
-		background: none;
-		border: 0;
 		cursor: pointer;
 		align-items: center;
-		gap: 0.3em;
+		gap: 0.4em;
+		font-family: var(--font-sans);
 	}
 
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
-		stroke-linecap: round;
-		stroke-linejoin: round;
+		stroke-width: 2.25;
+		stroke-linecap: square;
 		transition: transform var(--dur-base) var(--ease-out);
 	}
 
@@ -258,12 +281,9 @@
 		transform: rotate(180deg);
 	}
 
-	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
-	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
+	/* `em`, not `px`: tracks the label widths so text-only zoom collapses the bar instead of
+	   overflowing it. Mirrored by COLLAPSE_QUERY above. */
 	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
 		.nav {
 			flex-wrap: nowrap;
 		}
@@ -277,32 +297,21 @@
 			display: inline-flex;
 		}
 
+		.nav__link {
+			padding-inline: 0.625rem;
+		}
+
 		.nav .more__panel {
 			display: grid;
 			position: absolute;
 			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
-			min-width: max-content;
-			max-width: calc(100vw - 2 * var(--gutter));
+			top: calc(100% + var(--s-3));
+			right: 0;
+			min-width: 11rem;
 			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
+			background: var(--yellow);
+			border: 3px solid var(--ink);
 			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -310,27 +319,29 @@
 		}
 
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
+			padding: 0.875rem var(--s-3);
+			text-align: left;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
+		@media (hover: hover) and (pointer: fine) {
+			.more__panel .nav__link:hover {
+				background: var(--surface);
+			}
+		}
+	}
+
+	/* The wordmark gives way to the mark alone before it can crowd the links. */
+	@media (max-width: 30em) {
+		.brand__name {
+			display: none;
 		}
 	}
 
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
 		}
 	}
 </style>

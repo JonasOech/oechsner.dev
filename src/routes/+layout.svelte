@@ -1,4 +1,8 @@
 <script lang="ts">
+	import '@fontsource-variable/jost/wght.css';
+	import '@fontsource-variable/jost/wght-italic.css';
+	import '@fontsource/jetbrains-mono/400.css';
+	import '@fontsource/jetbrains-mono/500.css';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
@@ -11,9 +15,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<meta name="theme-color" content="#f4efe3" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>

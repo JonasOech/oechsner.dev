@@ -78,9 +78,9 @@
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		border: 3px solid var(--ink);
+		border-radius: 0;
+		box-shadow: var(--shadow-2);
 	}
 
 	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
@@ -90,10 +90,10 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		border-radius: 0;
+		color: var(--ink);
+		background: var(--yellow);
+		border: 3px solid var(--ink);
 	}
 
 	.subscribe__text {
@@ -134,7 +134,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.subscribe__links a:hover {
-			color: var(--accent);
+			color: var(--ink);
 			text-decoration-color: var(--accent);
 		}
 	}
@@ -145,7 +145,7 @@
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 0;
 		box-shadow: var(--focus-ring);
 	}
 

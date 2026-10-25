@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
+	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { site, cvPath } from '$lib/data/site';
 	import {
 		about,
@@ -19,9 +20,10 @@
 	description="Jonas Öchsner — applied computer science at Universität Bamberg, machine learning and data-protection engineering at LIfBi, ERASMUS at TU Dublin from September 2026."
 />
 
+<PageTitle title="About" kicker={site.name} tone="blue" />
+
 <div class="container">
 	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
@@ -94,7 +96,7 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-8);
 		max-width: var(--measure);
 	}
 
@@ -127,7 +129,7 @@
 		gap: var(--s-4);
 		align-items: baseline;
 		padding: var(--s-3) 0;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 2px solid var(--ink);
 	}
 
 	.grades__row:last-child {
@@ -148,7 +150,7 @@
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
 		}
 	}
 </style>

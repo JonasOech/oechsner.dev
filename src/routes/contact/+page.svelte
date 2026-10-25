@@ -1,8 +1,7 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import Rail from '$lib/components/Rail.svelte';
-	import AsciiWall from '$lib/components/AsciiWall.svelte';
+	import PageTitle from '$lib/components/PageTitle.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -15,60 +14,79 @@
 	description="Get in touch with Jonas Öchsner — email, GitHub and LinkedIn."
 />
 
-<div class="container">
-	<Rail label="Get In Touch" id="contact" level={1} wide>
-		<!-- <p class="lede enter" style="--i: 0">
-			The fastest way to reach me is email.
-		</p> -->
+<PageTitle title="Get in touch" kicker="Contact" tone="yellow">
+	The fastest way to reach me is email.
+</PageTitle>
 
-		<dl class="channels">
-			{#each contacts as channel (channel.href)}
-				<div class="channel">
-					<dt class="label">{channel.label}</dt>
-					<dd>
-						<a
-							class="channel__link"
-							href={channel.href}
-							target={isExternal(channel.href) ? '_blank' : undefined}
-							rel={isExternal(channel.href) ? 'noreferrer noopener' : undefined}
-						>
-							<Icon name={channel.icon} size={16} />
-							<span class="channel__value">{channel.value}</span>
-							{#if isExternal(channel.href)}
-								<Icon name="external" size={13} />
-							{/if}
-						</a>
-					</dd>
-				</div>
-			{/each}
-		</dl>
+<div class="container contact">
+	<dl class="channels">
+		{#each contacts as channel, i (channel.href)}
+			<div class="channel channel--{i % 3}">
+				<dt class="label channel__label">{channel.label}</dt>
+				<dd>
+					<a
+						class="channel__link"
+						href={channel.href}
+						target={isExternal(channel.href) ? '_blank' : undefined}
+						rel={isExternal(channel.href) ? 'noreferrer noopener' : undefined}
+					>
+						<Icon name={channel.icon} size={22} />
+						<span class="channel__value">{channel.value}</span>
+						{#if isExternal(channel.href)}
+							<Icon name="external" size={16} />
+						{/if}
+					</a>
+				</dd>
+			</div>
+		{/each}
+	</dl>
 
-		<p class="note">
-			Based in Bavaria, Germany. Currently in Dublin, Ireland.
-		</p>
-	</Rail>
+	<p class="note">Based in Bavaria, Germany. Currently in Dublin, Ireland.</p>
 </div>
 
-<AsciiWall />
-
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
+	.contact {
+		padding-top: var(--s-8);
 	}
 
 	.channels {
 		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+		gap: var(--s-6);
 	}
 
 	.channel {
 		display: grid;
-		gap: var(--s-2);
+		gap: var(--s-3);
 		min-width: 0;
+		padding: var(--s-5);
+		border: 3px solid var(--ink);
+		box-shadow: var(--shadow-2);
+		background: var(--surface);
+		position: relative;
+	}
+
+	/* A colour tab on each card, cycling through the primaries. */
+	.channel::before {
+		content: '';
+		position: absolute;
+		top: -3px;
+		left: -3px;
+		width: 3.5rem;
+		height: 0.75rem;
+		background: var(--red);
+		border: 3px solid var(--ink);
+		border-bottom: 0;
+		transform: translateY(-100%);
+	}
+
+	.channel--1::before {
+		background: var(--yellow);
+	}
+
+	.channel--2::before {
+		background: var(--blue);
 	}
 
 	.channel dd {
@@ -76,33 +94,40 @@
 		min-width: 0;
 	}
 
+	.channel__label {
+		color: var(--text);
+	}
+
 	.channel__link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--s-2);
+		gap: var(--s-3);
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1.125rem;
+		font-weight: 700;
 		max-width: 100%;
-		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
+		background-image: linear-gradient(var(--yellow), var(--yellow)), linear-gradient(var(--red), var(--red));
+		background-size:
+			100% 0%,
+			100% 2px;
 		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		background-position:
+			0 100%,
+			0 100%;
+		transition: background-size var(--dur-base) var(--ease-out);
 		overflow-wrap: anywhere;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.channel__link:hover {
-			color: var(--accent);
-		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			background-size:
+				100% 100%,
+				100% 2px;
 		}
 	}
 
@@ -112,14 +137,16 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
-		margin-top: var(--s-4);
-		font-size: 0.8125rem;
-		color: var(--text-muted);
+		margin-top: var(--s-7);
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--text-secondary);
 		max-width: var(--measure);
+		padding-left: var(--s-4);
+		border-left: var(--rule-w-thick) solid var(--red);
 	}
 </style>
