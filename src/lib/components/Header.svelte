@@ -89,6 +89,11 @@
 
 <header class="header" data-scrolled={scrolled}>
 	<nav class="container nav" aria-label="Primary">
+		<a class="nav__mark" href="/" aria-label="oechsner.dev, home">
+			<span class="nav__mark-name">Jonas Öchsner</span>
+			<span class="nav__mark-sub">Catalogue of writing</span>
+		</a>
+
 		<a
 			class="nav__link"
 			href={primary.href}
@@ -150,36 +155,61 @@
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+		background: var(--bg);
+		border-bottom: 1px solid var(--line);
+		transition: border-color var(--dur-base) var(--ease-out);
 	}
 
 	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		border-bottom-color: var(--line-strong);
 	}
 
 	.nav {
 		display: flex;
-		justify-content: center;
+		align-items: center;
+		justify-content: flex-end;
 		gap: 1.75rem;
-		padding-block: var(--s-5);
+		padding-block: var(--s-4);
+	}
+
+	/* The wordmark: a small serif name over a mono descriptor. Small by design (DESIGN.md §11). */
+	.nav__mark {
+		margin-right: auto;
+		display: flex;
+		align-items: baseline;
+		gap: var(--s-3);
+		text-decoration: none;
+		color: var(--text);
+		min-width: 0;
+		border-radius: var(--radius);
+	}
+
+	.nav__mark:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	.nav__mark-name {
+		font-family: var(--font-display);
+		font-size: 1rem;
+		font-weight: 600;
+		white-space: nowrap;
+	}
+
+	.nav__mark-sub {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.06em;
+		color: var(--text-muted);
+		white-space: nowrap;
 	}
 
 	.nav__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -223,7 +253,7 @@
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
@@ -268,6 +298,10 @@
 			flex-wrap: nowrap;
 		}
 
+		.nav__mark-sub {
+			display: none;
+		}
+
 		.nav .more {
 			display: block;
 			position: relative;
@@ -282,27 +316,15 @@
 			position: absolute;
 			z-index: 1;
 			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
+			right: 0;
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
 			padding: var(--s-2);
 			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
 			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			background: var(--surface);
+			border: 1px solid var(--line-strong);
+			border-radius: var(--radius);
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {

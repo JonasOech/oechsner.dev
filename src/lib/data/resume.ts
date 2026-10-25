@@ -136,7 +136,7 @@ export const projects: Entry[] = [
 		stack: 'SvelteKit · Svelte 5 · mdsvex · Cloudflare Pages',
 		points: [
 			'Designed and built this fully prerendered personal site from scratch, including a custom mdsvex pipeline for citations, display math, and reading-time estimates.',
-			'Authored a written design contract and kept the whole site to a single dark theme with no hard-coded colors.',
+			'Authored a written design contract and kept the whole site to a single light theme with no hard-coded colors.',
 			'Deployed on Cloudflare Pages via Git-integrated continuous deployment.'
 		]
 	},

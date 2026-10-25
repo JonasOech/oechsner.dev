@@ -79,7 +79,7 @@
 		padding: var(--s-5);
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: 10px;
+		border-radius: var(--radius);
 		box-shadow: var(--shadow-inset);
 	}
 
@@ -90,10 +90,10 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
+		border-radius: var(--radius);
 		color: var(--accent);
 		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		border: 1px solid var(--accent);
 	}
 
 	.subscribe__text {
@@ -145,7 +145,7 @@
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 

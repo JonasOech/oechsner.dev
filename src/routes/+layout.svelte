@@ -1,4 +1,11 @@
 <script lang="ts">
+	import '@fontsource-variable/source-serif-4/opsz.css';
+	import '@fontsource-variable/source-serif-4/opsz-italic.css';
+	import '@fontsource/ibm-plex-sans/latin-400.css';
+	import '@fontsource/ibm-plex-sans/latin-500.css';
+	import '@fontsource/ibm-plex-sans/latin-600.css';
+	import '@fontsource/ibm-plex-mono/latin-400.css';
+	import '@fontsource/ibm-plex-mono/latin-500.css';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
@@ -11,9 +18,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<meta name="theme-color" content="#f4f2ec" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>

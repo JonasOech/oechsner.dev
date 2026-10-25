@@ -1,45 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="The Obsidian logo at the centre of a note graph, with links radiating outwards to connected notes">
   <defs>
     <radialGradient id="obGlowA" cx="12%" cy="12%" r="70%">
-      <stop offset="0%" stop-color="#6b5a94" stop-opacity="0.40"/>
-      <stop offset="100%" stop-color="#6b5a94" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#3f7567" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#3f7567" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="obGlowB" cx="86%" cy="90%" r="65%">
-      <stop offset="0%" stop-color="#b06c2e" stop-opacity="0.34"/>
-      <stop offset="100%" stop-color="#b06c2e" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#1d4d42" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#1d4d42" stop-opacity="0"/>
     </radialGradient>
     <!-- The halo that lifts the mark off the graph behind it. -->
     <radialGradient id="obCore" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#8f7ad0" stop-opacity="0.50"/>
-      <stop offset="100%" stop-color="#8f7ad0" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#5f8f80" stop-opacity="0.50"/>
+      <stop offset="100%" stop-color="#5f8f80" stop-opacity="0"/>
     </radialGradient>
     <pattern id="obDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
+      <circle cx="1" cy="1" r="1" fill="#1d211f" opacity="0.05"/>
     </pattern>
 
     <!-- One gradient per facet of the mark, lit from the upper left. -->
     <linearGradient id="obFacetT" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%" stop-color="#9d88dc"/>
-      <stop offset="100%" stop-color="#c9bcf2"/>
+      <stop offset="0%" stop-color="#7fa89a"/>
+      <stop offset="100%" stop-color="#b9d0c7"/>
     </linearGradient>
     <linearGradient id="obFacetM" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#8f7ad0"/>
-      <stop offset="100%" stop-color="#5f4fa0"/>
+      <stop offset="0%" stop-color="#5f8f80"/>
+      <stop offset="100%" stop-color="#2c6a5c"/>
     </linearGradient>
     <linearGradient id="obFacetL" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#5d4d94"/>
-      <stop offset="100%" stop-color="#3b3163"/>
+      <stop offset="0%" stop-color="#2c6a5c"/>
+      <stop offset="100%" stop-color="#1d4d42"/>
     </linearGradient>
     <linearGradient id="obFacetD" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4a3d7d"/>
-      <stop offset="100%" stop-color="#2f2752"/>
+      <stop offset="0%" stop-color="#1d4d42"/>
+      <stop offset="100%" stop-color="#16382f"/>
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="675" fill="#0e0f12"/>
+  <rect width="1200" height="675" fill="#f4f2ec"/>
   <rect width="1200" height="675" fill="url(#obDots)"/>
-  <rect width="1200" height="675" fill="url(#obGlowA)"/>
-  <rect width="1200" height="675" fill="url(#obGlowB)"/>
 
   <!-- Links out of the mark. Every ray starts clear of the facets so the
        silhouette stays sharp; three are lit to trace one path through the vault. -->

@@ -8,6 +8,7 @@
 	import { site, cvPath, feeds } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
+	import { accession, medium } from '$lib/catalogue';
 	import { trackFeed } from '$lib/track';
 
 	let activeTag = $state<string | null>(null);
@@ -67,67 +68,74 @@
 	</header>
 
 	{#if lead}
-		<article class="lead">
-			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
-			     newest post on the site. -->
-			<p class="lead__eyebrow enter" style="--i: 1">Featured Blog Post</p>
+		<!-- An index card for the lead piece. Not "Latest": the lead is the newest *hero*
+		     post, which is not always the newest post on the site. -->
+		<article class="lead enter" style="--i: 1">
+			<header class="lead__bar">
+				<span>Featured entry</span>
+				<span>No.&nbsp;{accession(lead.slug)}</span>
+			</header>
 
-			<h2 class="hero-title lead__title enter" style="--i: 2">
-				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
-			</h2>
+			<div class="lead__body">
+				<div class="lead__text">
+					<h2 class="hero-title lead__title">
+						<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
+					</h2>
 
-			{#if lead.summary}
-				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
-			{/if}
+					{#if lead.summary}
+						<p class="lead__summary">{lead.summary}</p>
+					{/if}
 
-			<p class="meta lead__meta enter" style="--i: 4">
-				<time datetime={lead.date}>{formatDate(lead.date)}</time>
-				<span class="lead__dot" aria-hidden="true">·</span>
-				{lead.readingMinutes} min read
-				{#if lead.nerdyness}
-					<span class="lead__dot" aria-hidden="true">·</span>
-					<Nerdyness level={lead.nerdyness} />
+					<dl class="lead__facts">
+						<div>
+							<dt>Date</dt>
+							<dd><time datetime={lead.date}>{formatDate(lead.date)}</time></dd>
+						</div>
+						<div>
+							<dt>Medium</dt>
+							<dd>{medium(lead.tags)}</dd>
+						</div>
+						<div>
+							<dt>Dimensions</dt>
+							<dd>{lead.readingMinutes} min read</dd>
+						</div>
+						{#if lead.nerdyness}
+							<div>
+								<dt>Depth</dt>
+								<dd><Nerdyness level={lead.nerdyness} /></dd>
+							</div>
+						{/if}
+					</dl>
+
+					<!-- The visible affordance. Not a tab stop: the title above is the accessible
+					     link to the same post. -->
+					<a class="lead__cta" href="/blog/{lead.slug}" tabindex="-1" aria-hidden="true">
+						Read the entry
+						<Icon name="arrow-right" size={15} />
+					</a>
+				</div>
+
+				{#if lead.cover}
+					<!-- Decorative: the title is the accessible link to the same post. -->
+					<a class="lead__media" href="/blog/{lead.slug}" tabindex="-1" aria-hidden="true">
+						<img
+							class="lead__cover"
+							src={lead.cover}
+							alt=""
+							width="720"
+							height="540"
+							decoding="async"
+						/>
+					</a>
 				{/if}
-			</p>
-
-			<!-- The visible affordance. Not a tab stop: the title above is the accessible
-			     link to the same post, and three tab stops to one destination is noise. -->
-			<a
-				class="lead__cta enter"
-				style="--i: 5"
-				href="/blog/{lead.slug}"
-				tabindex="-1"
-				aria-hidden="true"
-			>
-				Read the post
-				<Icon name="arrow-right" size={15} />
-			</a>
-
-			{#if lead.cover}
-				<!-- Decorative: the title above is the accessible link to the same post. -->
-				<a
-					class="lead__media enter"
-					style="--i: 2"
-					href="/blog/{lead.slug}"
-					tabindex="-1"
-					aria-hidden="true"
-				>
-					<img
-						class="lead__cover"
-						src={lead.cover}
-						alt=""
-						width="720"
-						height="540"
-						decoding="async"
-					/>
-				</a>
-			{/if}
+			</div>
 		</article>
 	{/if}
 
-	<Rail label="Writing" id="writing" wide>
+	<Rail label="The collection" id="writing" wide>
 		{#if allTags.length}
 			<div class="tag-row filter" role="group" aria-label="Filter posts by tag">
+				<span class="label filter__label" aria-hidden="true">Filter by medium</span>
 				{#each allTags as tag (tag)}
 					<button
 						type="button"
@@ -140,6 +148,12 @@
 				{/each}
 			</div>
 		{/if}
+
+		<div class="articles-head" aria-hidden="true">
+			<span>No.</span>
+			<span>Entry</span>
+			<span>Date / extent</span>
+		</div>
 
 		<div class="articles" aria-live="polite" use:reveal={{ stagger: true }}>
 			{#if listed.length === 0}
@@ -160,7 +174,7 @@
 		</div>
 	</Rail>
 
-	<Rail label="About" id="about">
+	<Rail label="Curator's note" id="about">
 		<p>{about[0]}</p>
 		<p class="about__more">
 			<a class="inline-cta" href="/about">
@@ -172,121 +186,92 @@
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
+	/* The author line is small and left-aligned: the largest type on the page is always a
+	   piece of writing (DESIGN.md §11). */
 	.intro {
-		display: block;
-		padding-top: var(--s-8);
-		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
-		text-align: center;
-	}
-
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
-	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
-		font-weight: 400;
-		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
-		text-wrap: balance;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		text-align: center;
-	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
-	.intro__tagline {
-		margin: 0 auto;
-		max-width: 46ch;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		text-align: center;
-		text-wrap: balance;
-	}
-
-	/* Centres the inline CV and feed links under the tagline. */
-	.intro__actions {
-		margin: var(--s-4) 0 0;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-2) var(--s-6);
-	}
-
-	/* The feed icon leads its label rather than trailing it, so it should not take the
-	   arrow's nudge to the right on hover. */
-	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta--feed:hover :global(svg) {
-			transform: none;
-			color: var(--accent);
-		}
-	}
-
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
-	.lead {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
-		grid-template-areas:
-			'eyebrow media'
-			'title   media'
-			'summary media'
-			'meta    media'
-			'cta     media';
-		column-gap: var(--s-7);
-		row-gap: var(--s-4);
-		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: var(--s-3) var(--s-7);
+		align-items: end;
 		padding-top: var(--s-7);
+		padding-bottom: var(--s-6);
 	}
 
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
-	.lead__title {
-		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+	.intro__greeting {
+		grid-column: 1;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 500;
+		line-height: 1.35;
+		color: var(--text);
 		margin: 0;
 	}
 
-	.lead__eyebrow {
-		grid-area: eyebrow;
-		font-family: var(--font-display);
-		font-size: 0.8125rem;
-		font-weight: 400;
-		line-height: 1.4;
-		letter-spacing: 0.24em;
+	.intro__tagline {
+		grid-column: 1;
+		margin: 0;
+		max-width: 52ch;
+		color: var(--text-secondary);
+		line-height: 1.6;
+	}
+
+	.intro__actions {
+		grid-column: 2;
+		grid-row: 1 / span 2;
+		margin: 0;
+		display: grid;
+		gap: 0 var(--s-6);
+		justify-items: start;
+	}
+
+	.inline-cta--feed :global(svg) {
+		color: var(--accent);
+	}
+
+	/* The index card: a hairline frame, a title strip in mono, then the entry itself. */
+	.lead {
+		background: var(--surface);
+		border: 1px solid var(--text);
+	}
+
+	.lead__bar {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--s-4);
+		padding: var(--s-2) var(--s-5);
+		border-bottom: 1px solid var(--text);
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.14em;
 		text-transform: uppercase;
+		font-variant-numeric: tabular-nums;
 		color: var(--text-muted);
-		margin: 0 0 calc(var(--s-1) * -1);
+	}
+
+	.lead__body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 340px;
+		align-items: stretch;
+	}
+
+	.lead__text {
+		display: grid;
+		align-content: start;
+		gap: var(--s-4);
+		padding: var(--s-6) var(--s-5) var(--s-5);
+	}
+
+	.lead__title {
+		font-size: clamp(1.875rem, 3.8vw, 3rem);
+		margin: 0;
 	}
 
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
+		text-decoration-color: var(--accent);
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
@@ -295,24 +280,61 @@
 		}
 	}
 
+	.lead__link:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	.lead__summary {
+		font-size: 1.0625rem;
+		line-height: 1.65;
+		color: var(--text-secondary);
+		max-width: 56ch;
+	}
+
+	/* Label card facts: ruled rows, label left in mono, value right. */
+	.lead__facts {
+		margin: var(--s-2) 0 0;
+		max-width: 28rem;
+		border-top: 1px solid var(--line-strong);
+	}
+
+	.lead__facts > div {
+		display: grid;
+		grid-template-columns: 7rem minmax(0, 1fr);
+		gap: var(--s-3);
+		padding: var(--s-2) 0;
+		border-bottom: 1px solid var(--line);
+		align-items: baseline;
+	}
+
+	.lead__facts dt {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-muted);
+	}
+
+	.lead__facts dd {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+		color: var(--text);
+		font-variant-numeric: tabular-nums;
+	}
+
 	.lead__cta {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
-		   bottom rule sits under the words rather than spanning the whole measure. */
 		justify-self: start;
-		grid-area: cta;
-		margin-top: var(--s-2);
 		min-height: 44px;
 		font-size: 0.875rem;
-		font-weight: 700;
-		color: var(--text);
+		font-weight: 500;
+		color: var(--accent);
 		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
+		border-bottom: 1px solid var(--accent);
 	}
 
 	.lead__cta :global(svg) {
@@ -320,75 +342,56 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.lead__cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
 		.lead__cta:hover :global(svg) {
 			transform: translateX(3px);
 		}
 	}
 
-	.lead__cta:active {
-		color: var(--accent-dim);
-	}
-
-	.lead__link:focus-visible {
-		outline: none;
-		border-radius: 4px;
-		box-shadow: var(--focus-ring);
-	}
-
-	.lead__summary {
-		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
-	}
-
-	.lead__meta {
-		grid-area: meta;
-	}
-
-	.lead__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
-	}
-
+	/* The plate: the cover is mounted on its own paper, hairline-ruled from the text. */
 	.lead__media {
-		grid-area: media;
-		align-self: start;
 		display: block;
-		border-radius: 6px;
+		border-left: 1px solid var(--text);
+		background: var(--plate);
 		overflow: hidden;
-		border: 1px solid var(--line);
 	}
 
 	.lead__cover {
 		width: 100%;
+		height: 100%;
+		min-height: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
-		}
 	}
 
 	.filter {
-		margin-bottom: var(--s-7);
+		margin-bottom: var(--s-6);
+		align-items: center;
+	}
+
+	.filter__label {
+		margin-right: var(--s-2);
+	}
+
+	.articles-head {
+		display: grid;
+		grid-template-columns: 4.5rem minmax(0, 1fr) 7.5rem 96px;
+		column-gap: var(--s-5);
+		padding: var(--s-2) 0;
+		border-bottom: 1px solid var(--text);
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--text-muted);
 	}
 
 	.articles {
-		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		display: block;
 	}
 
 	.empty {
 		color: var(--text-muted);
+		padding: var(--s-5) 0;
 	}
 
 	.about__more {
@@ -401,7 +404,7 @@
 		gap: var(--s-2);
 		min-height: 44px;
 		color: var(--text);
-		font-weight: 700;
+		font-weight: 500;
 		font-size: 0.875rem;
 		text-decoration: none;
 		border-bottom: 1px solid var(--line-strong);
@@ -430,35 +433,52 @@
 
 	.inline-cta:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: var(--radius);
 		box-shadow: var(--focus-ring);
 	}
 
 	@media (max-width: 1023px) {
-		.lead {
-			grid-template-columns: minmax(0, 1fr) 260px;
-			column-gap: var(--s-6);
+		.lead__body {
+			grid-template-columns: minmax(0, 1fr) 240px;
+		}
+		.articles-head {
+			grid-template-columns: 4.5rem minmax(0, 1fr) 7rem;
+		}
+		.articles-head span:nth-child(4) {
+			display: none;
 		}
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
-			padding-bottom: var(--s-5);
-		}
-		/* Stack, with the cover sitting between the meta line and the CTA. */
-		.lead {
 			grid-template-columns: minmax(0, 1fr);
-			grid-template-areas:
-				'eyebrow'
-				'title'
-				'summary'
-				'meta'
-				'media'
-				'cta';
+			padding-top: var(--s-5);
+		}
+		.intro__actions {
+			grid-column: 1;
+			grid-row: auto;
+			grid-auto-flow: column;
+			justify-content: start;
+		}
+		.lead__body {
+			grid-template-columns: minmax(0, 1fr);
+		}
+		.lead__media {
+			order: -1;
+			border-left: 0;
+			border-bottom: 1px solid var(--text);
 		}
 		.lead__cover {
 			aspect-ratio: 16 / 9;
+		}
+		.lead__text {
+			padding: var(--s-5) var(--s-4);
+		}
+		.lead__bar {
+			padding-inline: var(--s-4);
+		}
+		.articles-head {
+			display: none;
 		}
 	}
 </style>

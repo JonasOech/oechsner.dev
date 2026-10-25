@@ -7,6 +7,7 @@
 	import Subscribe from '$lib/components/Subscribe.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
+	import { accession } from '$lib/catalogue';
 	import type { PageProps } from './$types';
 	// Math is rendered to static HTML at build time, so posts only need KaTeX's stylesheet —
 	// scoped to this route so the woff2 faces aren't pulled in on pages without equations.
@@ -88,52 +89,70 @@
 				All articles
 			</a>
 
+			<p class="post__kicker">Catalogue entry</p>
+
 			<h1 class="post__title">{post.title}</h1>
 
 			{#if post.summary}
 				<p class="post__summary">{post.summary}</p>
 			{/if}
 
-			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
-			     the measure, and the badge claims the slack the two of them leave behind. -->
-			<div class="post__facts">
-				<div class="post__facts-main">
-					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
-						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
-						{#if post.nerdyness}
-							<span class="post__dot" aria-hidden="true">·</span>
-							<Nerdyness level={post.nerdyness} />
-						{/if}
-					</p>
-
+			<!-- The label card: the facts of the piece, set like the card beside an exhibit. -->
+			<section class="card" aria-label="Entry details">
+				<dl class="card__facts">
+					<div>
+						<dt>Accession no.</dt>
+						<dd>{accession(post.slug)}</dd>
+					</div>
+					<div>
+						<dt>Date</dt>
+						<dd><time datetime={post.date}>{formatDate(post.date)}</time></dd>
+					</div>
 					{#if post.tags.length}
-						<div class="tag-row post__tags">
-							{#each post.tags as tag (tag)}
-								<span class="tag">{tag}</span>
-							{/each}
+						<div>
+							<dt>Medium</dt>
+							<dd class="card__tags">
+								{#each post.tags as tag (tag)}
+									<span class="tag">{tag}</span>
+								{/each}
+							</dd>
 						</div>
 					{/if}
-				</div>
+					<div>
+						<dt>Dimensions</dt>
+						<dd>{post.readingMinutes} min read</dd>
+					</div>
+					{#if post.nerdyness}
+						<div>
+							<dt>Depth</dt>
+							<dd><Nerdyness level={post.nerdyness} /></dd>
+						</div>
+					{/if}
+				</dl>
 
 				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
 				{#if post.ai === false}
-					<HumanWritten />
+					<div class="card__seal">
+						<HumanWritten />
+					</div>
 				{/if}
-			</div>
+			</section>
 		</header>
 
 		{#if post.cover}
-			<img
-				class="post__cover enter"
-				style="--i: 1"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="1200"
-				height="675"
-				decoding="async"
-			/>
+			<figure class="post__plate enter" style="--i: 1">
+				<img
+					class="post__cover"
+					src={post.cover}
+					alt={post.coverAlt ?? ''}
+					width="1200"
+					height="675"
+					decoding="async"
+				/>
+				{#if post.coverAlt}
+					<figcaption><span>Plate.</span> {post.coverAlt}</figcaption>
+				{/if}
+			</figure>
 		{/if}
 
 		<div class="prose post__body">
@@ -149,7 +168,7 @@
 		<nav class="post__nav" aria-label="More articles">
 			{#if neighbours.prev}
 				<a class="post__nav-link" href="/blog/{neighbours.prev.slug}">
-					<span class="label">Newer</span>
+					<span class="label">Newer entry</span>
 					<span class="post__nav-title">{neighbours.prev.title}</span>
 				</a>
 			{:else}
@@ -158,7 +177,7 @@
 
 			{#if neighbours.next}
 				<a class="post__nav-link post__nav-link--next" href="/blog/{neighbours.next.slug}">
-					<span class="label">Older</span>
+					<span class="label">Older entry</span>
 					<span class="post__nav-title">{neighbours.next.title}</span>
 				</a>
 			{/if}
@@ -210,9 +229,10 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -244,54 +264,115 @@
 		box-shadow: var(--focus-ring);
 	}
 
+	.post__kicker {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
+		font-size: clamp(2rem, 4.6vw, 2.875rem);
+		font-weight: 600;
+		font-variation-settings: 'opsz' 60;
+		line-height: 1.12;
 		letter-spacing: -0.02em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-family: var(--font-display);
+		font-size: 1.1875rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 
-	.post__dot {
-		margin-inline: 0.4em;
+	/* The label card: surface paper, ruled rows, mono labels. */
+	.card {
+		display: flex;
+		align-items: stretch;
+		gap: var(--s-5);
+		margin-top: var(--s-2);
+		padding: var(--s-4) var(--s-5);
+		background: var(--surface);
+		border: 1px solid var(--text);
+	}
+
+	.card__facts {
+		flex: 1 1 auto;
+		min-width: 0;
+		margin: 0;
+	}
+
+	.card__facts > div {
+		display: grid;
+		grid-template-columns: 8.5rem minmax(0, 1fr);
+		gap: var(--s-3);
+		padding: var(--s-2) 0;
+		border-bottom: 1px solid var(--line);
+		align-items: baseline;
+	}
+
+	.card__facts > div:last-child {
+		border-bottom: 0;
+	}
+
+	.card__facts dt {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 		color: var(--text-muted);
 	}
 
-	.post__facts {
+	.card__facts dd {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+		color: var(--text);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.card__tags {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--s-5);
 		flex-wrap: wrap;
+		gap: var(--s-2);
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
-	.post__facts-main {
+	.card__seal {
+		flex: none;
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
+		place-items: center;
+		padding-left: var(--s-5);
+		border-left: 1px solid var(--line);
 	}
 
-	.post__tags {
-		margin-top: var(--s-1);
+	.post__plate {
+		margin: 0 0 var(--s-8);
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		border: 1px solid var(--text);
+		background: var(--plate);
+	}
+
+	.post__plate figcaption {
+		margin-top: var(--s-2);
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		color: var(--text-muted);
+	}
+
+	.post__plate figcaption span {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		margin-right: 0.4em;
 	}
 
 	.post__subscribe {
@@ -309,7 +390,7 @@
 		gap: var(--s-4);
 		margin-top: var(--s-9);
 		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		border-top: 2px solid var(--text);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -317,8 +398,7 @@
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
+		padding: var(--s-3) 0;
 		border-radius: 8px;
 		border: 1px solid transparent;
 		text-decoration: none;
@@ -334,8 +414,12 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: transparent;
+		}
+		.post__nav-link:hover .post__nav-title {
+			text-decoration: underline;
+			text-decoration-color: var(--accent);
+			text-underline-offset: 0.2em;
 		}
 	}
 
@@ -351,13 +435,28 @@
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-family: var(--font-display);
+		font-size: 1.125rem;
+		font-weight: 600;
+		line-height: 1.35;
 	}
 
 	@media (max-width: 767px) {
 		.post {
 			padding-top: var(--s-6);
+		}
+		.card {
+			flex-direction: column;
+			padding: var(--s-3) var(--s-4);
+		}
+		.card__facts > div {
+			grid-template-columns: 6.5rem minmax(0, 1fr);
+		}
+		.card__seal {
+			padding: var(--s-3) 0 0;
+			border-left: 0;
+			border-top: 1px solid var(--line);
+			place-items: start;
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
