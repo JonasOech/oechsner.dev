@@ -40,19 +40,21 @@
 	     byline read as the post's standfirst rather than as the author line. -->
 	
 	<header class="intro enter" style="--i: 0">
-		<h3 class="intro__greeting">{site.intro}</h3>
-		<p class="intro__tagline">
-			Applied CS at Uni Bamberg, currently TU Dublin<br />
-			Software engineer &amp; AI tutor <br />
-			Currently looking for an Internship in Dublin
-		</p>
+		<div class="intro__card">
+			<h3 class="intro__greeting">{site.intro}</h3>
+			<ul class="intro__facts">
+				<li>Applied CS at Uni Bamberg, currently TU Dublin</li>
+				<li>Software engineer &amp; AI tutor</li>
+				<li>Currently looking for an Internship in Dublin</li>
+			</ul>
+		</div>
 		<p class="intro__actions">
-			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
+			<a class="btn btn--secondary" href={cvPath} target="_blank" rel="noopener">
 				Download CV
 				<Icon name="arrow-right" size={14} />
 			</a>
 			<a
-				class="inline-cta inline-cta--feed"
+				class="btn btn--secondary"
 				href={feeds.rss}
 				type="application/rss+xml"
 				data-sveltekit-reload
@@ -62,8 +64,6 @@
 				Subscribe
 			</a>
 		</p>
-		<!-- <p class="intro__prebyline">{site.prebyline}</p>
-		<p class="intro__byline">{site.byline}</p> -->
 	</header>
 
 	{#if lead}
@@ -163,7 +163,7 @@
 	<Rail label="About" id="about">
 		<p>{about[0]}</p>
 		<p class="about__more">
-			<a class="inline-cta" href="/about">
+			<a class="btn btn--primary" href="/about">
 				Background, projects and CV
 				<Icon name="arrow-right" size={14} />
 			</a>
@@ -172,75 +172,77 @@
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
+	/* Greeting card + the two utility buttons: a compact name tag, deliberately small.
+	   DESIGN.md §10: the largest type on the page is always the writing. */
 	.intro {
-		display: block;
-		padding-top: var(--s-8);
-		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
-		text-align: center;
-	}
-
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
-	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
-		font-weight: 400;
-		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
-		text-wrap: balance;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		text-align: center;
-	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
-	.intro__tagline {
-		margin: 0 auto;
-		max-width: 46ch;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		text-align: center;
-		text-wrap: balance;
-	}
-
-	/* Centres the inline CV and feed links under the tagline. */
-	.intro__actions {
-		margin: var(--s-4) 0 0;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-2) var(--s-6);
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--s-5) var(--s-6);
+		padding-top: var(--s-7);
 	}
 
-	/* The feed icon leads its label rather than trailing it, so it should not take the
-	   arrow's nudge to the right on hover. */
-	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
+	.intro__card {
+		background: var(--blue);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-3);
+		padding: var(--s-5) var(--s-5) var(--s-5);
+		transform: rotate(-1deg);
+		max-width: 38rem;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta--feed:hover :global(svg) {
-			transform: none;
-			color: var(--accent);
-		}
+	/* Capped well below `.lead__title` at every viewport width. */
+	.intro__greeting {
+		font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		color: var(--ink);
+		margin: 0 0 var(--s-4);
 	}
 
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
+	.intro__facts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s-2) var(--s-3);
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.intro__facts li {
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.3;
+		color: var(--ink);
+		background: var(--surface);
+		border: var(--bw-thin) solid var(--ink);
+		border-radius: 999px;
+		padding: 0.4rem 0.8rem;
+	}
+
+	.intro__facts li:nth-child(2) {
+		background: var(--lime);
+		transform: rotate(1.5deg);
+	}
+
+	.intro__facts li:nth-child(3) {
+		background: var(--yellow);
+		transform: rotate(-1deg);
+	}
+
+	.intro__actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--s-4);
+		margin: 0;
+	}
+
+	/* The lead post: one oversized sticker. Explicit grid areas so the mobile stack can
+	   slot the image between the meta line and the call to action. */
 	.lead {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
+		grid-template-columns: minmax(0, 1fr) 380px;
 		grid-template-areas:
 			'eyebrow media'
 			'title   media'
@@ -250,43 +252,42 @@
 		column-gap: var(--s-7);
 		row-gap: var(--s-4);
 		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
-		padding-top: var(--s-7);
+		margin-top: var(--s-8);
+		padding: var(--s-7) var(--s-7) var(--s-7);
+		background: var(--yellow);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-4);
 	}
 
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
 	.lead__title {
 		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+		font-size: clamp(2.25rem, 5.4vw, 4.75rem);
 		margin: 0;
+		overflow-wrap: break-word;
 	}
 
 	.lead__eyebrow {
 		grid-area: eyebrow;
-		font-family: var(--font-display);
+		justify-self: start;
 		font-size: 0.8125rem;
-		font-weight: 400;
-		line-height: 1.4;
-		letter-spacing: 0.24em;
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--text-muted);
-		margin: 0 0 calc(var(--s-1) * -1);
+		color: var(--text-inverse);
+		background: var(--ink);
+		padding: 0.55rem 0.8rem;
+		margin: 0;
+		transform: rotate(-2deg);
 	}
 
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
-		text-decoration-thickness: 1px;
-		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
+		text-decoration-thickness: 6px;
+		text-underline-offset: 0.1em;
+		text-decoration-color: var(--ink);
+		text-decoration-skip-ink: none;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
@@ -295,156 +296,147 @@
 		}
 	}
 
-	.lead__cta {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
-		   bottom rule sits under the words rather than spanning the whole measure. */
-		justify-self: start;
-		grid-area: cta;
-		margin-top: var(--s-2);
-		min-height: 44px;
-		font-size: 0.875rem;
-		font-weight: 700;
-		color: var(--text);
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.lead__cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.lead__cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.lead__cta:active {
-		color: var(--accent-dim);
-	}
-
 	.lead__link:focus-visible {
 		outline: none;
-		border-radius: 4px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.lead__summary {
 		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		font-size: 1.1875rem;
+		line-height: 1.55;
+		font-weight: 500;
+		color: var(--ink);
+		max-width: 52ch;
 	}
 
 	.lead__meta {
 		grid-area: meta;
+		color: var(--ink);
 	}
 
 	.lead__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
+	}
+
+	/* Looks like a button, is not a tab stop: the title is the accessible link. */
+	.lead__cta {
+		grid-area: cta;
+		justify-self: start;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-2);
+		margin-top: var(--s-3);
+		min-height: 52px;
+		padding: 0.8rem 1.4rem;
+		font-weight: 800;
+		color: var(--text-inverse);
+		background: var(--ink);
+		border: var(--bw) solid var(--ink);
+		box-shadow: 5px 5px 0 var(--surface);
+		text-decoration: none;
+		transition:
+			transform var(--dur-fast) var(--ease-out),
+			box-shadow var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out),
+			color var(--dur-fast) var(--ease-out);
+	}
+
+	.lead__cta :global(svg) {
+		stroke-width: 2.25;
+		transition: transform 160ms var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__cta:hover {
+			transform: translate(-2px, -2px);
+			box-shadow: 8px 8px 0 var(--surface);
+			background: var(--pink);
+			color: var(--ink);
+		}
+		.lead__cta:hover :global(svg) {
+			transform: translateX(4px);
+		}
 	}
 
 	.lead__media {
 		grid-area: media;
 		align-self: start;
 		display: block;
-		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid var(--line);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-3);
+		background: var(--surface);
+		transform: rotate(2deg);
 	}
 
 	.lead__cover {
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
+		transition: transform 360ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
+			transform: scale(1.05);
 		}
+	}
+
+	:global(#writing) {
+		--tone: var(--pink);
+	}
+
+	:global(#about) {
+		--tone: var(--lime);
 	}
 
 	.filter {
 		margin-bottom: var(--s-7);
 	}
 
+	/* Two columns of boxed cards, colour cycling through the sticker palette. */
 	.articles {
 		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+		gap: var(--s-7) var(--s-6);
+		align-items: stretch;
+	}
+
+	.articles :global(.card:nth-child(4n + 1)) {
+		--tone: var(--pink);
+	}
+	.articles :global(.card:nth-child(4n + 2)) {
+		--tone: var(--blue);
+	}
+	.articles :global(.card:nth-child(4n + 3)) {
+		--tone: var(--lime);
+	}
+	.articles :global(.card:nth-child(4n + 4)) {
+		--tone: var(--orange);
 	}
 
 	.empty {
-		color: var(--text-muted);
+		grid-column: 1 / -1;
+		font-weight: 700;
+		color: var(--text-secondary);
 	}
 
 	.about__more {
 		margin-top: var(--s-5);
 	}
 
-	.inline-cta {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		min-height: 44px;
-		color: var(--text);
-		font-weight: 700;
-		font-size: 0.875rem;
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.inline-cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.inline-cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.inline-cta:active {
-		color: var(--accent-dim);
-	}
-
-	.inline-cta:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
-	}
-
 	@media (max-width: 1023px) {
 		.lead {
 			grid-template-columns: minmax(0, 1fr) 260px;
 			column-gap: var(--s-6);
+			padding: var(--s-6);
 		}
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
-			padding-bottom: var(--s-5);
+			padding-top: var(--s-5);
 		}
 		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {
@@ -456,9 +448,16 @@
 				'meta'
 				'media'
 				'cta';
+			padding: var(--s-5);
+			margin-top: var(--s-7);
+			box-shadow: var(--shadow-3);
 		}
 		.lead__cover {
 			aspect-ratio: 16 / 9;
+		}
+		.lead__media {
+			transform: rotate(1deg);
+			margin-block: var(--s-2);
 		}
 	}
 </style>

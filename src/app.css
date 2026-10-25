@@ -1,90 +1,93 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md (neo-brutalism)
    Every colour in this project resolves to a variable declared in this block.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
+	/* — Paper & ink — */
+	--ink: #111111;
+	--ink-rgb: 17, 17, 17;
+	--paper: #fff8ea;
+	--paper-rgb: 255, 248, 234;
+
 	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	--bg: #fff8ea;
+	--bg-rgb: 255, 248, 234;
+	--bg-deep: #f1e9d2;
+	--bg-deep-rgb: 241, 233, 210;
+	--surface: #ffffff;
+	--surface-rgb: 255, 255, 255;
+	--surface-hover: #fff1b8;
+	--surface-hover-rgb: 255, 241, 184;
+	--surface-active: #ffe27a;
+	--surface-active-rgb: 255, 226, 122;
 
-	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	/* — Ink on paper — */
+	--text: #111111;
+	--text-rgb: 17, 17, 17;
+	--text-secondary: #2a2a2a;
+	--text-secondary-rgb: 42, 42, 42;
+	--text-muted: #4d4d4d;
+	--text-muted-rgb: 77, 77, 77;
+	--text-inverse: #fff8ea;
+	--text-inverse-rgb: 255, 248, 234;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #333333;
+	--text-pressed-rgb: 51, 51, 51;
 
-	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	/* — Structure: everything is outlined in ink — */
+	--line: #111111;
+	--line-rgb: 17, 17, 17;
+	--line-strong: #111111;
+	--line-strong-rgb: 17, 17, 17;
+	--bw: 3px;
+	--bw-thin: 2px;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Sticker colours: flat fills, always carrying ink text — */
+	--yellow: #ffd93b;
+	--pink: #ff8fc7;
+	--blue: #7cc4ff;
+	--lime: #b7f04a;
+	--orange: #ff9a3c;
+	--lilac: #c9b0ff;
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Accent: the one text-safe colour (links on hover, markers, focus) — */
+	--accent: #2b36e8;
+	--accent-rgb: 43, 54, 232;
+	--accent-dim: #1b2299;
+	--accent-dim-rgb: 27, 34, 153;
+	--accent-wash: #ffe98a;
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
+	/* — Figure plate — */
+	--plate: #ffffff;
 
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series — */
+	--series-cool: #3a7bd5;
+	--series-cool-rgb: 58, 123, 213;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #d11f2a;
+	--danger-rgb: 209, 31, 42;
+	--success: #0b7a32;
+	--success-rgb: 11, 122, 50;
 
-	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	/* — Focus: yellow halo inside an ink ring, visible on every sticker colour — */
+	--focus-ring: 0 0 0 3px var(--yellow), 0 0 0 6px var(--ink);
 
 	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--font-display: 'Bricolage Grotesque Variable', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+	--font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
-	--container: 1080px;
+	--container: 1180px;
 	--measure: 62ch;
-	--measure-prose: 68ch;
+	--measure-prose: 74ch;
 	--rail-width: 200px;
-	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
-	   and the post column has to keep its measure with two of these beside it. */
-	--outline-width: 180px;
-	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	--outline-width: 200px;
+	--gutter: 1.25rem;
+	--header-h: 4.5rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -99,26 +102,25 @@
 	--s-10: 8rem;
 	--s-11: 11rem;
 
-	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	--gap-hero: var(--s-9);
+	--gap-section: var(--s-9);
 
-	/* — Elevation — */
+	/* — Elevation: hard offset, zero blur, always ink — */
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: 3px 3px 0 var(--ink);
+	--shadow-2: 5px 5px 0 var(--ink);
+	--shadow-3: 8px 8px 0 var(--ink);
+	--shadow-4: 12px 12px 0 var(--ink);
+	--shadow-inset: none;
 
-	/* — Motion — */
-	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	/* — Motion: snappy, mechanical — */
+	--ease-out: cubic-bezier(0.2, 0.9, 0.3, 1);
 	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	--dur-fast: 120ms;
+	--dur-base: 180ms;
+	--dur-slow: 420ms;
 
-	color-scheme: dark;
+	color-scheme: light;
 }
 
 /* =============================================================================
@@ -133,57 +135,30 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
 	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
+	background: var(--bg);
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
-	background: var(--bg);
+	background-color: var(--bg);
+	/* A quiet graph-paper grid: the page is a sheet the stickers are stuck to. */
+	background-image:
+		linear-gradient(rgba(var(--ink-rgb), 0.055) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(var(--ink-rgb), 0.055) 1px, transparent 1px);
+	background-size: 32px 32px;
 	color: var(--text-secondary);
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
+	font-size: 1rem;
+	line-height: 1.7;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -193,7 +168,8 @@ h4,
 h5,
 h6 {
 	color: var(--text);
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-weight: 800;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -215,8 +191,8 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
-	color: var(--text);
+	background: var(--yellow);
+	color: var(--ink);
 }
 
 /* =============================================================================
@@ -238,26 +214,40 @@ a {
 
 .section {
 	margin-top: var(--gap-section);
+	--tone: var(--yellow);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
+/* Section stickers cycle through the palette. */
+.section:nth-of-type(4n + 2) {
+	--tone: var(--pink);
+}
+.section:nth-of-type(4n + 3) {
+	--tone: var(--blue);
+}
+.section:nth-of-type(4n + 4) {
+	--tone: var(--lime);
+}
+
+/* The signature construct: a rotated colour sticker for the label, then the content
+   beneath it. */
 .rail {
-	display: grid;
-	grid-template-columns: var(--rail-width) minmax(0, 1fr);
-	gap: 0;
+	display: block;
 }
 
 .rail__label {
+	display: inline-block;
 	font-family: var(--font-display);
-	font-size: 0.8125rem;
-	font-weight: 400;
-	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
-	margin: 0;
+	font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	background: var(--tone);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
+	padding: 0.3rem 0.9rem 0.4rem;
+	margin: 0 0 var(--s-6);
+	transform: rotate(-1.5deg);
 }
 
 .rail__body {
@@ -272,7 +262,7 @@ a {
 
 .divider {
 	border: 0;
-	border-top: 1px solid var(--line);
+	border-top: var(--bw) solid var(--ink);
 	margin: var(--s-7) 0;
 }
 
@@ -281,44 +271,45 @@ a {
    ========================================================================== */
 
 .eyebrow {
-	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
-	line-height: 1.4;
-	letter-spacing: 0.24em;
+	display: inline-block;
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	font-weight: 800;
+	line-height: 1;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text-inverse);
+	background: var(--ink);
+	padding: 0.5rem 0.75rem;
 	margin: 0;
+	transform: rotate(-2deg);
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: clamp(2.5rem, 7vw, 5rem);
+	font-weight: 800;
+	line-height: 0.98;
+	letter-spacing: -0.035em;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
-	font-weight: 700;
-	line-height: 1.2;
-	letter-spacing: -0.01em;
+	font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
 }
 
 .lede {
 	color: var(--text-secondary);
+	font-size: 1.125rem;
 	max-width: var(--measure);
 }
 
 .meta {
 	font-family: var(--font-sans);
-	font-size: 0.75rem;
+	font-size: 0.8125rem;
 	font-weight: 700;
 	line-height: 1.4;
 	letter-spacing: 0.01em;
@@ -328,18 +319,18 @@ a {
 
 .label {
 	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-size: 0.75rem;
+	font-weight: 800;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
+	letter-spacing: 0.1em;
 	text-transform: uppercase;
-	color: var(--text-muted);
+	color: var(--text);
 	margin: 0;
 }
 
 .mono {
 	font-family: var(--font-mono);
-	font-size: 0.75rem;
+	font-size: 0.8125rem;
 	color: var(--text-muted);
 }
 
@@ -347,7 +338,7 @@ a {
    Components
    ========================================================================== */
 
-/* — Buttons — */
+/* — Buttons: chunky, outlined, with a hard shadow that they press into — */
 
 .btn {
 	display: inline-flex;
@@ -355,82 +346,72 @@ a {
 	justify-content: center;
 	gap: var(--s-2);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	font-weight: 700;
+	font-size: 1rem;
+	font-weight: 800;
 	line-height: 1;
-	padding: 0.6875rem 1.125rem;
-	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	padding: 0.8rem 1.4rem;
+	min-height: 52px;
+	border-radius: 0;
+	border: var(--bw) solid var(--ink);
+	color: var(--ink);
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
+	box-shadow: var(--shadow-2);
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
 		transform var(--dur-fast) var(--ease-out),
 		box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
-	width: 15px;
-	height: 15px;
+	width: 18px;
+	height: 18px;
 	flex: none;
-	transition: transform 220ms var(--ease-out);
+	stroke-width: 2.25;
+	transition: transform 160ms var(--ease-out);
 }
 
 .btn--primary {
-	background: var(--text);
-	color: var(--text-inverse);
+	background: var(--yellow);
 }
 
 .btn--secondary {
 	background: var(--surface);
-	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
+	.btn:hover {
+		transform: translate(-2px, -2px);
+		box-shadow: var(--shadow-3);
 	}
-	.btn--primary:hover svg {
-		transform: translateX(3px);
+	.btn--primary:hover {
+		background: var(--pink);
 	}
 	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
+		background: var(--lime);
+	}
+	.btn--primary:hover svg {
+		transform: translateX(4px);
 	}
 	.btn--secondary:hover svg {
-		transform: translateY(2px);
+		transform: translateY(3px);
 	}
 }
 
-.btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
-}
-
-.btn--secondary:active {
-	transform: translateY(0);
-	background: var(--surface-active);
+.btn:active {
+	transform: translate(5px, 5px);
+	box-shadow: 0 0 0 var(--ink);
 }
 
 .btn:focus-visible {
 	outline: none;
-	box-shadow: var(--focus-ring);
+	box-shadow: var(--shadow-2), var(--focus-ring);
 }
 
 .btn:disabled,
 .btn[aria-disabled='true'] {
-	opacity: 0.45;
+	opacity: 0.5;
 	cursor: not-allowed;
 	transform: none;
 	pointer-events: none;
@@ -440,37 +421,35 @@ a {
 .btn-row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--s-3);
+	gap: var(--s-4) var(--s-5);
 }
 
-/* — Prose links — */
+/* — Prose links: marker-pen underline that floods on hover — */
 
 .link {
 	color: var(--text);
+	font-weight: 700;
 	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
+	background-image: linear-gradient(var(--yellow), var(--yellow));
+	background-size: 100% 0.4em;
 	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition:
-		background-size 280ms var(--ease-out),
-		color var(--dur-fast) var(--ease-out);
+	background-position: 0 92%;
+	transition: background-size var(--dur-base) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
-		color: var(--accent);
-		background-size: 100% 1px;
+		background-size: 100% 100%;
 	}
 }
 
 .link:active {
-	color: var(--accent-dim);
+	background-image: linear-gradient(var(--pink), var(--pink));
+	background-size: 100% 100%;
 }
 
 .link:focus-visible {
 	outline: none;
-	border-radius: 2px;
 	box-shadow: var(--focus-ring);
 }
 
@@ -480,38 +459,48 @@ a {
 	background-image: none;
 }
 
-/* — Tags — */
+/* — Tags: oversized outlined pills — */
 
 .tag {
 	display: inline-block;
 	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-size: 0.8125rem;
+	font-weight: 800;
 	line-height: 1;
-	letter-spacing: 0.08em;
+	letter-spacing: 0.04em;
 	text-transform: uppercase;
-	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
+	padding: 0.55rem 0.9rem;
+	border-radius: 999px;
 	background: var(--surface);
-	color: var(--text-muted);
-	border: 1px solid var(--line);
+	color: var(--ink);
+	border: var(--bw-thin) solid var(--ink);
 	text-decoration: none;
+	cursor: default;
 	transition:
-		color var(--dur-fast) var(--ease-out),
 		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out);
+		transform var(--dur-fast) var(--ease-out),
+		box-shadow var(--dur-fast) var(--ease-out);
+}
+
+button.tag,
+a.tag {
+	cursor: pointer;
+	box-shadow: var(--shadow-1);
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
-		color: var(--accent);
-		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+	button.tag:hover,
+	a.tag:hover {
+		background: var(--lime);
+		transform: translate(-1px, -1px) rotate(-2deg);
+		box-shadow: 4px 4px 0 var(--ink);
 	}
 }
 
-.tag:active {
-	background: var(--surface-active);
+button.tag:active,
+a.tag:active {
+	transform: translate(3px, 3px);
+	box-shadow: none;
 }
 
 .tag:focus-visible {
@@ -521,36 +510,41 @@ a {
 
 .tag[aria-pressed='true'] {
 	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--ink);
+	box-shadow: none;
+	transform: translate(3px, 3px);
 }
 
 .tag[aria-disabled='true'] {
-	opacity: 0.45;
+	opacity: 0.5;
 	pointer-events: none;
 }
 
 .tag-row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--s-2);
+	gap: var(--s-3);
 }
 
-/* — Timeline entries — */
+/* — Timeline entries: each one a boxed card — */
 
 .entry {
-	padding: 0 0 2.25rem;
+	padding: var(--s-5);
+	margin: 0 0 var(--s-6);
+	background: var(--surface);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
 }
 
 .entry:last-child {
-	padding-bottom: 0;
+	margin-bottom: 0;
 }
 
 .entry__title {
-	font-size: 1.1875rem;
-	font-weight: 700;
-	line-height: 1.35;
-	letter-spacing: -0.005em;
+	font-size: 1.3125rem;
+	font-weight: 800;
+	line-height: 1.25;
+	letter-spacing: -0.01em;
 	color: var(--text);
 	margin: 0 0 0.625rem;
 }
@@ -562,7 +556,7 @@ a {
 
 .entry__list {
 	margin: 0 0 var(--s-3);
-	padding-left: 1.1rem;
+	padding-left: 1.2rem;
 	color: var(--text-secondary);
 }
 
@@ -571,7 +565,8 @@ a {
 }
 
 .entry__list li::marker {
-	color: var(--text-muted);
+	color: var(--ink);
+	font-weight: 800;
 }
 
 /* — Form controls — */
@@ -579,16 +574,16 @@ a {
 .field {
 	width: 100%;
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	font-weight: 400;
+	font-size: 1rem;
+	font-weight: 500;
 	background: var(--surface);
 	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
-	padding: 0.6875rem 0.875rem;
+	border: var(--bw) solid var(--ink);
+	border-radius: 0;
+	padding: 0.75rem 0.9rem;
 	transition:
-		border-color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out);
+		background-color var(--dur-fast) var(--ease-out),
+		box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .field::placeholder {
@@ -596,21 +591,21 @@ a {
 }
 
 .field:hover {
-	border-color: var(--line-strong);
+	background: var(--surface-hover);
 }
 
 .field:focus {
 	outline: none;
-	border-color: var(--accent-dim);
 	background: var(--surface-hover);
+	box-shadow: var(--shadow-2);
 }
 
 .field:focus-visible {
-	box-shadow: var(--focus-ring);
+	box-shadow: var(--shadow-2), var(--focus-ring);
 }
 
 .field:disabled {
-	opacity: 0.45;
+	opacity: 0.5;
 	cursor: not-allowed;
 }
 
@@ -626,11 +621,11 @@ a {
 	top: -100px;
 	z-index: 100;
 	padding: var(--s-3) var(--s-4);
-	background: var(--text);
-	color: var(--text-inverse);
-	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
+	background: var(--yellow);
+	color: var(--ink);
+	font-size: 0.9375rem;
+	font-weight: 800;
+	border: var(--bw) solid var(--ink);
 	box-shadow: var(--shadow-2);
 	text-decoration: none;
 	transition: top var(--dur-base) var(--ease-out);
@@ -641,13 +636,13 @@ a {
 }
 
 /* =============================================================================
-   Motion — L1 → low-L2, CSS only (DESIGN.md §7)
+   Motion — stamp-in entrances, CSS only (DESIGN.md §8)
    ========================================================================== */
 
 @keyframes rise {
 	from {
 		opacity: 0;
-		transform: translateY(14px);
+		transform: translateY(18px) rotate(-0.6deg);
 	}
 	to {
 		opacity: 1;
@@ -658,12 +653,12 @@ a {
 .enter {
 	opacity: 0;
 	animation: rise var(--dur-slow) var(--ease-out) forwards;
-	animation-delay: calc(60ms + var(--i, 0) * 90ms);
+	animation-delay: calc(40ms + var(--i, 0) * 70ms);
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px);
+	transform: translateY(20px);
 	transition:
 		opacity var(--dur-slow) var(--ease-out),
 		transform var(--dur-slow) var(--ease-out);
@@ -675,7 +670,7 @@ a {
 }
 
 .reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
+	transition-delay: calc(var(--i, 0) * 60ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -702,7 +697,6 @@ a {
    ========================================================================== */
 
 .prose {
-	max-width: var(--measure-prose);
 	font-size: 1.0625rem;
 	line-height: 1.8;
 	color: var(--text-secondary);
@@ -738,44 +732,76 @@ a {
 }
 
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
+	font-size: clamp(1.5rem, 3.4vw, 2rem);
+	line-height: 1.12;
+	letter-spacing: -0.02em;
 	margin-top: var(--s-8);
+	width: fit-content;
+	max-width: 100%;
+	padding: 0.2em 0.55em 0.28em;
+	background: var(--yellow);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
+	transform: rotate(-0.8deg);
+}
+
+.prose > h2:first-child {
+	margin-top: 0;
+}
+
+.prose h2:nth-of-type(4n + 2) {
+	background: var(--pink);
+	transform: rotate(0.6deg);
+}
+
+.prose h2:nth-of-type(4n + 3) {
+	background: var(--blue);
+}
+
+.prose h2:nth-of-type(4n + 4) {
+	background: var(--lime);
+	transform: rotate(0.5deg);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	line-height: 1.4;
+	font-size: 1.375rem;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
 	margin-top: var(--s-7);
+	text-decoration: underline;
+	text-decoration-color: var(--pink);
+	text-decoration-thickness: 5px;
+	text-underline-offset: 5px;
+	text-decoration-skip-ink: none;
 }
 
 .prose h4 {
-	font-size: 1.0625rem;
-	font-weight: 600;
+	font-size: 1.125rem;
+	font-weight: 800;
 	line-height: 1.4;
 	margin-top: var(--s-6);
 }
 
 .prose a {
 	color: var(--text);
+	font-weight: 600;
 	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
+	background-image: linear-gradient(var(--yellow), var(--yellow));
+	background-size: 100% 0.38em;
 	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition: color var(--dur-fast) var(--ease-out);
+	background-position: 0 94%;
+	overflow-wrap: break-word;
+	transition: background-size var(--dur-base) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
-		color: var(--accent);
+		background-size: 100% 100%;
 	}
 }
 
 .prose a:focus-visible {
 	outline: none;
-	border-radius: 2px;
 	box-shadow: var(--focus-ring);
 }
 
@@ -789,7 +815,8 @@ a {
 }
 
 .prose li::marker {
-	color: var(--text-muted);
+	color: var(--ink);
+	font-weight: 800;
 }
 
 .prose strong {
@@ -799,22 +826,31 @@ a {
 
 .prose blockquote {
 	margin-inline: 0;
-	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
-	color: var(--text-secondary);
-	font-style: italic;
+	padding: var(--s-4) var(--s-5);
+	background: var(--yellow);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
+	color: var(--ink);
+	font-weight: 500;
+	transform: rotate(-0.4deg);
+}
+
+.prose blockquote > * + * {
+	margin-top: var(--s-3);
 }
 
 .prose hr {
 	border: 0;
-	border-top: 1px solid var(--line);
+	border: 0;
+	height: 10px;
+	background: repeating-linear-gradient(135deg, var(--ink) 0 6px, transparent 6px 12px);
 	margin-block: var(--s-8);
 }
 
 .prose img,
 .prose video {
-	border-radius: 6px;
-	border: 1px solid var(--line);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
 }
 
 .prose figure {
@@ -850,22 +886,20 @@ a {
 	text-indent: -1.5em;
 	/* DOIs and URLs are single unbreakable words otherwise. */
 	overflow-wrap: anywhere;
-	border-radius: 3px;
 	transition: background-color var(--dur-fast) var(--ease-out);
 }
 
 /* Following a citation lands here; mark the entry so the eye finds it. */
 .prose .references li:target {
-	background: var(--surface);
+	background: var(--yellow);
 }
 
 .prose :not(pre) > code {
 	font-family: var(--font-mono);
 	font-size: 0.8125em;
 	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: 3px;
-	padding: 0.1em 0.35em;
+	border: var(--bw-thin) solid var(--ink);
+	padding: 0.05em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
 }
@@ -875,8 +909,8 @@ a {
 	font-size: 0.8125rem;
 	line-height: 1.65;
 	background: var(--bg-deep);
-	border: 1px solid var(--line);
-	border-radius: 6px;
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -943,12 +977,13 @@ a {
 .prose td {
 	text-align: left;
 	padding: var(--s-3) var(--s-4);
-	border-bottom: 1px solid var(--line);
+	border: var(--bw-thin) solid var(--ink);
 }
 
 .prose th {
 	color: var(--text);
-	font-weight: 700;
+	background: var(--yellow);
+	font-weight: 800;
 	font-size: 0.75rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -1056,15 +1091,15 @@ a {
 .prose .widget {
 	margin-block: var(--s-6);
 	padding: var(--s-5) var(--s-5) var(--s-4);
-	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: 10px;
+	background: var(--bg);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-3);
 }
 
 .prose .widget > figcaption {
 	margin-top: var(--s-4);
 	padding-top: var(--s-3);
-	border-top: 1px solid var(--line);
+	border-top: var(--bw-thin) solid var(--ink);
 }
 
 .prose .widget h4 {
@@ -1082,33 +1117,38 @@ a {
 .prose .rpm-btn {
 	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 600;
+	font-weight: 800;
 	line-height: 1.4;
 	padding: 0.4rem 0.85rem;
-	border-radius: 6px;
-	border: 1px solid transparent;
-	background: var(--accent);
-	color: var(--text-inverse);
+	border: var(--bw-thin) solid var(--ink);
+	background: var(--yellow);
+	color: var(--ink);
+	box-shadow: var(--shadow-1);
 	cursor: pointer;
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out);
+		transform var(--dur-fast) var(--ease-out),
+		box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .prose .rpm-btn.ghost {
-	background: var(--surface-active);
-	border-color: var(--line);
-	color: var(--text);
+	background: var(--surface);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose .rpm-btn:hover {
-		background: var(--accent-dim);
+		background: var(--pink);
+		transform: translate(-1px, -1px);
+		box-shadow: 4px 4px 0 var(--ink);
 	}
 	.prose .rpm-btn.ghost:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
+		background: var(--lime);
 	}
+}
+
+.prose .rpm-btn:active {
+	transform: translate(3px, 3px);
+	box-shadow: none;
 }
 
 .prose .rpm-btn:focus-visible {
@@ -1141,10 +1181,10 @@ a {
 
 .prose .note {
 	padding: var(--s-4) var(--s-5);
-	background: var(--surface);
-	border: 1px solid var(--line);
-	border-left: 3px solid var(--series-cool);
-	border-radius: 8px;
+	background: var(--blue);
+	color: var(--ink);
+	border: var(--bw) solid var(--ink);
+	box-shadow: var(--shadow-2);
 	font-size: 0.9375rem;
 }
 
@@ -1153,52 +1193,32 @@ a {
 }
 
 /* =============================================================================
-   Responsive (DESIGN.md §9)
+   Responsive (DESIGN.md §10)
    ========================================================================== */
 
 @media (max-width: 1023px) {
 	:root {
-		--gap-hero: var(--s-9);
+		--gap-hero: var(--s-8);
 		--gap-section: var(--s-8);
-	}
-
-	/* Rail collapses: label sits above its content, keeping its tracking. */
-	.rail {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.rail__label {
-		padding-top: 0;
-		margin-bottom: var(--s-4);
-	}
-
-	.rail__body {
-		max-width: none;
 	}
 }
 
 @media (max-width: 767px) {
 	:root {
-		--gap-hero: var(--s-8);
+		--gap-hero: var(--s-7);
 		--gap-section: var(--s-7);
+		--shadow-3: 6px 6px 0 var(--ink);
+		--shadow-4: 8px 8px 0 var(--ink);
 	}
 
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
+	body {
+		background-size: 24px 24px;
 	}
 }
 
 @media (max-width: 479px) {
 	/* Phone measure drops to roughly 40 characters, and justification tears at
-	   that width: too few words per line, so the spaces that absorb the slack
-	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
-	   on, since it still earns its keep on a narrow column. */
+	   that width. Ragged-right below this tier. */
 	.prose > p,
 	.prose > blockquote p {
 		text-align: left;
@@ -1211,20 +1231,18 @@ a {
 
 	.btn {
 		width: 100%;
+		white-space: normal;
 	}
 }
 
 /* Coarse pointers get larger hit areas without changing the visual weight.
-   Only the *interactive* tags need the 44px floor — `span.tag` (skills, post tags)
-   is a label, not a control, and would look bloated at that height.
-   Inline links inside a sentence are exempt from the target-size rule
-   (WCAG 2.5.8, "Inline" exception) and are deliberately left at text size. */
+   Only interactive tags need the 44px floor. */
 @media (pointer: coarse) {
 	button.tag,
 	a.tag {
 		display: inline-flex;
 		align-items: center;
 		min-height: 44px;
-		padding: 0 0.75rem;
+		padding: 0 0.9rem;
 	}
 }

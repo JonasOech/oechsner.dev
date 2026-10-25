@@ -31,11 +31,19 @@
 <style>
 	.error {
 		display: grid;
-		justify-items: center;
-		text-align: center;
+		justify-items: start;
 		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-10);
+		padding-top: var(--s-8);
+		padding-bottom: var(--s-8);
+	}
+
+	.error .hero-title {
+		font-size: clamp(3rem, 12vw, 8rem);
+		padding: 0.1em 0.25em 0.15em;
+		background: var(--pink);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-4);
+		transform: rotate(-1.5deg);
 	}
 
 	.lede {
@@ -44,7 +52,7 @@
 
 	@media (max-width: 767px) {
 		.error {
-			padding-top: var(--s-8);
+			padding-top: var(--s-6);
 		}
 	}
 </style>

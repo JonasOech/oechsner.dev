@@ -19,7 +19,7 @@
 </script>
 
 <div class="hw">
-	<svg class="hw__quill" viewBox="0 0 578 743" fill="var(--accent)" aria-hidden="true">
+	<svg class="hw__quill" viewBox="0 0 578 743" fill="var(--ink)" aria-hidden="true">
 		<path d={SWOOSH} />
 		<path d={FEATHER} />
 	</svg>
@@ -50,10 +50,10 @@
 		margin: 0;
 		font-family: var(--font-display);
 		font-size: 1rem;
-		font-weight: 500;
+		font-weight: 800;
 		line-height: 1.2;
 		letter-spacing: -0.005em;
-		color: var(--accent);
+		color: var(--ink);
 		white-space: nowrap;
 	}
 </style>

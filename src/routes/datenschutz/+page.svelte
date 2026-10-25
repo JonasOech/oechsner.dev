@@ -132,12 +132,10 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Schriftarten „Bricolage Grotesque“, „DM Sans“ und „JetBrains Mono“ werden
+					von diesem Server selbst ausgeliefert. Beim Laden der Schriftdateien wird keine
+					Verbindung zu Servern Dritter (etwa Google) aufgebaut und keine IP-Adresse an
+					Dritte übertragen. Es gelten die unter „Hosting und Server-Logs“ beschriebenen Server-Logdaten.
 				</p>
 			</section>
 

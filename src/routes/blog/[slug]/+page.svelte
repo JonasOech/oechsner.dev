@@ -168,98 +168,111 @@
 
 <style>
 	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	   children does the centring; above it, the explicit tracks take over. */
 	.post-layout {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
-	@media (min-width: 1100px) {
+	.post-layout > :global(*) {
+		min-width: 0;
+	}
+
+	@media (min-width: 1180px) {
 		.post-layout {
 			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
+			   line whether or not an outline was rendered into the left. */
 			grid-template-columns:
 				minmax(0, var(--outline-width))
 				minmax(0, var(--measure-prose))
 				minmax(0, var(--outline-width));
 			justify-content: center;
-			column-gap: var(--s-5);
+			column-gap: var(--s-6);
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
+		grid-column: 1;
+		padding-top: var(--s-7);
+		width: 100%;
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
 
+	/* The title block: a flat yellow slab, the loudest thing on the page. */
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-7);
+		padding: var(--s-6);
+		background: var(--yellow);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-4);
 	}
 
 	.post__back {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		justify-self: start;
+		font-size: 0.875rem;
+		font-weight: 800;
+		color: var(--ink);
+		background: var(--surface);
+		border: var(--bw-thin) solid var(--ink);
+		border-radius: 999px;
 		text-decoration: none;
-		padding: 0.5rem 0;
+		padding: 0.5rem 1rem 0.5rem 0.75rem;
 		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
+		transform: rotate(-1.5deg);
+		transition:
+			transform var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out),
+			box-shadow var(--dur-fast) var(--ease-out);
 	}
 
 	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
+		stroke-width: 2.25;
+		transition: transform 160ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			background: var(--pink);
+			transform: rotate(-1.5deg) translate(-1px, -1px);
+			box-shadow: 3px 3px 0 var(--ink);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
 		}
 	}
 
-	.post__back:active {
-		color: var(--text-secondary);
-	}
-
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(2rem, 5.6vw, 3.5rem);
+		font-weight: 800;
+		line-height: 1;
+		letter-spacing: -0.035em;
+		overflow-wrap: break-word;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		font-size: 1.125rem;
+		line-height: 1.55;
+		font-weight: 500;
+		color: var(--ink);
 	}
 
 	.post__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
+	}
+
+	.post__header .meta {
+		color: var(--ink);
 	}
 
 	.post__facts {
@@ -270,13 +283,9 @@
 		flex-wrap: wrap;
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
 		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
 		min-width: min(100%, 22rem);
 		flex: 1 1 22rem;
 	}
@@ -289,13 +298,21 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-3);
+		margin-bottom: var(--s-7);
+	}
+
+	/* The article body sits on a white sheet with its own ink border and shadow. */
+	.post__body {
+		background: var(--surface);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-3);
+		padding: var(--s-7) var(--s-7);
 	}
 
 	.post__subscribe {
-		grid-column: 2;
+		grid-column: 1;
 		width: 100%;
 		max-width: var(--measure-prose);
 		margin-inline: auto;
@@ -303,28 +320,29 @@
 	}
 
 	.post__nav {
-		grid-column: 2;
+		grid-column: 1;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		gap: var(--s-6);
+		margin-top: var(--s-8);
 		max-width: var(--measure-prose);
+		width: 100%;
 		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		align-content: start;
+		padding: var(--s-4) var(--s-5);
+		background: var(--surface);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-2);
 		text-decoration: none;
 		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+			transform var(--dur-fast) var(--ease-out),
+			box-shadow var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -334,38 +352,60 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--blue);
+			transform: translate(-2px, -2px);
+			box-shadow: var(--shadow-3);
+		}
+		.post__nav-link--next:hover {
+			background: var(--lime);
 		}
 	}
 
 	.post__nav-link:active {
-		background: var(--surface-active);
+		transform: translate(4px, 4px);
+		box-shadow: none;
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		box-shadow: var(--shadow-2), var(--focus-ring);
 	}
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-family: var(--font-display);
+		font-size: 1.1875rem;
+		font-weight: 800;
+		line-height: 1.2;
+		letter-spacing: -0.01em;
 	}
 
 	@media (max-width: 767px) {
 		.post {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
+		}
+		.post__header {
+			padding: var(--s-5);
+			box-shadow: var(--shadow-3);
+		}
+		.post__body {
+			padding: var(--s-5) var(--s-4);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;
 			justify-items: start;
+		}
+	}
+
+	@media (min-width: 1180px) {
+		.post,
+		.post__subscribe,
+		.post__nav {
+			grid-column: 2;
 		}
 	}
 </style>

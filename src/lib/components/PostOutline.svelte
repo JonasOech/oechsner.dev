@@ -114,20 +114,17 @@
 		position: sticky;
 		align-self: start;
 		top: calc(var(--header-h) + var(--s-5));
-		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
+		margin-top: var(--s-7);
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-2);
 		overflow: hidden;
 	}
 
-	@media (max-width: 1099px) {
+	@media (max-width: 1179px) {
 		.outline {
 			display: none;
 		}
@@ -139,13 +136,13 @@
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
+		font-family: var(--font-sans);
 		font-size: 0.75rem;
-		font-weight: 400;
+		font-weight: 800;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--ink);
 		margin: 0 0 var(--s-3);
 		white-space: nowrap;
 		overflow: hidden;
@@ -160,24 +157,24 @@
 
 	.outline__track {
 		flex: 1 1 auto;
-		height: 1px;
-		background: var(--line);
-		border-radius: 1px;
+		height: 8px;
+		background: var(--surface);
+		border: var(--bw-thin) solid var(--ink);
 		overflow: hidden;
 	}
 
 	.outline__fill {
 		height: 100%;
-		background: var(--accent);
-		border-radius: 1px;
+		background: var(--pink);
 		transition: width 120ms var(--ease-out);
 	}
 
 	.outline__readout {
 		flex: none;
-		font-size: 0.6875rem;
+		font-size: 0.75rem;
+		font-weight: 800;
 		font-variant-numeric: tabular-nums;
-		color: var(--text-muted);
+		color: var(--ink);
 		white-space: nowrap;
 	}
 
@@ -207,10 +204,10 @@
 		position: relative;
 		display: block;
 		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
-		font-size: 0.8125rem;
+		font-size: 0.875rem;
+		font-weight: 600;
 		line-height: 1.35;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		text-decoration: none;
 		transition:
 			background-color var(--dur-fast) var(--ease-out),
@@ -229,15 +226,15 @@
 		left: 0;
 		top: 3px;
 		bottom: 3px;
-		width: 2px;
-		border-radius: 1px;
-		background: var(--accent);
+		width: 4px;
+		background: var(--ink);
 		transform: scaleY(0);
 		transition: transform var(--dur-base) var(--ease-out);
 	}
 
 	.outline__link.is-active {
-		background: var(--accent-wash);
+		background: var(--yellow);
+		font-weight: 800;
 		color: var(--text);
 	}
 
@@ -247,13 +244,13 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__link:not(.is-active):hover {
-			background: var(--surface-hover);
+			background: var(--lime);
 			color: var(--text);
 		}
 	}
 
 	.outline__link:active {
-		color: var(--text-secondary);
+		color: var(--text);
 	}
 
 	.outline__link:focus-visible {
@@ -263,7 +260,7 @@
 
 	.outline__foot {
 		flex: none;
-		border-top: 1px solid var(--line);
+		border-top: var(--bw) solid var(--ink);
 		padding: var(--s-2);
 	}
 
@@ -272,9 +269,9 @@
 		align-items: center;
 		gap: var(--s-2);
 		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
-		font-size: 0.75rem;
-		color: var(--text-muted);
+		font-size: 0.8125rem;
+		font-weight: 800;
+		color: var(--text);
 		text-decoration: none;
 		transition:
 			background-color var(--dur-fast) var(--ease-out),

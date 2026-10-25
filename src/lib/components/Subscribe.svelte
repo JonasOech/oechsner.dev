@@ -77,23 +77,22 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		background: var(--lime);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-3);
+		transform: rotate(-0.5deg);
 	}
 
-	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
-	   site's ordinary surface, so it reads as part of the post's ending, not an advert. */
 	.subscribe__mark {
 		display: grid;
 		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		width: 3rem;
+		height: 3rem;
+		color: var(--ink);
+		background: var(--surface);
+		border: var(--bw) solid var(--ink);
+		box-shadow: var(--shadow-1);
+		transform: rotate(4deg);
 	}
 
 	.subscribe__text {
@@ -103,9 +102,10 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: var(--text-secondary);
+		font-size: 1rem;
+		line-height: 1.5;
+		font-weight: 500;
+		color: var(--ink);
 	}
 
 	.subscribe__actions {
@@ -116,36 +116,31 @@
 
 	/* Fixed to its wider label, so "Copied" does not make the button jump. */
 	.subscribe__copy-btn {
-		min-width: 10.5rem;
+		min-width: 11.5rem;
 	}
 
 	.subscribe__links {
 		display: flex;
 		gap: var(--s-2);
+		color: var(--ink);
 	}
 
 	.subscribe__links a {
-		color: var(--text-muted);
+		color: var(--ink);
+		font-weight: 800;
 		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
+		text-decoration-thickness: 2px;
 		text-underline-offset: 3px;
-		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.subscribe__links a:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			background: var(--yellow);
 		}
-	}
-
-	.subscribe__links a:active {
-		color: var(--accent-dim);
 	}
 
 	.subscribe__links a:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
