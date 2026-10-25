@@ -35,10 +35,8 @@
 <Seo title={site.name} />
 
 <div class="container">
-	<!-- Greeting and byline are one unit: tight internally, ruled off from the lead
-	     below. Previously they sat 6rem apart with only 2rem before the post, so the
-	     byline read as the post's standfirst rather than as the author line. -->
-	
+	<!-- Masthead: the site's greeting and standfirst, ruled off with a double rule the way a
+	     paper's title block is. Small and quiet — the writing below is the loudest thing here. -->
 	<header class="intro enter" style="--i: 0">
 		<h3 class="intro__greeting">{site.intro}</h3>
 		<p class="intro__tagline">
@@ -62,11 +60,10 @@
 				Subscribe
 			</a>
 		</p>
-		<!-- <p class="intro__prebyline">{site.prebyline}</p>
-		<p class="intro__byline">{site.byline}</p> -->
 	</header>
 
 	{#if lead}
+		<!-- The title page of the featured post: title, author block, abstract, figure. -->
 		<article class="lead">
 			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
 			     newest post on the site. -->
@@ -76,11 +73,12 @@
 				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
 			</h2>
 
-			{#if lead.summary}
-				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
-			{/if}
+			<p class="lead__author enter" style="--i: 3">
+				<span class="lead__name">{site.name}</span>
+				<span class="lead__affil">{site.role}</span>
+			</p>
 
-			<p class="meta lead__meta enter" style="--i: 4">
+			<p class="meta lead__meta enter" style="--i: 3">
 				<time datetime={lead.date}>{formatDate(lead.date)}</time>
 				<span class="lead__dot" aria-hidden="true">·</span>
 				{lead.readingMinutes} min read
@@ -90,54 +88,61 @@
 				{/if}
 			</p>
 
-			<!-- The visible affordance. Not a tab stop: the title above is the accessible
-			     link to the same post, and three tab stops to one destination is noise. -->
-			<a
-				class="lead__cta enter"
-				style="--i: 5"
-				href="/blog/{lead.slug}"
-				tabindex="-1"
-				aria-hidden="true"
-			>
-				Read the post
-				<Icon name="arrow-right" size={15} />
-			</a>
+			<div class="lead__body enter" style="--i: 4">
+				{#if lead.summary}
+					<div class="lead__abstract">
+						<p class="lead__abstract-label">Abstract</p>
+						<p class="lead__summary">{lead.summary}</p>
+						<!-- The visible affordance. Not a tab stop: the title above is the accessible
+						     link to the same post, and three tab stops to one destination is noise. -->
+						<a class="lead__cta" href="/blog/{lead.slug}" tabindex="-1" aria-hidden="true">
+							Read the post
+							<Icon name="arrow-right" size={15} />
+						</a>
+					</div>
+				{/if}
 
-			{#if lead.cover}
-				<!-- Decorative: the title above is the accessible link to the same post. -->
-				<a
-					class="lead__media enter"
-					style="--i: 2"
-					href="/blog/{lead.slug}"
-					tabindex="-1"
-					aria-hidden="true"
-				>
-					<img
-						class="lead__cover"
-						src={lead.cover}
-						alt=""
-						width="720"
-						height="540"
-						decoding="async"
-					/>
-				</a>
-			{/if}
+				{#if lead.cover}
+					<figure class="lead__figure">
+						<!-- Decorative: the title above is the accessible link to the same post. -->
+						<a class="lead__media" href="/blog/{lead.slug}" tabindex="-1" aria-hidden="true">
+							<img
+								class="lead__cover"
+								src={lead.cover}
+								alt=""
+								width="720"
+								height="540"
+								decoding="async"
+							/>
+						</a>
+						{#if lead.coverAlt}
+							<figcaption class="lead__caption">
+								<span class="lead__fig">Figure 1.</span>
+								{lead.coverAlt}.
+							</figcaption>
+						{/if}
+					</figure>
+				{/if}
+			</div>
 		</article>
 	{/if}
 
 	<Rail label="Writing" id="writing" wide>
 		{#if allTags.length}
-			<div class="tag-row filter" role="group" aria-label="Filter posts by tag">
-				{#each allTags as tag (tag)}
-					<button
-						type="button"
-						class="tag"
-						aria-pressed={activeTag === tag}
-						onclick={() => toggleTag(tag)}
-					>
-						{tag}
-					</button>
-				{/each}
+			<div class="keywords filter">
+				<span class="keywords__label" id="kw-label">Keywords</span>
+				<div class="tag-row" role="group" aria-labelledby="kw-label">
+					{#each allTags as tag (tag)}
+						<button
+							type="button"
+							class="tag"
+							aria-pressed={activeTag === tag}
+							onclick={() => toggleTag(tag)}
+						>
+							{tag}
+						</button>
+					{/each}
+				</div>
 			</div>
 		{/if}
 
@@ -161,7 +166,7 @@
 	</Rail>
 
 	<Rail label="About" id="about">
-		<p>{about[0]}</p>
+		<p class="about__text">{about[0]}</p>
 		<p class="about__more">
 			<a class="inline-cta" href="/about">
 				Background, projects and CV
@@ -172,182 +177,113 @@
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
+	/* Double rule under the masthead: \hrule\vspace\hrule. */
 	.intro {
 		display: block;
-		padding-top: var(--s-8);
-		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
+		padding-top: var(--s-6);
+		padding-bottom: var(--s-5);
+		border-bottom: 3px double var(--text);
 		text-align: center;
 	}
 
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
+	/* Small and italic: §11 reserves the largest type on the page for the writing, never a
+	   greeting. */
 	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+		font-family: var(--font-serif);
+		font-size: 1.25rem;
+		font-style: italic;
 		font-weight: 400;
 		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
 		text-wrap: balance;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
+		margin: 0 0 var(--s-2);
 		text-align: center;
 	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
+
 	.intro__tagline {
 		margin: 0 auto;
 		max-width: 46ch;
 		color: var(--text-secondary);
-		line-height: 1.6;
+		line-height: 1.5;
 		text-align: center;
 		text-wrap: balance;
 	}
 
-	/* Centres the inline CV and feed links under the tagline. */
 	.intro__actions {
-		margin: var(--s-4) 0 0;
+		margin: var(--s-3) 0 0;
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: var(--s-2) var(--s-6);
+		gap: 0 var(--s-6);
 	}
 
-	/* The feed icon leads its label rather than trailing it, so it should not take the
-	   arrow's nudge to the right on hover. */
 	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
+		color: var(--accent);
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta--feed:hover :global(svg) {
-			transform: none;
-			color: var(--accent);
-		}
-	}
-
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
+	/* The lead is a paper's first page: everything centred on one axis, then the abstract. */
 	.lead {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
-		grid-template-areas:
-			'eyebrow media'
-			'title   media'
-			'summary media'
-			'meta    media'
-			'cta     media';
-		column-gap: var(--s-7);
-		row-gap: var(--s-4);
-		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
+		display: block;
 		padding-top: var(--s-7);
+		text-align: center;
 	}
 
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
 	.lead__title {
-		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
-		margin: 0;
+		font-size: clamp(1.875rem, 4.6vw, 3rem);
+		margin: var(--s-2) auto 0;
+		max-width: 22ch;
 	}
 
 	.lead__eyebrow {
-		grid-area: eyebrow;
-		font-family: var(--font-display);
-		font-size: 0.8125rem;
-		font-weight: 400;
-		line-height: 1.4;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
+		font-size: 1rem;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.12em;
 		color: var(--text-muted);
-		margin: 0 0 calc(var(--s-1) * -1);
+		margin: 0;
 	}
 
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
+		text-decoration-color: var(--accent);
 		text-decoration-thickness: 1px;
-		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
+		text-underline-offset: 0.12em;
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__link:hover {
+			color: var(--accent);
 			text-decoration-line: underline;
 		}
 	}
 
-	.lead__cta {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
-		   bottom rule sits under the words rather than spanning the whole measure. */
-		justify-self: start;
-		grid-area: cta;
-		margin-top: var(--s-2);
-		min-height: 44px;
-		font-size: 0.875rem;
-		font-weight: 700;
-		color: var(--text);
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.lead__cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.lead__cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.lead__cta:active {
-		color: var(--accent-dim);
-	}
-
 	.lead__link:focus-visible {
 		outline: none;
-		border-radius: 4px;
+		border-radius: 1px;
 		box-shadow: var(--focus-ring);
 	}
 
-	.lead__summary {
-		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+	/* Author block */
+	.lead__author {
+		display: grid;
+		gap: 0.1rem;
+		margin-top: var(--s-5);
+	}
+
+	.lead__name {
+		font-size: 1.125rem;
+		color: var(--text);
+	}
+
+	.lead__affil {
+		font-style: italic;
+		color: var(--text-muted);
+		font-size: 0.9375rem;
 	}
 
 	.lead__meta {
-		grid-area: meta;
+		margin-top: var(--s-2);
 	}
 
 	.lead__dot {
@@ -355,36 +291,104 @@
 		color: var(--text-muted);
 	}
 
+	.lead__body {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 17rem;
+		column-gap: var(--s-6);
+		align-items: start;
+		margin-top: var(--s-6);
+		padding-top: var(--s-5);
+		border-top: 1px solid var(--line);
+		text-align: left;
+	}
+
+	/* Abstract: bold small-caps head, the summary set justified one step smaller. */
+	.lead__abstract-label {
+		font-size: 1rem;
+		font-weight: 700;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.1em;
+		color: var(--text);
+		margin: 0 0 var(--s-2);
+	}
+
+	.lead__summary {
+		font-size: 1.0625rem;
+		line-height: 1.55;
+		color: var(--text-secondary);
+		text-align: justify;
+		text-align-last: left;
+		hyphens: auto;
+	}
+
+	.lead__cta {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-2);
+		margin-top: var(--s-3);
+		min-height: 44px;
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__cta:hover {
+			color: var(--accent-dim);
+		}
+	}
+
+	.lead__figure {
+		margin: 0;
+	}
+
 	.lead__media {
-		grid-area: media;
-		align-self: start;
 		display: block;
-		border-radius: 6px;
-		overflow: hidden;
 		border: 1px solid var(--line);
+		background: var(--plate);
 	}
 
 	.lead__cover {
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
-		}
+	.lead__caption {
+		margin-top: var(--s-2);
+		font-size: 0.9375rem;
+		line-height: 1.4;
+		color: var(--text-secondary);
 	}
 
+	.lead__fig {
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	/* Keywords line above the contents. */
 	.filter {
-		margin-bottom: var(--s-7);
+		margin-bottom: var(--s-4);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: var(--s-1) var(--s-3);
+	}
+
+	.keywords__label {
+		font-style: italic;
+		color: var(--text-muted);
+	}
+
+	.keywords__label::after {
+		content: ':';
 	}
 
 	.articles {
 		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		counter-reset: entry;
+		max-width: 52rem;
 	}
 
 	.empty {
@@ -392,7 +396,7 @@
 	}
 
 	.about__more {
-		margin-top: var(--s-5);
+		margin-top: var(--s-3);
 	}
 
 	.inline-cta {
@@ -400,27 +404,18 @@
 		align-items: center;
 		gap: var(--s-2);
 		min-height: 44px;
-		color: var(--text);
-		font-weight: 700;
-		font-size: 0.875rem;
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.inline-cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
+		color: var(--accent);
+		font-size: 1rem;
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.18em;
+		text-decoration-color: rgba(var(--accent-rgb), 0.45);
+		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.inline-cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.inline-cta:hover :global(svg) {
-			transform: translateX(3px);
+			text-decoration-color: currentColor;
 		}
 	}
 
@@ -430,35 +425,30 @@
 
 	.inline-cta:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 1px;
 		box-shadow: var(--focus-ring);
-	}
-
-	@media (max-width: 1023px) {
-		.lead {
-			grid-template-columns: minmax(0, 1fr) 260px;
-			column-gap: var(--s-6);
-		}
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
-			padding-bottom: var(--s-5);
+			padding-top: var(--s-4);
+			padding-bottom: var(--s-4);
 		}
-		/* Stack, with the cover sitting between the meta line and the CTA. */
 		.lead {
-			grid-template-columns: minmax(0, 1fr);
-			grid-template-areas:
-				'eyebrow'
-				'title'
-				'summary'
-				'meta'
-				'media'
-				'cta';
+			padding-top: var(--s-6);
 		}
-		.lead__cover {
-			aspect-ratio: 16 / 9;
+		.lead__body {
+			grid-template-columns: minmax(0, 1fr);
+			row-gap: var(--s-5);
+		}
+		.lead__figure {
+			max-width: 22rem;
+		}
+	}
+
+	@media (max-width: 479px) {
+		.lead__summary {
+			text-align: left;
 		}
 	}
 </style>

@@ -65,32 +65,20 @@
 		align-items: center;
 		gap: var(--s-4) var(--s-6);
 		padding: var(--s-5);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		/* Translucent on the same terms as the scrolled header, and at the same 12px cap
-		   (DESIGN.md §8, Don't #3) — the panel sits over running prose, so the tint is the
-		   heavier one the "More" menu uses. */
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
-		box-shadow: var(--shadow-4);
+		border: 1px solid var(--text);
+		border-radius: 0;
+		/* Opaque paper: the panel sits over running prose and must stay legible without
+		   any blur or shadow. */
+		background: var(--bg);
 		animation: consent-rise var(--dur-base) var(--ease-out) both;
-	}
-
-	/* Where backdrop-filter is unavailable the tint alone would let text read through. */
-	@supports not (backdrop-filter: blur(12px)) {
-		.consent__panel {
-			background: var(--surface);
-		}
 	}
 
 	@keyframes consent-rise {
 		from {
 			opacity: 0;
-			transform: translateY(12px);
 		}
 		to {
 			opacity: 1;
-			transform: none;
 		}
 	}
 
@@ -103,7 +91,7 @@
 		margin: 0;
 		max-width: 62ch;
 		font-size: 0.9375rem;
-		line-height: 1.7;
+		line-height: 1.55;
 		color: var(--text-secondary);
 	}
 

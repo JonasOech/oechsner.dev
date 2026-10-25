@@ -1,52 +1,33 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="The Obsidian logo at the centre of a note graph, with links radiating outwards to connected notes">
   <defs>
-    <radialGradient id="obGlowA" cx="12%" cy="12%" r="70%">
-      <stop offset="0%" stop-color="#6b5a94" stop-opacity="0.40"/>
-      <stop offset="100%" stop-color="#6b5a94" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="obGlowB" cx="86%" cy="90%" r="65%">
-      <stop offset="0%" stop-color="#b06c2e" stop-opacity="0.34"/>
-      <stop offset="100%" stop-color="#b06c2e" stop-opacity="0"/>
-    </radialGradient>
     <!-- The halo that lifts the mark off the graph behind it. -->
-    <radialGradient id="obCore" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#8f7ad0" stop-opacity="0.50"/>
-      <stop offset="100%" stop-color="#8f7ad0" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="obDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
-    </pattern>
 
     <!-- One gradient per facet of the mark, lit from the upper left. -->
     <linearGradient id="obFacetT" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0%" stop-color="#9d88dc"/>
-      <stop offset="100%" stop-color="#c9bcf2"/>
+      <stop offset="0%" stop-color="#1d347d"/>
+      <stop offset="100%" stop-color="#132253"/>
     </linearGradient>
     <linearGradient id="obFacetM" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#8f7ad0"/>
-      <stop offset="100%" stop-color="#5f4fa0"/>
+      <stop offset="0%" stop-color="#223c92"/>
+      <stop offset="100%" stop-color="#526bbd"/>
     </linearGradient>
     <linearGradient id="obFacetL" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#5d4d94"/>
-      <stop offset="100%" stop-color="#3b3163"/>
+      <stop offset="0%" stop-color="#5c73c1"/>
+      <stop offset="100%" stop-color="#7287ca"/>
     </linearGradient>
     <linearGradient id="obFacetD" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#4a3d7d"/>
-      <stop offset="100%" stop-color="#2f2752"/>
+      <stop offset="0%" stop-color="#7287ca"/>
+      <stop offset="100%" stop-color="#7287ca"/>
     </linearGradient>
   </defs>
 
-  <rect width="1200" height="675" fill="#0e0f12"/>
-  <rect width="1200" height="675" fill="url(#obDots)"/>
-  <rect width="1200" height="675" fill="url(#obGlowA)"/>
-  <rect width="1200" height="675" fill="url(#obGlowB)"/>
+  <rect width="1200" height="675" fill="#fefefe"/>
 
   <!-- Links out of the mark. Every ray starts clear of the facets so the
        silhouette stays sharp; three are lit to trace one path through the vault. -->
  
   <!-- The Obsidian mark itself: the four facets of the official logo, drawn on
        its native 24px grid and scaled up about the centre of the graph. -->
-  <circle cx="600" cy="338" r="150" fill="url(#obCore)"/>
   <g transform="translate(484.32 222.8) scale(9.6)">
     <!-- Upper-left facet: the tall one that catches the light. -->
     <path fill="url(#obFacetT)" d="M9.32 14.01c.615-.183 1.606-.465 2.745-.534-.683-1.725-.848-3.233-.716-4.577.154-1.552.7-2.847 1.235-3.95.113-.235.223-.454.328-.664.149-.297.288-.577.419-.86.217-.47.379-.885.46-1.27.08-.38.08-.72-.014-1.043-.095-.325-.297-.675-.68-1.06a1.6 1.6 0 0 0-1.475.36l-4.95 4.452a1.602 1.602 0 0 0-.513.952l-.427 2.83c.672.59 2.328 2.316 3.335 4.711.09.21.175.43.253.653z"/>

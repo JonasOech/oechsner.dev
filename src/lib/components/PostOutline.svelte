@@ -47,6 +47,21 @@
 		};
 	});
 
+	// The numbers the prose's CSS counters give the same headings (app.css, `.prose h2` / `h3`).
+	const numbered = $derived.by(() => {
+		let sec = 0;
+		let sub = 0;
+		return headings.map((heading) => {
+			if (heading.depth === 3) {
+				sub += 1;
+				return { ...heading, num: `${sec}.${sub}` };
+			}
+			sec += 1;
+			sub = 0;
+			return { ...heading, num: `${sec}` };
+		});
+	});
+
 	function backToTop(event: MouseEvent) {
 		event.preventDefault();
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -66,7 +81,7 @@
 
 <nav class="outline" aria-label="On this page">
 	<div class="outline__head">
-		<p class="outline__label">On this page</p>
+		<p class="outline__label">Contents</p>
 		<div class="outline__progress">
 			<div class="outline__track" role="presentation">
 				<div class="outline__fill" style="width: {progress * 100}%"></div>
@@ -77,7 +92,7 @@
 
 	<div class="outline__scroll">
 		<ol class="outline__list">
-			{#each headings as heading (heading.id)}
+			{#each numbered as heading (heading.id)}
 				{@const active = activeId === heading.id}
 				<li class:outline__item--sub={heading.depth === 3}>
 					<a
@@ -86,6 +101,7 @@
 						aria-current={active ? 'location' : undefined}
 						href="#{heading.id}"
 					>
+						<span class="outline__num">{heading.num}</span>
 						<span class="outline__text">{heading.text}</span>
 					</a>
 				</li>
@@ -105,9 +121,8 @@
 </nav>
 
 <style>
-	/* The outline as a contained object rather than a bare list floating in the track:
-	   a bordered panel, sticky in the article's row, bled slightly toward the page edge
-	   so its padding does not eat further into the already-narrow 180px track. */
+	/* The table of contents, set in the margin: no panel, a hairline at its left edge and
+	   the section numbers the prose uses. Sticky beside the article. */
 	.outline {
 		grid-column: 1;
 		grid-row: 1;
@@ -115,16 +130,11 @@
 		align-self: start;
 		top: calc(var(--header-h) + var(--s-5));
 		margin-top: var(--s-9);
-		margin-left: -0.75rem;
-		width: calc(100% + 0.75rem);
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
-		overflow: hidden;
+		border-left: 1px solid var(--line);
+		padding-left: var(--s-3);
 	}
 
 	@media (max-width: 1099px) {
@@ -135,21 +145,17 @@
 
 	.outline__head {
 		flex: none;
-		padding: var(--s-4) var(--s-4) var(--s-3);
+		padding-bottom: var(--s-2);
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
-		font-size: 0.75rem;
-		font-weight: 400;
+		font-size: 1rem;
+		font-weight: 600;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		margin: 0 0 var(--s-3);
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.1em;
+		color: var(--text);
+		margin: 0 0 var(--s-2);
 	}
 
 	.outline__progress {
@@ -162,21 +168,19 @@
 		flex: 1 1 auto;
 		height: 1px;
 		background: var(--line);
-		border-radius: 1px;
 		overflow: hidden;
 	}
 
 	.outline__fill {
 		height: 100%;
 		background: var(--accent);
-		border-radius: 1px;
 		transition: width 120ms var(--ease-out);
 	}
 
 	.outline__readout {
 		flex: none;
-		font-size: 0.6875rem;
-		font-variant-numeric: tabular-nums;
+		font-size: 0.875rem;
+		font-variant-numeric: lining-nums tabular-nums;
 		color: var(--text-muted);
 		white-space: nowrap;
 	}
@@ -185,7 +189,6 @@
 		flex: 1 1 auto;
 		min-height: 0;
 		overflow-y: auto;
-		padding: 0 var(--s-2) var(--s-2);
 		scrollbar-width: thin;
 	}
 
@@ -194,66 +197,67 @@
 		margin: 0;
 		padding: 0;
 		display: grid;
-		gap: 1px;
+		gap: 2px;
 	}
 
 	.outline__item--sub {
 		padding-left: var(--s-4);
 	}
 
-	/* The lit-key row: a full-width hit area rather than a bare underlined link, so the
-	   active heading reads as a switched-on panel segment, not just coloured text. */
 	.outline__link {
 		position: relative;
-		display: block;
-		padding: 0.4rem var(--s-3) 0.4rem calc(var(--s-3) + 2px);
-		border-radius: 5px;
-		font-size: 0.8125rem;
+		display: grid;
+		grid-template-columns: 1.75rem minmax(0, 1fr);
+		padding: 0.2rem 0;
+		font-size: 0.9375rem;
 		line-height: 1.35;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition:
-			background-color var(--dur-fast) var(--ease-out),
-			color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__item--sub .outline__link {
-		font-size: 0.75rem;
-		padding-top: 0.32rem;
-		padding-bottom: 0.32rem;
+		grid-template-columns: 2.25rem minmax(0, 1fr);
 	}
 
+	.outline__num {
+		font-variant-numeric: lining-nums tabular-nums;
+	}
+
+	/* The section the reader is in: ink, bold, and a bar on the hairline. */
 	.outline__link::before {
 		content: '';
 		position: absolute;
-		left: 0;
+		left: calc(var(--s-3) * -1 - 1px);
 		top: 3px;
 		bottom: 3px;
 		width: 2px;
-		border-radius: 1px;
 		background: var(--accent);
-		transform: scaleY(0);
-		transition: transform var(--dur-base) var(--ease-out);
+		opacity: 0;
+		transition: opacity var(--dur-fast) var(--ease-out);
+	}
+
+	.outline__item--sub .outline__link::before {
+		left: calc((var(--s-3) + var(--s-4)) * -1 - 1px);
 	}
 
 	.outline__link.is-active {
-		background: var(--accent-wash);
 		color: var(--text);
+		font-weight: 600;
 	}
 
 	.outline__link.is-active::before {
-		transform: scaleY(1);
+		opacity: 1;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__link:not(.is-active):hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__link:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__link:focus-visible {
@@ -263,22 +267,18 @@
 
 	.outline__foot {
 		flex: none;
-		border-top: 1px solid var(--line);
-		padding: var(--s-2);
+		padding-top: var(--s-2);
 	}
 
 	.outline__top {
 		display: flex;
 		align-items: center;
 		gap: var(--s-2);
-		padding: 0.5rem var(--s-2);
-		border-radius: 5px;
-		font-size: 0.75rem;
+		padding: 0.4rem 0;
+		font-size: 0.9375rem;
 		color: var(--text-muted);
 		text-decoration: none;
-		transition:
-			background-color var(--dur-fast) var(--ease-out),
-			color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.outline__top svg {
@@ -289,13 +289,12 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.outline__top:hover {
-			background: var(--surface-hover);
-			color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.outline__top:active {
-		color: var(--text-secondary);
+		color: var(--accent-dim);
 	}
 
 	.outline__top:focus-visible {

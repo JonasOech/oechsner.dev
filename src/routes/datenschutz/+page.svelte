@@ -132,12 +132,10 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Website verwendet die Schriftarten „STIX Two Text“ und „JetBrains Mono“. Die
+					Schriftdateien werden von diesem Server selbst ausgeliefert; es werden keine
+					Anfragen an Server Dritter gestellt und dabei keine Daten, insbesondere keine
+					IP-Adressen, an Dritte übermittelt.
 				</p>
 			</section>
 
@@ -181,10 +179,11 @@
 <style>
 	.legal {
 		display: grid;
-		gap: var(--s-7);
+		gap: var(--s-6);
 		/* German legal prose is dense; keep the measure and leading generous. */
 		max-width: var(--measure);
-		line-height: 1.8;
+		line-height: 1.6;
+		counter-reset: clause;
 	}
 
 	.legal section {
@@ -193,10 +192,16 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
+		counter-increment: clause;
+		font-size: 1.0625rem;
+		font-weight: 600;
 		line-height: 1.4;
 		color: var(--text);
+	}
+
+	.legal__h::before {
+		content: counter(section) '.' counter(clause) '\2003';
+		font-variant-numeric: lining-nums;
 	}
 
 	.legal p {
@@ -220,9 +225,9 @@
 		padding: 0;
 		font: inherit;
 		cursor: pointer;
-		color: var(--text);
+		color: var(--accent);
 		text-decoration: underline;
-		text-decoration-color: var(--accent-dim);
+		text-decoration-color: var(--accent);
 		text-underline-offset: 3px;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
@@ -240,13 +245,13 @@
 
 	.legal__inline-btn:focus-visible {
 		outline: none;
-		border-radius: 2px;
+		border-radius: 1px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.legal__updated {
 		margin-top: var(--s-2);
-		font-size: 0.8125rem;
+		font-size: 0.9375rem;
 		color: var(--text-muted);
 	}
 </style>

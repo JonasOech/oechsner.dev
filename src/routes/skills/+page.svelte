@@ -134,6 +134,13 @@
 		margin: 0;
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--s-2);
+		gap: var(--s-1) 0;
+	}
+
+	/* Items run on as a list, separated by a centred dot. */
+	.skills__items .tag + .tag::before {
+		content: '\00b7';
+		margin-inline: 0.6em;
+		color: var(--text-muted);
 	}
 </style>

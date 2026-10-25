@@ -137,10 +137,11 @@
 <style>
 	.legal {
 		display: grid;
-		gap: var(--s-7);
+		gap: var(--s-6);
 		/* German legal prose is dense; keep the measure and leading generous. */
 		max-width: var(--measure);
-		line-height: 1.8;
+		line-height: 1.6;
+		counter-reset: clause;
 	}
 
 	.legal section {
@@ -149,10 +150,16 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
+		counter-increment: clause;
+		font-size: 1.0625rem;
+		font-weight: 600;
 		line-height: 1.4;
 		color: var(--text);
+	}
+
+	.legal__h::before {
+		content: counter(section) '.' counter(clause) '\2003';
+		font-variant-numeric: lining-nums;
 	}
 
 	.legal address {
@@ -175,8 +182,10 @@
 
 	.legal__dl dt {
 		color: var(--text-muted);
-		font-size: 0.8125rem;
-		font-weight: 700;
+		font-size: 0.9375rem;
+		font-weight: 400;
+		font-variant-caps: all-small-caps;
+		letter-spacing: 0.06em;
 	}
 
 	.legal__dl dd {
@@ -186,7 +195,7 @@
 
 	.legal__updated {
 		margin-top: var(--s-2);
-		font-size: 0.8125rem;
+		font-size: 0.9375rem;
 		color: var(--text-muted);
 	}
 

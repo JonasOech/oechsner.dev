@@ -22,6 +22,7 @@
 <div class="container">
 	<section class="intro">
 		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
+		<h1 class="page-title enter" style="--i: 0">About</h1>
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
@@ -94,7 +95,7 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-7);
 		max-width: var(--measure);
 	}
 

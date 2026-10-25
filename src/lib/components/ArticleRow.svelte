@@ -5,6 +5,8 @@
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
+<!-- One entry in a table of contents: number, title, leader, date; the abstract and
+     the facts hang beneath, and the cover is a small figure at the right margin. -->
 <a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
 	{#if featured && post.cover}
 		<div class="card__media card__media--wide">
@@ -21,13 +23,15 @@
 	{/if}
 
 	<div class="card__text">
-		<h3 class="card__title">{post.title}</h3>
+		<div class="card__head">
+			<h3 class="card__title">{post.title}</h3>
+			<span class="card__leader" aria-hidden="true"></span>
+			<time class="card__date" datetime={post.date}>{formatDate(post.date)}</time>
+		</div>
 		{#if post.summary}
 			<p class="card__summary">{post.summary}</p>
 		{/if}
 		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
 			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
 			     leave a dangling dot at the end of the line. -->
@@ -56,72 +60,96 @@
 <style>
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: 2.75rem minmax(0, 1fr) 120px;
+		column-gap: var(--s-3);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-4) 0;
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+		counter-increment: entry;
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
+	/* 1.1, 1.2 … — the entry's number inside the section it sits in. */
+	.card::before {
+		content: counter(section) '.' counter(entry);
+		grid-column: 1;
+		grid-row: 1;
+		font-variant-numeric: lining-nums tabular-nums;
+		color: var(--text-muted);
+		line-height: 1.45;
+	}
+
+	.card__text {
+		grid-column: 2;
+		min-width: 0;
+	}
+
+	.card__media {
+		grid-column: 3;
+		grid-row: 1;
+	}
+
+	/* No cover image means no media column. */
 	.card--noMedia,
 	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+		grid-template-columns: 2.75rem minmax(0, 1fr);
 	}
 
-	.card--featured {
-		gap: var(--s-5);
+	.card__head {
+		display: flex;
+		align-items: last baseline;
+		gap: var(--s-2);
+		margin: 0 0 var(--s-1);
+	}
+
+	.card__title {
+		flex: 0 1 auto;
+		font-size: 1.1875rem;
+		font-weight: 600;
+		line-height: 1.35;
+		color: var(--text);
+		margin: 0;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	/* The dotted leader that carries the eye from title to date. */
+	.card__leader {
+		flex: 1 1 1.5rem;
+		min-width: 1rem;
+		border-bottom: 2px dotted var(--line-strong);
+		transform: translateY(-0.3em);
+	}
+
+	.card__date {
+		flex: none;
+		font-variant-numeric: lining-nums tabular-nums;
+		color: var(--text-muted);
+		white-space: nowrap;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.card:hover .card__title {
+			color: var(--accent);
+			text-decoration: underline;
+			text-decoration-thickness: 1px;
+			text-underline-offset: 0.18em;
 		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
-	.card__text {
-		min-width: 0;
-	}
-
-	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.card--featured .card__title {
-		font-size: 1.375rem;
+	.card:focus-visible .card__title {
+		color: var(--accent);
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+		font-size: 1rem;
+		line-height: 1.5;
+		margin: 0 0 var(--s-2);
 	}
 
 	.card__dot {
@@ -129,10 +157,12 @@
 		color: var(--text-muted);
 	}
 
+	/* The cover as a small figure: plate, hairline, no radius. */
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
 		aspect-ratio: 4 / 3;
+		border: 1px solid var(--line);
+		background: var(--plate);
 	}
 
 	.card__media--wide {
@@ -144,22 +174,38 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
 	}
 
 	@media (max-width: 767px) {
 		.card {
-			grid-template-columns: minmax(0, 1fr);
+			grid-template-columns: 2.25rem minmax(0, 1fr) 88px;
+			column-gap: var(--s-2);
 		}
-		/* Thumbnail drops below the text at full width. */
+		.card--noMedia,
+		.card--featured {
+			grid-template-columns: 2.25rem minmax(0, 1fr);
+		}
+	}
+
+	@media (max-width: 539px) {
+		/* Thumbnail drops below the text, inside the text column. */
+		.card {
+			grid-template-columns: 2.25rem minmax(0, 1fr);
+		}
 		.card__media {
-			aspect-ratio: 16 / 9;
+			grid-column: 2;
+			grid-row: 2;
+			margin-top: var(--s-3);
+			max-width: 14rem;
+		}
+		.card__head {
+			flex-wrap: wrap;
+		}
+		.card__title {
+			flex: 1 1 100%;
+		}
+		.card__leader {
+			display: none;
 		}
 	}
 </style>
