@@ -108,10 +108,10 @@
 		border-top: 1px solid var(--line);
 		border-left: 1px solid var(--line);
 		background: none;
-		font-family: var(--font-sans);
-		font-size: 0.8125rem;
-		font-weight: 600;
-		line-height: 1.35;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		font-weight: 500;
+		line-height: 1.3;
 		text-align: center;
 		color: var(--text-secondary);
 		cursor: pointer;
@@ -183,8 +183,8 @@
 
 	.panel__use {
 		margin: 0;
-		font-size: 0.9375rem;
-		line-height: 1.7;
+		font-size: 1rem;
+		line-height: 1.5;
 		color: var(--text-secondary);
 	}
 

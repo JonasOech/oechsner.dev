@@ -83,7 +83,7 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1.1875rem;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
@@ -107,18 +107,19 @@
 	}
 
 	.channel__link:active {
-		color: var(--accent-dim);
+		color: var(--accent-press);
 	}
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
 		margin-top: var(--s-4);
-		font-size: 0.8125rem;
+		font-size: 1rem;
+		font-style: italic;
 		color: var(--text-muted);
 		max-width: var(--measure);
 	}

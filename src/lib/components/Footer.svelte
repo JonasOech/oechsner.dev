@@ -52,8 +52,18 @@
 		z-index: 1;
 		margin-top: var(--gap-hero);
 		padding-block: var(--s-8) var(--s-7);
-		background: var(--bg-deep);
-		border-top: 1px solid var(--line);
+		background: transparent;
+	}
+
+	/* A short double rule sits on the footer's top edge, like the tail-piece of a chapter. */
+	.footer::before {
+		content: '';
+		display: block;
+		width: 3rem;
+		height: 3px;
+		margin: 0 auto var(--s-6);
+		border-top: 1px solid var(--text);
+		border-bottom: 1px solid var(--text);
 	}
 
 	.footer__inner {
@@ -71,12 +81,12 @@
 	}
 
 	.footer__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-serif);
+		font-size: 1rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-variant-caps: all-small-caps;
 		color: var(--text-muted);
 		text-decoration: none;
 		padding: 0.5rem 0.125rem;
@@ -98,7 +108,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__link:hover {
-			color: var(--text);
+			color: var(--accent);
 		}
 		.footer__feed:hover :global(svg) {
 			color: var(--accent);
@@ -106,19 +116,19 @@
 	}
 
 	.footer__link:active {
-		color: var(--text-secondary);
+		color: var(--accent-press);
 	}
 
 	.footer__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.footer__copy {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-serif);
+		font-size: 0.9375rem;
+		font-weight: 400;
 		color: var(--text-muted);
 		margin: 0;
 	}
@@ -130,9 +140,9 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-serif);
+		font-size: 0.9375rem;
+		font-weight: 400;
 		color: var(--text-muted);
 		text-decoration: underline;
 		text-decoration-color: var(--line-strong);
@@ -144,18 +154,18 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__legal-link:hover {
-			color: var(--text);
-			text-decoration-color: var(--text);
+			color: var(--accent);
+			text-decoration-color: var(--accent);
 		}
 	}
 
 	.footer__legal-link:active {
-		color: var(--text-secondary);
+		color: var(--accent-press);
 	}
 
 	.footer__legal-link:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -169,10 +179,11 @@
 	}
 
 	.footer__colophon {
-		font-size: 0.75rem;
+		font-size: 0.9375rem;
+		font-style: italic;
 		color: var(--text-muted);
 		max-width: 46ch;
-		line-height: 1.6;
+		line-height: 1.5;
 		margin: 0;
 	}
 

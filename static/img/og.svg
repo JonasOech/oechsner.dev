@@ -1,19 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="oechsner.dev — writing on machine learning, data protection and systems">
   <defs>
     <radialGradient id="ogA" cx="15%" cy="0%" r="70%">
-      <stop offset="0%" stop-color="#566c94" stop-opacity="0.40"/>
-      <stop offset="100%" stop-color="#566c94" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#6f8aa3" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#6f8aa3" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="ogB" cx="88%" cy="4%" r="65%">
-      <stop offset="0%" stop-color="#b06c2e" stop-opacity="0.44"/>
-      <stop offset="100%" stop-color="#b06c2e" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#a6683a" stop-opacity="0.44"/>
+      <stop offset="100%" stop-color="#a6683a" stop-opacity="0"/>
     </radialGradient>
     <pattern id="ogDots" width="24" height="24" patternUnits="userSpaceOnUse">
-      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
+      <circle cx="1" cy="1" r="1" fill="#1f1a15" opacity="0.05"/>
     </pattern>
   </defs>
-  <rect width="1200" height="630" fill="#0e0f12"/>
-  <rect width="1200" height="630" fill="url(#ogDots)"/>
+  <rect width="1200" height="630" fill="#fbf8ef"/>
   <rect width="1200" height="630" fill="url(#ogA)"/>
   <rect width="1200" height="630" fill="url(#ogB)"/>
 
@@ -21,12 +20,12 @@
         font-size="17" font-weight="700" letter-spacing="4" fill="#80818a">OECHSNER.DEV</text>
 
   <text x="110" y="345" font-family="Georgia, 'Times New Roman', serif"
-        font-size="70" fill="#f4f4f6">Hi, I'm Jonas.</text>
+        font-size="70" fill="#1f1a15">Hi, I'm Jonas.</text>
   <text x="110" y="425" font-family="Georgia, 'Times New Roman', serif"
-        font-size="70" fill="#f4f4f6">Welcome to my Blog.</text>
+        font-size="70" fill="#1f1a15">Welcome to my Blog.</text>
 
-  <line x1="110" y1="480" x2="330" y2="480" stroke="#34353d" stroke-width="1"/>
+  <line x1="110" y1="480" x2="330" y2="480" stroke="#a89a7c" stroke-width="1"/>
 
   <text x="110" y="524" font-family="ui-sans-serif, system-ui, sans-serif"
-        font-size="19" fill="#a3a4ac">Jonas  Öchsner</text>
+        font-size="19" fill="#3d342b">Jonas  Öchsner</text>
 </svg>

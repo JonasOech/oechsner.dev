@@ -5,7 +5,7 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
-	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
+	import { formatDate, getPostComponent, getNeighbours, posts } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
 	// Math is rendered to static HTML at build time, so posts only need KaTeX's stylesheet —
@@ -17,6 +17,28 @@
 	const post = $derived(data.post);
 	const Content = $derived(getPostComponent(post.slug)!);
 	const neighbours = $derived(getNeighbours(post.slug));
+
+	/** The post's place in the book: oldest published post is chapter one. */
+	const chapterNumber = $derived(posts.length - posts.findIndex((p) => p.slug === post.slug));
+	const chapter = $derived(roman(chapterNumber));
+
+	function roman(n: number): string {
+		const table: [number, string][] = [
+			[10, 'X'],
+			[9, 'IX'],
+			[5, 'V'],
+			[4, 'IV'],
+			[1, 'I']
+		];
+		let out = '';
+		for (const [value, glyph] of table) {
+			while (n >= value) {
+				out += glyph;
+				n -= value;
+			}
+		}
+		return out;
+	}
 
 	// A single heading is not an outline, it is a label — nothing to navigate between.
 	const outline = $derived(post.headings.length > 1 ? post.headings : []);
@@ -73,72 +95,88 @@
 	})}<\/script>`}
 </svelte:head>
 
-<!-- Three tracks, the outer two the same width: the post keeps the centred position it has
-     without an outline, and the left track is simply filled when there is one to show. The
-     right track stays empty on purpose — it is the counterweight that does the centring. -->
+<!-- Two tracks: the text, and a wide right margin that carries the sidenotes (the facts about
+     the post) and the contents. Below 1100px the margin folds into a block under the chapter
+     opening and the contents drop out. -->
 <div class="container post-layout">
-	{#if outline.length}
-		<PostOutline headings={outline} {activeId} />
-	{/if}
+	<header class="post__header enter" style="--i: 0">
+		<div class="post__runhead">
+			<a class="post__back" href="/">
+				<Icon name="arrow-left" size={14} />
+				Contents
+			</a>
+			<span class="post__runhead-title">{site.name}</span>
+		</div>
+
+		<p class="post__chapter">Chapter {chapter}</p>
+		<h1 class="post__title">{post.title}</h1>
+
+		{#if post.summary}
+			<p class="post__summary">{post.summary}</p>
+		{/if}
+
+		<span class="post__rule" aria-hidden="true"></span>
+	</header>
+
+	<aside class="margin" aria-label="About this post">
+		<dl class="notes">
+			<div class="notes__item">
+				<dt>Written</dt>
+				<dd><time class="num" datetime={post.date}>{formatDate(post.date)}</time></dd>
+			</div>
+			<div class="notes__item">
+				<dt>Length</dt>
+				<dd>{post.readingMinutes} min read</dd>
+			</div>
+			{#if post.nerdyness}
+				<div class="notes__item">
+					<dt>Depth</dt>
+					<dd><Nerdyness level={post.nerdyness} /></dd>
+				</div>
+			{/if}
+			{#if post.tags.length}
+				<div class="notes__item">
+					<dt>Subjects</dt>
+					<dd class="tag-row post__tags">
+						{#each post.tags as tag (tag)}
+							<span class="tag">{tag}</span>
+						{/each}
+					</dd>
+				</div>
+			{/if}
+		</dl>
+
+		<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
+		{#if post.ai === false}
+			<div class="margin__laurel">
+				<HumanWritten />
+			</div>
+		{/if}
+
+		{#if outline.length}
+			<PostOutline headings={outline} {activeId} />
+		{/if}
+	</aside>
 
 	<article class="post">
-		<header class="post__header enter" style="--i: 0">
-			<a class="post__back" href="/">
-				<Icon name="arrow-left" />
-				All articles
-			</a>
-
-			<h1 class="post__title">{post.title}</h1>
-
-			{#if post.summary}
-				<p class="post__summary">{post.summary}</p>
-			{/if}
-
-			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
-			     the measure, and the badge claims the slack the two of them leave behind. -->
-			<div class="post__facts">
-				<div class="post__facts-main">
-					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
-						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
-						{#if post.nerdyness}
-							<span class="post__dot" aria-hidden="true">·</span>
-							<Nerdyness level={post.nerdyness} />
-						{/if}
-					</p>
-
-					{#if post.tags.length}
-						<div class="tag-row post__tags">
-							{#each post.tags as tag (tag)}
-								<span class="tag">{tag}</span>
-							{/each}
-						</div>
-					{/if}
-				</div>
-
-				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
-				{#if post.ai === false}
-					<HumanWritten />
-				{/if}
-			</div>
-		</header>
-
 		{#if post.cover}
-			<img
-				class="post__cover enter"
-				style="--i: 1"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="1200"
-				height="675"
-				decoding="async"
-			/>
+			<figure class="post__plate enter" style="--i: 1">
+				<img
+					class="post__cover"
+					src={post.cover}
+					alt={post.coverAlt ?? ''}
+					width="1200"
+					height="675"
+					decoding="async"
+				/>
+			</figure>
 		{/if}
 
 		<div class="prose post__body">
 			<Content />
 		</div>
+
+		<p class="post__folio num" aria-hidden="true">{chapterNumber}</p>
 	</article>
 
 	<div class="post__subscribe">
@@ -167,57 +205,77 @@
 </div>
 
 <style>
-	/* Below the outline's breakpoint this is a single column and the `margin-inline` on the
-	   children does the centring; above it, the explicit tracks take over. Written as a
-	   min-width query so the narrow case is the default rather than an override. */
+	/* One column by default (the margin folds in under the header); two from 1100px. The
+	   pair is centred as a unit, so the text sits slightly left of the page's centre line,
+	   which is where a margin-note layout puts it. */
 	.post-layout {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			'head'
+			'margin'
+			'body'
+			'subscribe'
+			'nav';
+		justify-content: center;
 	}
 
 	@media (min-width: 1100px) {
 		.post-layout {
-			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
-			grid-template-columns:
-				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
-				minmax(0, var(--outline-width));
-			justify-content: center;
-			column-gap: var(--s-5);
+			grid-template-columns: minmax(0, var(--measure-prose)) minmax(0, var(--margin-width));
+			grid-template-areas:
+				'head      margin'
+				'body      margin'
+				'subscribe .'
+				'nav       .';
+			column-gap: var(--s-8);
+			grid-template-rows: auto 1fr auto auto;
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
-	.post {
-		grid-column: 2;
-		padding-top: var(--s-9);
-		max-width: var(--measure-prose);
-		margin-inline: auto;
-	}
+	/* — Chapter opening — */
 
 	.post__header {
+		grid-area: head;
 		display: grid;
+		justify-items: center;
+		text-align: center;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		padding-top: var(--s-5);
+		margin-bottom: var(--s-6);
+		min-width: 0;
+	}
+
+	/* The running head: where you are, and the way back. A hairline under it. */
+	.post__runhead {
+		justify-self: stretch;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--s-4);
+		padding-bottom: var(--s-2);
+		margin-bottom: var(--s-6);
+		border-bottom: 1px solid var(--line);
+		font-size: 1rem;
+		letter-spacing: 0.1em;
+		font-variant-caps: all-small-caps;
+		color: var(--text-muted);
+	}
+
+	.post__runhead-title {
+		font-style: italic;
+		font-variant-caps: normal;
+		letter-spacing: 0.01em;
 	}
 
 	.post__back {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
-		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
-		padding: 0.5rem 0;
 		min-height: 44px;
+		margin-block: -0.75rem;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
@@ -227,7 +285,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			color: var(--accent);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
@@ -235,96 +293,199 @@
 	}
 
 	.post__back:active {
-		color: var(--text-secondary);
+		color: var(--accent-press);
 	}
 
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
+		border-radius: 2px;
 		box-shadow: var(--focus-ring);
 	}
 
+	.post__chapter {
+		font-size: 1.0625rem;
+		letter-spacing: 0.14em;
+		font-variant-caps: all-small-caps;
+		color: var(--accent);
+		font-weight: 500;
+	}
+
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(2.125rem, 5vw, 3.125rem);
+		font-weight: 400;
+		line-height: 1.12;
+		letter-spacing: -0.01em;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		max-width: 30rem;
+		font-size: 1.25rem;
+		font-style: italic;
+		line-height: 1.45;
 		color: var(--text-secondary);
 	}
 
-	.post__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
+	.post__rule {
+		display: block;
+		width: 3rem;
+		height: 3px;
+		margin-top: var(--s-2);
+		border-top: 1px solid var(--text);
+		border-bottom: 1px solid var(--text);
 	}
 
-	.post__facts {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: var(--s-5);
-		flex-wrap: wrap;
-	}
+	/* — Sidenotes — */
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
-	.post__facts-main {
+	.margin {
+		grid-area: margin;
+		min-width: 0;
 		display: grid;
-		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
-		min-width: min(100%, 22rem);
-		flex: 1 1 22rem;
+		gap: var(--s-5);
+		align-content: start;
+		margin-bottom: var(--s-6);
+	}
+
+	.notes {
+		margin: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+		gap: var(--s-3) var(--s-5);
+		padding-block: var(--s-3);
+		border-top: 1px solid var(--line);
+		border-bottom: 1px solid var(--line);
+	}
+
+	.notes__item {
+		min-width: 0;
+	}
+
+	.notes dt {
+		font-size: 0.9375rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		font-variant-caps: all-small-caps;
+		color: var(--text-muted);
+		line-height: 1.3;
+	}
+
+	.notes dd {
+		margin: 0;
+		color: var(--text);
+		line-height: 1.35;
 	}
 
 	.post__tags {
-		margin-top: var(--s-1);
+		margin-top: 0;
+		gap: 0 var(--s-3);
+	}
+
+	.margin__laurel {
+		justify-self: start;
+	}
+
+	@media (min-width: 1100px) {
+		.margin {
+			position: sticky;
+			top: calc(var(--header-h) + var(--s-5));
+			align-self: start;
+			max-height: calc(100dvh - var(--header-h) - var(--s-6));
+			overflow-y: auto;
+			scrollbar-width: thin;
+			/* The first sidenote lines up with the chapter number, not the running head. */
+			margin-top: 5.5rem;
+			margin-bottom: 0;
+			padding-bottom: var(--s-4);
+		}
+
+		.notes {
+			grid-template-columns: minmax(0, 1fr);
+			gap: var(--s-3);
+			border-top: 0;
+			padding-block: 0 var(--s-4);
+			padding-left: var(--s-4);
+			border-left: 1px solid var(--line-strong);
+			border-bottom: 0;
+		}
+	}
+
+	/* — Body — */
+
+	.post {
+		grid-area: body;
+		min-width: 0;
+		padding-top: var(--s-2);
+	}
+
+	.post__plate {
+		margin: 0 0 var(--s-7);
+		padding: var(--s-2);
+		background: var(--plate);
+		border: 1px solid var(--line-strong);
 	}
 
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+	}
+
+	/* Opening of the chapter: the first line in small capitals, and a drop initial where the
+	   browser can raise one. Only a plain paragraph that opens the text gets either. */
+	.post__body > :global(p:first-child)::first-line {
+		font-variant-caps: small-caps;
+		letter-spacing: 0.04em;
+		color: var(--text);
+	}
+
+	@supports (initial-letter: 3) {
+		.post__body > :global(p:first-child)::first-letter {
+			initial-letter: 3 2;
+			font-weight: 500;
+			color: var(--accent);
+			margin-right: 0.12em;
+		}
+	}
+
+	/* The folio: the chapter's number, centred at the foot of the text like a page number. */
+	.post__folio {
+		margin-top: var(--s-7);
+		text-align: center;
+		font-size: 1rem;
+		letter-spacing: 0.1em;
+		color: var(--text-muted);
+	}
+
+	.post__folio::before,
+	.post__folio::after {
+		content: '\2014';
+		margin-inline: 0.75em;
+		color: var(--line-strong);
 	}
 
 	.post__subscribe {
-		grid-column: 2;
+		grid-area: subscribe;
 		width: 100%;
 		max-width: var(--measure-prose);
-		margin-inline: auto;
-		margin-top: var(--s-8);
+		margin-top: var(--s-7);
 	}
 
 	.post__nav {
-		grid-column: 2;
+		grid-area: nav;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		gap: var(--s-5);
+		margin-top: var(--s-8);
+		padding-top: var(--s-4);
+		border-top: 1px solid var(--line-strong);
 		max-width: var(--measure-prose);
-		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
-		gap: var(--s-2);
-		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		gap: var(--s-1);
+		align-content: start;
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.post__nav-link--next {
@@ -333,35 +494,31 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.post__nav-link:hover .post__nav-title {
+			color: var(--accent);
 		}
-	}
-
-	.post__nav-link:active {
-		background: var(--surface-active);
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-size: 1.1875rem;
+		font-weight: 500;
+		line-height: 1.3;
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (max-width: 767px) {
-		.post {
-			padding-top: var(--s-6);
+		.post__header {
+			padding-top: var(--s-3);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;

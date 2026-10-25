@@ -136,13 +136,14 @@
 
 	.grades dt {
 		color: var(--text-secondary);
-		font-size: 0.9375rem;
+		font-size: 1.0625rem;
 	}
 
 	.grades dd {
 		margin: 0;
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-family: var(--font-serif);
+		font-size: 1.0625rem;
+		font-variant-numeric: lining-nums tabular-nums;
 		color: var(--text);
 	}
 
