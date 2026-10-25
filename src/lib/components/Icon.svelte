@@ -17,7 +17,13 @@
 		| 'copy'
 		| 'check'
 		| 'maximize'
-		| 'minimize';
+		| 'minimize'
+		| 'search'
+		| 'download'
+		| 'pin'
+		| 'file'
+		| 'layers'
+		| 'pen';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -44,7 +50,13 @@
 		// Two corners pushed apart, and the same two pulled back together — the maximise
 		// toggle on a formula plate.
 		maximize: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
-		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'
+		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7',
+		search: 'M21 21l-4.3-4.3M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16z',
+		download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',
+		pin: 'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+		file: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h5',
+		layers: 'M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5',
+		pen: 'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'
 	};
 </script>
 

@@ -1,92 +1,103 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md (bento / product-UI language)
    Every colour in this project resolves to a variable declared in this block.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
 
 :root {
 	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	--bg: #f3f4f6;
+	--bg-rgb: 243, 244, 246;
+	--bg-deep: #eceef1;
+	--bg-deep-rgb: 236, 238, 241;
+	--surface: #ffffff;
+	--surface-rgb: 255, 255, 255;
+	--surface-hover: #fafafb;
+	--surface-hover-rgb: 250, 250, 251;
+	--surface-active: #eef0f3;
+	--surface-active-rgb: 238, 240, 243;
 
 	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	--text: #0f1218;
+	--text-rgb: 15, 18, 24;
+	--text-secondary: #454b57;
+	--text-secondary-rgb: 69, 75, 87;
+	--text-muted: #5f6572;
+	--text-muted-rgb: 95, 101, 114;
+	--text-inverse: #ffffff;
+	--text-inverse-rgb: 255, 255, 255;
+	--text-bright: #000000;
+	--text-bright-rgb: 0, 0, 0;
+	--text-pressed: #262b35;
+	--text-pressed-rgb: 38, 43, 53;
 
 	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	--line: #e3e5ea;
+	--line-rgb: 227, 229, 234;
+	--line-strong: #cfd2d9;
+	--line-strong-rgb: 207, 210, 217;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Accent: one hue family (indigo), one gradient — */
+	--accent: #4f46e5;
+	--accent-rgb: 79, 70, 229;
+	--accent-dim: #4338ca;
+	--accent-dim-rgb: 67, 56, 202;
+	--accent-wash: rgba(79, 70, 229, 0.08);
+	--grad-a: #4f46e5;
+	--grad-b: #9333ea;
+	--grad-c: #ec4899;
+	--grad: linear-gradient(120deg, var(--grad-a) 0%, var(--grad-b) 55%, var(--grad-c) 100%);
+	--grad-soft: linear-gradient(
+		135deg,
+		rgba(79, 70, 229, 0.1) 0%,
+		rgba(147, 51, 234, 0.07) 55%,
+		rgba(236, 72, 153, 0.1) 100%
+	);
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Ambient glow (page background only) — */
+	--glow-warm: rgba(236, 72, 153, 0.1);
+	--glow-cool: rgba(79, 70, 229, 0.12);
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
+	/* — Figure plate — diagrams drawn in dark ink sit on white — */
+	--plate: #ffffff;
 
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series — */
+	--series-cool: #0e7490;
+	--series-cool-rgb: 14, 116, 144;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #c81e3a;
+	--danger-rgb: 200, 30, 58;
+	--success: #15803d;
+	--success-rgb: 21, 128, 61;
 
 	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.8);
 
-	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	/* — Type — Inter for UI and prose; a mono for code and chips — */
+	--font-display: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	--font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
-	--container: 1080px;
+	--container: 1180px;
 	--measure: 62ch;
 	--measure-prose: 68ch;
 	--rail-width: 200px;
-	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
-	   and the post column has to keep its measure with two of these beside it. */
 	--outline-width: 180px;
-	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	--gutter: 1.25rem;
+	--header-h: 3.5rem;
 
-	/* — Spacing — */
+	/* — Shape — */
+	--r-xs: 6px;
+	--r-sm: 10px;
+	--r-md: 14px;
+	--r-lg: 20px;
+	--r-pill: 999px;
+
+	/* — Spacing (4px base) — */
 	--s-1: 0.25rem;
 	--s-2: 0.5rem;
 	--s-3: 0.75rem;
@@ -95,30 +106,31 @@
 	--s-6: 2rem;
 	--s-7: 3rem;
 	--s-8: 4rem;
-	--s-9: 6rem;
-	--s-10: 8rem;
-	--s-11: 11rem;
+	--s-9: 5rem;
+	--s-10: 6rem;
+	--s-11: 7rem;
+	--bento-gap: 0.875rem;
 
-	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	/* — Section rhythm — */
+	--gap-hero: var(--s-9);
+	--gap-section: var(--s-8);
 
 	/* — Elevation — */
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
+	--shadow-2: 0 4px 14px rgba(16, 24, 40, 0.08);
+	--shadow-3: 0 12px 32px rgba(16, 24, 40, 0.12);
+	--shadow-4: 0 24px 64px rgba(16, 24, 40, 0.18);
+	--shadow-inset: inset 0 1px 0 rgba(var(--surface-rgb), 0.9);
 
 	/* — Motion — */
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	--dur-fast: 150ms;
+	--dur-base: 240ms;
+	--dur-slow: 520ms;
 
-	color-scheme: dark;
+	color-scheme: light;
 }
 
 /* =============================================================================
@@ -133,17 +145,12 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
 	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
@@ -151,39 +158,25 @@ body {
 	color: var(--text-secondary);
 	font-family: var(--font-sans);
 	font-size: 0.9375rem;
-	line-height: 1.75;
+	line-height: 1.65;
+	font-feature-settings: 'cv11', 'ss03';
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
 }
 
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
+/* One soft gradient bloom behind the top bar; nothing else decorates the page. */
 body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
 	content: '';
 	position: absolute;
 	inset: 0 0 auto 0;
-	height: 140vh;
+	height: 520px;
 	z-index: 0;
 	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+	background:
+		radial-gradient(50vw 320px at 12% 0%, var(--glow-cool), transparent 70%),
+		radial-gradient(45vw 300px at 92% 0%, var(--glow-warm), transparent 70%);
 }
 
 h1,
@@ -193,7 +186,8 @@ h4,
 h5,
 h6 {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 650;
+	letter-spacing: -0.015em;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -215,7 +209,7 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
+	background: rgba(var(--accent-rgb), 0.2);
 	color: var(--text);
 }
 
@@ -240,29 +234,56 @@ a {
 	margin-top: var(--gap-section);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
-.rail {
+/* The page's workhorse: a rounded white panel. `.bento` lays panels on a 12-col grid. */
+.card-panel {
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-1);
+	padding: var(--s-5);
+	min-width: 0;
+}
+
+.bento {
 	display: grid;
-	grid-template-columns: var(--rail-width) minmax(0, 1fr);
-	gap: 0;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: var(--bento-gap);
+}
+
+/* A labelled section. Was a two-column "rail" in the previous language; now a single
+   column headed by a small gradient-dotted label, with the content in a bento panel. */
+.rail {
+	display: block;
 }
 
 .rail__label {
-	font-family: var(--font-display);
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s-2);
+	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 400;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
-	margin: 0;
+	letter-spacing: 0;
+	color: var(--text);
+	margin: 0 0 var(--s-3);
+}
+
+.rail__label::before {
+	content: '';
+	width: 8px;
+	height: 8px;
+	border-radius: 3px;
+	background: var(--grad);
 }
 
 .rail__body {
-	max-width: var(--measure);
 	min-width: 0;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-1);
+	padding: var(--s-5);
 }
 
 .stack {
@@ -281,57 +302,52 @@ a {
    ========================================================================== */
 
 .eyebrow {
-	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-secondary);
+	letter-spacing: 0.02em;
+	color: var(--text-muted);
 	margin: 0;
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.035em;
+	color: var(--text);
 }
 
 .page-title {
 	font-size: clamp(1.5rem, 3vw, 1.875rem);
 	font-weight: 700;
 	line-height: 1.2;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.02em;
 }
 
 .lede {
 	color: var(--text-secondary);
+	font-size: 1.0625rem;
 	max-width: var(--measure);
 }
 
 .meta {
 	font-family: var(--font-sans);
 	font-size: 0.75rem;
-	font-weight: 700;
-	line-height: 1.4;
-	letter-spacing: 0.01em;
+	font-weight: 500;
+	line-height: 1.5;
 	color: var(--text-muted);
 	margin: 0;
 }
 
 .label {
-	font-family: var(--font-sans);
+	font-family: var(--font-mono);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
+	letter-spacing: 0.04em;
 	text-transform: uppercase;
 	color: var(--text-muted);
 	margin: 0;
@@ -341,6 +357,38 @@ a {
 	font-family: var(--font-mono);
 	font-size: 0.75rem;
 	color: var(--text-muted);
+}
+
+/* Status chip: tiny pill with an optional live dot. */
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	font-family: var(--font-sans);
+	font-size: 0.6875rem;
+	font-weight: 600;
+	line-height: 1;
+	padding: 0.3125rem 0.625rem;
+	border-radius: var(--r-pill);
+	background: var(--bg);
+	border: 1px solid var(--line);
+	color: var(--text-secondary);
+	white-space: nowrap;
+}
+
+.chip--live::before {
+	content: '';
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--success);
+	box-shadow: 0 0 0 3px rgba(var(--success-rgb), 0.18);
+}
+
+.chip--accent {
+	background: var(--accent-wash);
+	border-color: rgba(var(--accent-rgb), 0.22);
+	color: var(--accent-dim);
 }
 
 /* =============================================================================
@@ -356,11 +404,11 @@ a {
 	gap: var(--s-2);
 	font-family: var(--font-sans);
 	font-size: 0.8125rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1;
-	padding: 0.6875rem 1.125rem;
+	padding: 0.6875rem 1rem;
 	min-height: 44px;
-	border-radius: 5px;
+	border-radius: var(--r-sm);
 	border: 1px solid transparent;
 	cursor: pointer;
 	text-decoration: none;
@@ -389,13 +437,12 @@ a {
 .btn--secondary {
 	background: var(--surface);
 	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	border-color: var(--line-strong);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.btn--primary:hover {
-		background: var(--text-bright);
+		background: var(--accent-dim);
 		transform: translateY(-1px);
 		box-shadow: var(--shadow-2);
 	}
@@ -404,8 +451,9 @@ a {
 	}
 	.btn--secondary:hover {
 		background: var(--surface-hover);
-		border-color: var(--line-strong);
+		border-color: var(--accent);
 		transform: translateY(-1px);
+		box-shadow: var(--shadow-2);
 	}
 	.btn--secondary:hover svg {
 		transform: translateY(2px);
@@ -446,21 +494,19 @@ a {
 /* — Prose links — */
 
 .link {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-color: rgba(var(--accent-rgb), 0.35);
+	text-underline-offset: 0.18em;
 	transition:
-		background-size 280ms var(--ease-out),
+		text-decoration-color var(--dur-fast) var(--ease-out),
 		color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
-		color: var(--accent);
-		background-size: 100% 1px;
+		color: var(--accent-dim);
+		text-decoration-color: currentColor;
 	}
 }
 
@@ -477,23 +523,21 @@ a {
 .link[aria-disabled='true'] {
 	color: var(--text-muted);
 	pointer-events: none;
-	background-image: none;
+	text-decoration: none;
 }
 
-/* — Tags — */
+/* — Tags (chips) — */
 
 .tag {
 	display: inline-block;
 	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-size: 0.75rem;
+	font-weight: 500;
 	line-height: 1;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
+	padding: 0.4375rem 0.75rem;
+	border-radius: var(--r-pill);
 	background: var(--surface);
-	color: var(--text-muted);
+	color: var(--text-secondary);
 	border: 1px solid var(--line);
 	text-decoration: none;
 	transition:
@@ -503,10 +547,11 @@ a {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
-		color: var(--accent);
+	button.tag:hover,
+	a.tag:hover {
+		color: var(--accent-dim);
 		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+		border-color: rgba(var(--accent-rgb), 0.35);
 	}
 }
 
@@ -521,8 +566,8 @@ a {
 
 .tag[aria-pressed='true'] {
 	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--text);
+	border-color: var(--text);
 }
 
 .tag[aria-disabled='true'] {
@@ -539,20 +584,24 @@ a {
 /* — Timeline entries — */
 
 .entry {
-	padding: 0 0 2.25rem;
+	padding: 0 0 var(--s-5);
+	margin-bottom: var(--s-5);
+	border-bottom: 1px solid var(--line);
 }
 
 .entry:last-child {
 	padding-bottom: 0;
+	margin-bottom: 0;
+	border-bottom: 0;
 }
 
 .entry__title {
-	font-size: 1.1875rem;
-	font-weight: 700;
-	line-height: 1.35;
-	letter-spacing: -0.005em;
+	font-size: 1.0625rem;
+	font-weight: 650;
+	line-height: 1.4;
+	letter-spacing: -0.01em;
 	color: var(--text);
-	margin: 0 0 0.625rem;
+	margin: 0 0 0.5rem;
 }
 
 .entry__body {
@@ -583,8 +632,8 @@ a {
 	font-weight: 400;
 	background: var(--surface);
 	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
+	border: 1px solid var(--line-strong);
+	border-radius: var(--r-sm);
 	padding: 0.6875rem 0.875rem;
 	transition:
 		border-color var(--dur-fast) var(--ease-out),
@@ -596,13 +645,12 @@ a {
 }
 
 .field:hover {
-	border-color: var(--line-strong);
+	border-color: var(--text-muted);
 }
 
 .field:focus {
 	outline: none;
-	border-color: var(--accent-dim);
-	background: var(--surface-hover);
+	border-color: var(--accent);
 }
 
 .field:focus-visible {
@@ -629,8 +677,8 @@ a {
 	background: var(--text);
 	color: var(--text-inverse);
 	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
+	font-weight: 600;
+	border-radius: var(--r-sm);
 	box-shadow: var(--shadow-2);
 	text-decoration: none;
 	transition: top var(--dur-base) var(--ease-out);
@@ -800,9 +848,12 @@ a {
 .prose blockquote {
 	margin-inline: 0;
 	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
-	color: var(--text-secondary);
-	font-style: italic;
+	border-left: 3px solid transparent;
+	border-image: var(--grad) 1;
+	color: var(--text);
+	font-size: 1.125rem;
+	font-weight: 500;
+	letter-spacing: -0.01em;
 }
 
 .prose hr {
@@ -813,7 +864,7 @@ a {
 
 .prose img,
 .prose video {
-	border-radius: 6px;
+	border-radius: var(--r-md);
 	border: 1px solid var(--line);
 }
 
@@ -864,7 +915,7 @@ a {
 	font-size: 0.8125em;
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 3px;
+	border-radius: var(--r-xs);
 	padding: 0.1em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
@@ -876,7 +927,7 @@ a {
 	line-height: 1.65;
 	background: var(--bg-deep);
 	border: 1px solid var(--line);
-	border-radius: 6px;
+	border-radius: var(--r-md);
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -1058,7 +1109,8 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-1);
 }
 
 .prose .widget > figcaption {
@@ -1158,47 +1210,28 @@ a {
 
 @media (max-width: 1023px) {
 	:root {
-		--gap-hero: var(--s-9);
-		--gap-section: var(--s-8);
-	}
-
-	/* Rail collapses: label sits above its content, keeping its tracking. */
-	.rail {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.rail__label {
-		padding-top: 0;
-		margin-bottom: var(--s-4);
-	}
-
-	.rail__body {
-		max-width: none;
+		--gap-hero: var(--s-8);
+		--gap-section: var(--s-7);
 	}
 }
 
 @media (max-width: 767px) {
 	:root {
-		--gap-hero: var(--s-8);
-		--gap-section: var(--s-7);
+		--gap-hero: var(--s-7);
+		--gap-section: var(--s-6);
+		--gutter: 1rem;
 	}
 
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
+	.rail__body,
+	.card-panel {
+		padding: var(--s-4);
+		border-radius: var(--r-md);
 	}
 }
 
 @media (max-width: 479px) {
 	/* Phone measure drops to roughly 40 characters, and justification tears at
-	   that width: too few words per line, so the spaces that absorb the slack
-	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
-	   on, since it still earns its keep on a narrow column. */
+	   that width. Ragged-right below this tier. */
 	.prose > p,
 	.prose > blockquote p {
 		text-align: left;
@@ -1214,11 +1247,7 @@ a {
 	}
 }
 
-/* Coarse pointers get larger hit areas without changing the visual weight.
-   Only the *interactive* tags need the 44px floor — `span.tag` (skills, post tags)
-   is a label, not a control, and would look bloated at that height.
-   Inline links inside a sentence are exempt from the target-size rule
-   (WCAG 2.5.8, "Inline" exception) and are deliberately left at text size. */
+/* Coarse pointers get larger hit areas without changing the visual weight. */
 @media (pointer: coarse) {
 	button.tag,
 	a.tag {
