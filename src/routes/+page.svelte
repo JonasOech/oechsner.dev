@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import Rail from '$lib/components/Rail.svelte';
+	import Window from '$lib/components/Window.svelte';
 	import ArticleRow from '$lib/components/ArticleRow.svelte';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
@@ -13,12 +13,11 @@
 	let activeTag = $state<string | null>(null);
 
 	/**
-	 * The home page *is* the writing index, and the lead post takes the display face that
-	 * used to carry the author's name, so the content occupies the loudest slot on the
-	 * site. `hero` in the front-matter is what grants a post that slot: `posts` is sorted
-	 * newest-first, so the newest one that opted in wins it and everything else stays a
-	 * row. Filtering by tag drops the lead treatment — a filtered view is a list, not a
-	 * front page.
+	 * The home page *is* the writing index, and the lead post takes the display face at the
+	 * largest size on the site, so the content occupies the loudest slot. `hero` in the
+	 * front-matter is what grants a post that slot: `posts` is sorted newest-first, so the
+	 * newest one that opted in wins it and everything else stays a row. Filtering by tag
+	 * drops the lead treatment — a filtered view is a list, not a front page.
 	 */
 	const lead = $derived(activeTag ? undefined : posts.find((p) => p.hero));
 	// Not `slice(1)`: the lead is no longer necessarily the first post, so it has to be
@@ -34,431 +33,379 @@
 
 <Seo title={site.name} />
 
-<div class="container">
-	<!-- Greeting and byline are one unit: tight internally, ruled off from the lead
-	     below. Previously they sat 6rem apart with only 2rem before the post, so the
-	     byline read as the post's standfirst rather than as the author line. -->
-	
-	<header class="intro enter" style="--i: 0">
-		<h3 class="intro__greeting">{site.intro}</h3>
-		<p class="intro__tagline">
-			Applied CS at Uni Bamberg, currently TU Dublin<br />
-			Software engineer &amp; AI tutor <br />
-			Currently looking for an Internship in Dublin
-		</p>
-		<p class="intro__actions">
-			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
-				Download CV
-				<Icon name="arrow-right" size={14} />
-			</a>
-			<a
-				class="inline-cta inline-cta--feed"
-				href={feeds.rss}
-				type="application/rss+xml"
-				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'home-intro')}
-			>
-				<Icon name="rss" size={14} />
-				Subscribe
-			</a>
-		</p>
-		<!-- <p class="intro__prebyline">{site.prebyline}</p>
-		<p class="intro__byline">{site.byline}</p> -->
-	</header>
+<div class="container page home">
+	<h1 class="sr-only">{site.name} — writing and portfolio</h1>
 
-	{#if lead}
-		<article class="lead">
+	<div class="home__lead">
+		{#if lead}
 			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
 			     newest post on the site. -->
-			<p class="lead__eyebrow enter" style="--i: 1">Featured Blog Post</p>
+			<Window title="Featured Blog Post" id="featured" enter={0}>
+				<article class="lead">
+					<p class="lead__eyebrow">
+						<Icon name="doc" size={20} />
+						<time datetime={lead.date}>{formatDate(lead.date)}</time>
+					</p>
 
-			<h2 class="hero-title lead__title enter" style="--i: 2">
-				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
-			</h2>
+					<h3 class="hero-title lead__title">
+						<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
+					</h3>
 
-			{#if lead.summary}
-				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
-			{/if}
+					{#if lead.summary}
+						<p class="lead__summary">{lead.summary}</p>
+					{/if}
 
-			<p class="meta lead__meta enter" style="--i: 4">
-				<time datetime={lead.date}>{formatDate(lead.date)}</time>
-				<span class="lead__dot" aria-hidden="true">·</span>
-				{lead.readingMinutes} min read
-				{#if lead.nerdyness}
-					<span class="lead__dot" aria-hidden="true">·</span>
-					<Nerdyness level={lead.nerdyness} />
-				{/if}
+					<p class="meta lead__meta">
+						{lead.readingMinutes} min read
+						{#if lead.nerdyness}
+							<span class="lead__dot" aria-hidden="true">·</span>
+							<Nerdyness level={lead.nerdyness} />
+						{/if}
+					</p>
+
+					<!-- The visible affordance. Not a tab stop: the title above is the accessible
+					     link to the same post, and three tab stops to one destination is noise. -->
+					<a
+						class="btn btn--primary lead__cta"
+						href="/blog/{lead.slug}"
+						tabindex="-1"
+						aria-hidden="true"
+					>
+						Open post
+						<Icon name="arrow-right" size={15} />
+					</a>
+
+					{#if lead.cover}
+						<!-- Decorative: the title above is the accessible link to the same post. -->
+						<a
+							class="lead__media"
+							href="/blog/{lead.slug}"
+							tabindex="-1"
+							aria-hidden="true"
+						>
+							<img
+								class="lead__cover"
+								src={lead.cover}
+								alt=""
+								width="720"
+								height="540"
+								decoding="async"
+							/>
+						</a>
+					{/if}
+				</article>
+			</Window>
+		{/if}
+	</div>
+
+	<aside class="home__side" aria-label="About this site">
+		<Window title="Read Me" id="readme" enter={1}>
+			<p class="readme__greeting">{site.intro}</p>
+			<p class="readme__tagline">
+				Applied CS at Uni Bamberg, currently TU Dublin<br />
+				Software engineer &amp; AI tutor <br />
+				Currently looking for an Internship in Dublin
 			</p>
 
-			<!-- The visible affordance. Not a tab stop: the title above is the accessible
-			     link to the same post, and three tab stops to one destination is noise. -->
-			<a
-				class="lead__cta enter"
-				style="--i: 5"
-				href="/blog/{lead.slug}"
-				tabindex="-1"
-				aria-hidden="true"
-			>
-				Read the post
-				<Icon name="arrow-right" size={15} />
-			</a>
-
-			{#if lead.cover}
-				<!-- Decorative: the title above is the accessible link to the same post. -->
-				<a
-					class="lead__media enter"
-					style="--i: 2"
-					href="/blog/{lead.slug}"
-					tabindex="-1"
-					aria-hidden="true"
-				>
-					<img
-						class="lead__cover"
-						src={lead.cover}
-						alt=""
-						width="720"
-						height="540"
-						decoding="async"
-					/>
-				</a>
-			{/if}
-		</article>
-	{/if}
-
-	<Rail label="Writing" id="writing" wide>
-		{#if allTags.length}
-			<div class="tag-row filter" role="group" aria-label="Filter posts by tag">
-				{#each allTags as tag (tag)}
-					<button
-						type="button"
-						class="tag"
-						aria-pressed={activeTag === tag}
-						onclick={() => toggleTag(tag)}
+			<ul class="tiles">
+				<li>
+					<a class="tile" href={cvPath} target="_blank" rel="noopener">
+						<Icon name="pdf" size={40} />
+						<span class="tile__name">Download CV</span>
+					</a>
+				</li>
+				<li>
+					<a
+						class="tile"
+						href={feeds.rss}
+						type="application/rss+xml"
+						data-sveltekit-reload
+						onclick={() => trackFeed('open-rss', 'home-intro')}
 					>
-						{tag}
-					</button>
-				{/each}
-			</div>
-		{/if}
+						<Icon name="rss-file" size={40} />
+						<span class="tile__name">Subscribe</span>
+					</a>
+				</li>
+				<li>
+					<a class="tile" href="/about">
+						<Icon name="folder" size={40} />
+						<span class="tile__name">About</span>
+					</a>
+				</li>
+			</ul>
+		</Window>
 
-		<div class="articles" aria-live="polite" use:reveal={{ stagger: true }}>
-			{#if listed.length === 0}
-				<p class="empty">
-					{#if activeTag}
-						Nothing tagged “{activeTag}” yet.
-					{:else}
-						That's the whole archive so far.
-					{/if}
-				</p>
-			{:else}
-				{#key activeTag}
-					{#each listed as post (post.slug)}
-						<ArticleRow {post} />
-					{/each}
-				{/key}
+		<Window title="About" id="about">
+			<p>{about[0]}</p>
+			<p class="about__more">
+				<a class="link" href="/about">Background, projects and CV</a>
+			</p>
+		</Window>
+	</aside>
+
+	<div class="home__finder">
+		<Window title="Writing" id="writing" flush>
+			{#if allTags.length}
+				<div class="toolbar" role="group" aria-label="Filter posts by tag">
+					<span class="toolbar__label" aria-hidden="true">Show</span>
+					<div class="tag-row">
+						<button
+							type="button"
+							class="tag"
+							aria-pressed={activeTag === null}
+							onclick={() => (activeTag = null)}
+						>
+							All
+						</button>
+						{#each allTags as tag (tag)}
+							<button
+								type="button"
+								class="tag"
+								aria-pressed={activeTag === tag}
+								onclick={() => toggleTag(tag)}
+							>
+								{tag}
+							</button>
+						{/each}
+					</div>
+				</div>
 			{/if}
-		</div>
-	</Rail>
 
-	<Rail label="About" id="about">
-		<p>{about[0]}</p>
-		<p class="about__more">
-			<a class="inline-cta" href="/about">
-				Background, projects and CV
-				<Icon name="arrow-right" size={14} />
-			</a>
-		</p>
-	</Rail>
+			<div class="articles" aria-live="polite" use:reveal={{ stagger: true }}>
+				{#if listed.length === 0}
+					<p class="empty">
+						{#if activeTag}
+							Nothing tagged “{activeTag}” yet.
+						{:else}
+							That's the whole archive so far.
+						{/if}
+					</p>
+				{:else}
+					{#key activeTag}
+						{#each listed as post (post.slug)}
+							<ArticleRow {post} />
+						{/each}
+					{/key}
+				{/if}
+			</div>
+
+			{#snippet status()}
+				<span>{listed.length} {listed.length === 1 ? 'item' : 'items'}</span>
+				<span>{activeTag ? `tagged ${activeTag}` : 'sorted by date'}</span>
+			{/snippet}
+		</Window>
+	</div>
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
-	.intro {
-		display: block;
-		padding-top: var(--s-8);
-		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
-		text-align: center;
+	/* Mobile first: one column, the writing before the author. */
+	.home {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			'lead'
+			'side'
+			'finder';
 	}
 
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
-	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
-		font-weight: 400;
-		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
-		text-wrap: balance;
-		color: var(--text);
-		margin: 0 0 var(--s-3);
-		text-align: center;
+	.home__lead {
+		grid-area: lead;
+		min-width: 0;
 	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
-	.intro__tagline {
-		margin: 0 auto;
-		max-width: 46ch;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		text-align: center;
-		text-wrap: balance;
+	.home__side {
+		grid-area: side;
+		display: grid;
+		gap: var(--gap-section);
+		align-content: start;
+		min-width: 0;
+	}
+	.home__finder {
+		grid-area: finder;
+		min-width: 0;
 	}
 
-	/* Centres the inline CV and feed links under the tagline. */
-	.intro__actions {
-		margin: var(--s-4) 0 0;
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-2) var(--s-6);
-	}
-
-	/* The feed icon leads its label rather than trailing it, so it should not take the
-	   arrow's nudge to the right on hover. */
-	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta--feed:hover :global(svg) {
-			transform: none;
-			color: var(--accent);
+	@media (min-width: 960px) {
+		.home {
+			grid-template-columns: minmax(0, 1fr) 19rem;
+			grid-template-areas:
+				'lead side'
+				'finder finder';
+			align-items: start;
 		}
 	}
 
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
+	/* The lead post. Everything here stays smaller than the title: §4 of DESIGN.md —
+	   the largest type on the site is always a piece of writing. */
 	.lead {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
-		grid-template-areas:
-			'eyebrow media'
-			'title   media'
-			'summary media'
-			'meta    media'
-			'cta     media';
-		column-gap: var(--s-7);
-		row-gap: var(--s-4);
-		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
-		padding-top: var(--s-7);
-	}
-
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
-	.lead__title {
-		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
-		margin: 0;
+		gap: var(--s-4);
+		justify-items: start;
 	}
 
 	.lead__eyebrow {
-		grid-area: eyebrow;
+		display: flex;
+		align-items: center;
+		gap: var(--s-2);
 		font-family: var(--font-display);
-		font-size: 0.8125rem;
-		font-weight: 400;
-		line-height: 1.4;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
+		font-size: 1rem;
 		color: var(--text-muted);
-		margin: 0 0 calc(var(--s-1) * -1);
+		margin: 0;
+	}
+
+	.lead__title {
+		font-size: clamp(2.125rem, 5.2vw, 3.5rem);
+		margin: 0;
 	}
 
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
-		text-decoration-thickness: 1px;
-		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__link:hover {
-			text-decoration-line: underline;
+			background: var(--ink);
+			color: var(--paper);
 		}
-	}
-
-	.lead__cta {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
-		   bottom rule sits under the words rather than spanning the whole measure. */
-		justify-self: start;
-		grid-area: cta;
-		margin-top: var(--s-2);
-		min-height: 44px;
-		font-size: 0.875rem;
-		font-weight: 700;
-		color: var(--text);
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.lead__cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.lead__cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.lead__cta:active {
-		color: var(--accent-dim);
 	}
 
 	.lead__link:focus-visible {
-		outline: none;
-		border-radius: 4px;
-		box-shadow: var(--focus-ring);
+		outline: 3px solid var(--ink);
+		outline-offset: 3px;
 	}
 
 	.lead__summary {
-		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
+		font-size: 1.1875rem;
+		line-height: 1.6;
 		color: var(--text-secondary);
-	}
-
-	.lead__meta {
-		grid-area: meta;
+		max-width: 56ch;
 	}
 
 	.lead__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
+	}
+
+	.lead__cta {
+		margin-top: var(--s-2);
 	}
 
 	.lead__media {
-		grid-area: media;
-		align-self: start;
 		display: block;
-		border-radius: 6px;
-		overflow: hidden;
-		border: 1px solid var(--line);
+		width: 100%;
+		margin-top: var(--s-2);
+		border: 2px solid var(--ink);
+		box-shadow: var(--shadow-2);
+		background: var(--paper);
 	}
 
 	.lead__cover {
 		width: 100%;
-		aspect-ratio: 4 / 3;
+		aspect-ratio: 16 / 8;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
+	}
+
+	/* — Read Me — */
+	.readme__greeting {
+		font-family: var(--font-display);
+		font-size: 1.375rem;
+		font-weight: 600;
+		line-height: 1.3;
+		color: var(--text);
+		margin-bottom: var(--s-3);
+		text-wrap: balance;
+	}
+
+	.readme__tagline {
+		color: var(--text-secondary);
+		line-height: 1.6;
+		font-size: 1rem;
+	}
+
+	/* Desktop icons: a file, a feed, a folder. Captions invert when selected. */
+	.tiles {
+		list-style: none;
+		margin: var(--s-5) 0 0;
+		padding: var(--s-4) 0 0;
+		border-top: 1px dotted var(--ink);
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--s-2);
+	}
+
+	.tile {
+		display: grid;
+		justify-items: center;
+		gap: var(--s-2);
+		padding: var(--s-2) 0;
+		min-height: 44px;
+		text-decoration: none;
+		color: var(--ink);
+		text-align: center;
+	}
+
+	.tile__name {
+		font-family: var(--font-display);
+		font-size: 0.9375rem;
+		line-height: 1.2;
+		padding: 0.125rem 0.375rem;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
+		.tile:hover .tile__name {
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
-	.filter {
-		margin-bottom: var(--s-7);
+	.tile:active .tile__name {
+		background: var(--ink);
+		color: var(--paper);
 	}
 
-	.articles {
-		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
-	}
-
-	.empty {
-		color: var(--text-muted);
+	.tile:focus-visible {
+		outline: 2px dotted var(--ink);
+		outline-offset: 2px;
 	}
 
 	.about__more {
-		margin-top: var(--s-5);
+		margin-top: var(--s-3);
 	}
 
-	.inline-cta {
-		display: inline-flex;
+	/* — Finder — */
+	.toolbar {
+		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
-		gap: var(--s-2);
-		min-height: 44px;
+		gap: var(--s-2) var(--s-3);
+		padding: var(--s-3) var(--s-5);
+		background: var(--surface);
+		border-bottom: 2px solid var(--ink);
+	}
+
+	.toolbar__label {
+		font-family: var(--font-display);
+		font-size: 0.9375rem;
+		font-weight: 600;
 		color: var(--text);
-		font-weight: 700;
-		font-size: 0.875rem;
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
 	}
 
-	.inline-cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
+	.articles {
+		display: block;
 	}
 
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
-		}
-		.inline-cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.inline-cta:active {
-		color: var(--accent-dim);
-	}
-
-	.inline-cta:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
-	}
-
-	@media (max-width: 1023px) {
-		.lead {
-			grid-template-columns: minmax(0, 1fr) 260px;
-			column-gap: var(--s-6);
-		}
+	.empty {
+		padding: var(--s-5);
+		color: var(--text-muted);
 	}
 
 	@media (max-width: 767px) {
-		.intro {
-			padding-top: var(--s-6);
-			padding-bottom: var(--s-5);
+		.toolbar {
+			padding-inline: var(--s-4);
 		}
-		/* Stack, with the cover sitting between the meta line and the CTA. */
-		.lead {
-			grid-template-columns: minmax(0, 1fr);
-			grid-template-areas:
-				'eyebrow'
-				'title'
-				'summary'
-				'meta'
-				'media'
-				'cta';
+		.tiles {
+			gap: 0;
 		}
-		.lead__cover {
-			aspect-ratio: 16 / 9;
+		.tile__name {
+			font-size: 0.875rem;
 		}
 	}
 </style>

@@ -1,38 +1,32 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { reveal } from '$lib/actions/reveal';
+	import Window from '$lib/components/Window.svelte';
 
 	/**
-	 * A labelled section: letterspaced serif rail label on the left, narrow content
-	 * measure on the right. Collapses to label-above-content below 1024px.
+	 * A labelled section of a page. On this site that is a window: the label becomes the
+	 * title bar, the content sits in the ruled body. The name and props are kept from the
+	 * earlier "rail" layout so every page can keep using `<Rail label="…">`.
 	 *
-	 * `level` picks the heading rank — pass 1 when this rail is the page's own title
-	 * (Contact), leave it at 2 for sections within a page.
+	 * `level` picks the heading rank — pass 1 when this window is the page's own title
+	 * (Contact), leave it at 2 for sections within a page. `closeHref` makes the close box
+	 * a link, which is how a page window offers a way back to the writing index.
 	 */
 	let {
 		label,
 		id,
-		wide = false,
 		level = 2,
+		closeHref,
 		children
-	}: { label: string; id?: string; wide?: boolean; level?: 1 | 2; children: Snippet } = $props();
-
-	const labelId = $derived(id ? `${id}-label` : undefined);
+	}: {
+		label: string;
+		id?: string;
+		wide?: boolean;
+		level?: 1 | 2;
+		closeHref?: string;
+		children: Snippet;
+	} = $props();
 </script>
 
-<section class="section rail" {id} use:reveal aria-labelledby={labelId}>
-	{#if level === 1}
-		<h1 class="rail__label" id={labelId}>{label}</h1>
-	{:else}
-		<h2 class="rail__label" id={labelId}>{label}</h2>
-	{/if}
-	<div class="rail__body" class:rail__body--wide={wide}>
-		{@render children()}
-	</div>
-</section>
-
-<style>
-	.rail__body--wide {
-		max-width: none;
-	}
-</style>
+<Window title={label} {id} {level} {closeHref} closeLabel="Close window, back to writing">
+	{@render children()}
+</Window>

@@ -19,7 +19,7 @@
 	description="Jonas Öchsner — applied computer science at Universität Bamberg, machine learning and data-protection engineering at LIfBi, ERASMUS at TU Dublin from September 2026."
 />
 
-<div class="container">
+<div class="container page">
 	<Rail label="Projects" id="projects">
 		{#each projects as project (project.title)}
 			<article class="entry">

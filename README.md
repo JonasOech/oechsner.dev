@@ -4,7 +4,7 @@ Personal portfolio and blog for Jonas Öchsner. **SvelteKit**, fully prerendered
 **Cloudflare Pages** through Cloudflare's own Git integration — no API tokens, no deploy
 credentials anywhere.
 
-The visual design is specified in [`DESIGN.md`](DESIGN.md) and derived from the
+The visual design ("Desktop", a System 7 homage) is specified in [`DESIGN.md`](DESIGN.md). Earlier it was derived from the
 [Elevate portfolio template](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)
 by Gaël Duval. **Read DESIGN.md before changing any styling** — it is the contract the CSS
 implements, including the rule that no component may hard-code a colour.

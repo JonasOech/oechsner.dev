@@ -36,8 +36,8 @@
 	description="Datenschutzerklärung nach Art. 13 DSGVO für oechsner.dev — Hosting, Reichweitenmessung und Einwilligung."
 />
 
-<div class="container">
-	<Rail label="Datenschutz" id="datenschutz" level={1}>
+<div class="container page">
+	<Rail label="Datenschutz" id="datenschutz" level={1} closeHref="/">
 		<div class="legal" lang="de">
 			<section>
 				<h2 class="legal__h">Verantwortlicher</h2>
@@ -132,12 +132,12 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
-					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
-					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
-					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
-					Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO mit dem berechtigten Interesse an
-					einer einheitlichen Darstellung des Angebots.
+					Die Website verwendet die Schriftarten „Pixelify Sans“, „Atkinson Hyperlegible“ und
+					„JetBrains Mono“. Sie werden von den eigenen Servern dieser Website ausgeliefert
+					(lokal eingebunden); beim Abruf der Schriftdateien wird keine Verbindung zu
+					Servern Dritter hergestellt und keine IP-Adresse an Dritte übertragen.
+					Rechtsgrundlage für die dabei ohnehin anfallende Verarbeitung im Rahmen der
+					Auslieferung dieser Website ist Art. 6 Abs. 1 lit. f DSGVO.
 				</p>
 			</section>
 
@@ -193,9 +193,10 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
 		font-weight: 700;
-		line-height: 1.4;
+		line-height: 1.3;
 		color: var(--text);
 	}
 
@@ -220,28 +221,26 @@
 		padding: 0;
 		font: inherit;
 		cursor: pointer;
-		color: var(--text);
+		color: var(--accent);
 		text-decoration: underline;
-		text-decoration-color: var(--accent-dim);
-		text-underline-offset: 3px;
-		transition: color var(--dur-fast) var(--ease-out);
+		text-underline-offset: 0.2em;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.legal__inline-btn:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
 	.legal__inline-btn:active {
-		color: var(--accent-dim);
+		background: var(--ink);
+		color: var(--paper);
 	}
 
 	.legal__inline-btn:focus-visible {
-		outline: none;
-		border-radius: 2px;
-		box-shadow: var(--focus-ring);
+		outline: 2px solid var(--ink);
+		outline-offset: 2px;
 	}
 
 	.legal__updated {

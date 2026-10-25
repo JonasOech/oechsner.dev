@@ -1,4 +1,12 @@
 <script lang="ts">
+	import '@fontsource/pixelify-sans/latin-400.css';
+	import '@fontsource/pixelify-sans/latin-500.css';
+	import '@fontsource/pixelify-sans/latin-600.css';
+	import '@fontsource/pixelify-sans/latin-700.css';
+	import '@fontsource/atkinson-hyperlegible/latin-400.css';
+	import '@fontsource/atkinson-hyperlegible/latin-400-italic.css';
+	import '@fontsource/atkinson-hyperlegible/latin-700.css';
+	import '@fontsource/jetbrains-mono/latin-400.css';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import Header from '$lib/components/Header.svelte';
@@ -11,9 +19,7 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 	<!-- Must match --bg in app.css; a meta attribute cannot reference a CSS variable. -->
-	<meta name="theme-color" content="#0e0f12" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+	<meta name="theme-color" content="#ffffff" />
 </svelte:head>
 
 <a class="skip-link" href="#main">Skip to content</a>

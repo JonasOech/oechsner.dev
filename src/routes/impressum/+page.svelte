@@ -30,8 +30,8 @@
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 
-<div class="container">
-	<Rail label="Impressum" id="impressum" level={1}>
+<div class="container page">
+	<Rail label="Impressum" id="impressum" level={1} closeHref="/">
 		<div class="legal" lang="de">
 			<section>
 				<h2 class="legal__h">Angaben gemäß § 5 DDG</h2>
@@ -149,9 +149,10 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
 		font-weight: 700;
-		line-height: 1.4;
+		line-height: 1.3;
 		color: var(--text);
 	}
 
@@ -175,8 +176,9 @@
 
 	.legal__dl dt {
 		color: var(--text-muted);
-		font-size: 0.8125rem;
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-size: 0.9375rem;
+		font-weight: 600;
 	}
 
 	.legal__dl dd {

@@ -35,7 +35,7 @@
 
 <aside class="subscribe" aria-labelledby="subscribe-title">
 	<span class="subscribe__mark">
-		<Icon name="rss" size={16} />
+		<Icon name="rss-file" size={40} />
 	</span>
 
 	<div class="subscribe__text">
@@ -71,29 +71,24 @@
 </aside>
 
 <style>
+	/* The end-of-post invitation is a dialog box: a feed file icon, a sentence, a button. */
 	.subscribe {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		background: var(--paper);
+		border: 2px solid var(--ink);
+		box-shadow: var(--shadow-4);
+		outline: 1px solid var(--ink);
+		outline-offset: -6px;
 	}
 
-	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
-	   site's ordinary surface, so it reads as part of the post's ending, not an advert. */
 	.subscribe__mark {
 		display: grid;
 		place-items: center;
-		width: 2.5rem;
-		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		color: var(--ink);
 	}
 
 	.subscribe__text {
@@ -103,7 +98,7 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
+		font-size: 1rem;
 		line-height: 1.6;
 		color: var(--text-secondary);
 	}
@@ -125,28 +120,26 @@
 	}
 
 	.subscribe__links a {
-		color: var(--text-muted);
+		color: var(--accent);
 		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
-		text-underline-offset: 3px;
-		transition: color var(--dur-fast) var(--ease-out);
+		text-underline-offset: 0.2em;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.subscribe__links a:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
 	.subscribe__links a:active {
-		color: var(--accent-dim);
+		background: var(--ink);
+		color: var(--paper);
 	}
 
 	.subscribe__links a:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+		outline: 2px dotted var(--ink);
+		outline-offset: 2px;
 	}
 
 	@media (max-width: 767px) {

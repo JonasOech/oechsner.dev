@@ -1,19 +1,18 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
-
-	let sentinel: HTMLElement;
-	let scrolled = $state(false);
+	import { nav, site } from '$lib/data/site';
+	import Icon from '$lib/components/Icon.svelte';
 
 	/**
 	 * `nav[0]` (Writing) is the site's root and stays on the bar at every width; the rest
-	 * fold behind "More" once the row would otherwise break onto two lines.
+	 * fold behind "More" once the row would otherwise break onto two lines. On the bar they
+	 * are menu titles; in the collapsed state "More" is a pull-down menu.
 	 */
 	const [primary, ...collapsible] = nav;
 
 	/**
-	 * Below this the four labels no longer fit on one line — see DESIGN.md §9. Kept in `em`
+	 * Below this the labels no longer fit on one line — see DESIGN.md §10. Kept in `em`
 	 * so it tracks the label widths under text-only zoom rather than the raw viewport, and
 	 * duplicated in the stylesheet's media query: the two have to move together.
 	 */
@@ -22,23 +21,6 @@
 	let moreOpen = $state(false);
 	let moreEl: HTMLElement;
 	let moreButton: HTMLButtonElement;
-
-	/**
-	 * Header scroll state via a 1px sentinel at the top of the document rather than a
-	 * `scroll` listener — no per-frame work (DESIGN.md §7).
-	 */
-	$effect(() => {
-		if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				scrolled = !entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	});
 
 	// Widening past the breakpoint puts the collapsed links back on the bar, so the
 	// disclosure state they belonged to has to go with them.
@@ -85,12 +67,14 @@
 
 <svelte:window onkeydown={onWindowKeydown} />
 
-<div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
+<header class="menubar">
+	<nav class="menubar__nav container" aria-label="Primary">
+		<span class="menubar__mark" aria-hidden="true">
+			<Icon name="disk" size={20} />
+		</span>
 
-<header class="header" data-scrolled={scrolled}>
-	<nav class="container nav" aria-label="Primary">
 		<a
-			class="nav__link"
+			class="menu__item"
 			href={primary.href}
 			aria-current={isCurrent(primary.href) ? 'page' : undefined}
 		>
@@ -98,15 +82,10 @@
 		</a>
 
 		<!-- `display: contents` above the breakpoint, so these links sit directly in the
-		     nav row and only become a dropdown once the bar runs out of width. -->
-		<div
-			class="more"
-			data-open={moreOpen}
-			bind:this={moreEl}
-			onfocusout={onMoreFocusout}
-		>
+		     bar and only become a pull-down once the bar runs out of width. -->
+		<div class="more" data-open={moreOpen} bind:this={moreEl} onfocusout={onMoreFocusout}>
 			<button
-				class="nav__link more__button"
+				class="menu__item more__button"
 				type="button"
 				bind:this={moreButton}
 				aria-expanded={moreOpen}
@@ -115,15 +94,15 @@
 				onclick={() => (moreOpen = !moreOpen)}
 			>
 				More
-				<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-					<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+				<svg class="more__caret" viewBox="0 0 9 6" aria-hidden="true" focusable="false">
+					<path d="M0 0h9L4.5 6z" fill="currentColor" />
 				</svg>
 			</button>
 
 			<div class="more__panel" id="nav-more">
 				{#each collapsible as item (item.href)}
 					<a
-						class="nav__link"
+						class="menu__item"
 						href={item.href}
 						aria-current={isCurrent(item.href) ? 'page' : undefined}
 						onclick={() => (moreOpen = false)}
@@ -133,98 +112,79 @@
 				{/each}
 			</div>
 		</div>
+
+		<span class="menubar__host" aria-hidden="true">{site.shortName}</span>
 	</nav>
 </header>
 
 <style>
-	.sentinel {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
-	}
-
-	.header {
+	.menubar {
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
+		background: var(--paper);
+		border-bottom: 2px solid var(--ink);
 	}
 
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
-	}
-
-	.nav {
+	.menubar__nav {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: stretch;
+		min-height: var(--header-h);
+		padding-inline: var(--gutter);
 	}
 
-	.nav__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
+	.menubar__mark {
+		display: flex;
+		align-items: center;
+		padding-right: var(--s-3);
+		color: var(--ink);
+	}
+
+	.menubar__host {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		font-family: var(--font-display);
+		font-size: 1rem;
 		color: var(--text-muted);
+	}
+
+	.menu__item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4em;
+		padding: 0 0.875rem;
+		font-family: var(--font-display);
+		font-size: 1.0625rem;
+		font-weight: 600;
+		line-height: 1;
+		color: var(--ink);
 		text-decoration: none;
 		white-space: nowrap;
-		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		background: none;
+		border: 0;
+		cursor: pointer;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+		.menu__item:hover {
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
-	.nav__link:active {
-		color: var(--text);
+	.menu__item:active,
+	.menu__item[aria-current='page'],
+	.menu__item[data-current='true'] {
+		background: var(--ink);
+		color: var(--paper);
 	}
 
-	.nav__link[aria-current='page'],
-	.nav__link[data-current='true'] {
-		color: var(--text);
-	}
-
-	.nav__link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+	.menu__item:focus-visible {
+		outline: 2px dotted var(--paper);
+		outline-offset: -4px;
+		background: var(--ink);
+		color: var(--paper);
 	}
 
 	/* Wide: the wrapper and its panel dissolve, leaving the links as plain flex items. */
@@ -233,104 +193,63 @@
 		display: contents;
 	}
 
-	/* Two-class selectors throughout the disclosure, so the `pointer: coarse` block
-	   further down cannot resurrect the button on a wide touch screen. */
-	.nav .more__button {
+	/* Two-class selectors throughout the pull-down, so a coarse-pointer rule cannot
+	   resurrect the button on a wide touch screen. */
+	.menubar .more__button {
 		display: none;
-		background: none;
-		border: 0;
-		cursor: pointer;
-		align-items: center;
-		gap: 0.3em;
 	}
 
-	.more__chevron {
-		width: 0.75em;
-		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		transition: transform var(--dur-base) var(--ease-out);
+	.more__caret {
+		width: 0.5625rem;
+		height: 0.375rem;
 	}
 
-	.more[data-open='true'] .more__chevron {
+	.more[data-open='true'] .more__caret {
 		transform: rotate(180deg);
 	}
 
 	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
 	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
 	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
-		.nav {
-			flex-wrap: nowrap;
-		}
-
-		.nav .more {
-			display: block;
-			position: relative;
-		}
-
-		.nav .more__button {
-			display: inline-flex;
-		}
-
-		.nav .more__panel {
-			display: grid;
-			position: absolute;
-			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
-			min-width: max-content;
-			max-width: calc(100vw - 2 * var(--gutter));
-			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
-		}
-
-		.nav .more:not([data-open='true']) .more__panel {
+		.menubar__host {
 			display: none;
 		}
 
-		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
+		.menubar .more {
+			position: relative;
+			display: flex;
 		}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
-		}
-	}
-
-	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
-		.nav__link {
+		.menubar .more__button {
 			display: inline-flex;
-			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
+		}
+
+		.menubar .more__panel {
+			display: grid;
+			position: absolute;
+			z-index: 1;
+			top: calc(100% + 2px);
+			left: 0;
+			min-width: 11rem;
+			background: var(--paper);
+			border: 2px solid var(--ink);
+			box-shadow: var(--shadow-3);
+		}
+
+		.menubar .more:not([data-open='true']) .more__panel {
+			display: none;
+		}
+
+		.more__panel .menu__item {
+			min-height: 2.75rem;
+			padding: 0 var(--s-4);
+			justify-content: flex-start;
+		}
+
+		/* The button lights up while its menu is open, as a pulled-down title does. */
+		.menubar .more[data-open='true'] .more__button {
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 </style>

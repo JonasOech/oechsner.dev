@@ -15,8 +15,8 @@
 	description="Get in touch with Jonas Öchsner — email, GitHub and LinkedIn."
 />
 
-<div class="container">
-	<Rail label="Get In Touch" id="contact" level={1} wide>
+<div class="container page">
+	<Rail label="Get In Touch" id="contact" level={1} closeHref="/">
 		<!-- <p class="lede enter" style="--i: 0">
 			The fastest way to reach me is email.
 		</p> -->
@@ -47,22 +47,17 @@
 			Based in Bavaria, Germany. Currently in Dublin, Ireland.
 		</p>
 	</Rail>
+
+	<AsciiWall />
 </div>
 
-<AsciiWall />
-
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
-	}
-
 	.channels {
 		margin: 0;
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		gap: var(--s-5) var(--s-6);
+		max-width: 680px;
 	}
 
 	.channel {
@@ -79,47 +74,47 @@
 	.channel__link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--s-2);
+		gap: var(--s-3);
 		min-height: 44px;
-		color: var(--text);
+		color: var(--accent);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1rem;
 		max-width: 100%;
-		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.channel__link :global(svg) {
+		flex: none;
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 		overflow-wrap: anywhere;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.channel__link:hover {
-			color: var(--accent);
-		}
-		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
 	.channel__link:active {
-		color: var(--accent-dim);
+		background: var(--ink);
+		color: var(--paper);
 	}
 
 	.channel__link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+		outline: 2px dotted var(--ink);
+		outline-offset: 2px;
 	}
 
 	.note {
-		margin-top: var(--s-4);
-		font-size: 0.8125rem;
-		color: var(--text-muted);
+		margin-top: var(--s-5);
+		padding-top: var(--s-4);
+		border-top: 1px dotted var(--ink);
+		font-size: 1rem;
+		color: var(--text-secondary);
 		max-width: var(--measure);
 	}
 </style>

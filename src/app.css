@@ -1,90 +1,98 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md ("Desktop", a System 7 homage)
    Every colour in this project resolves to a variable declared in this block.
+   Fonts are self-hosted via @fontsource and imported in src/routes/+layout.svelte.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	/* — The two inks of a 1-bit display — */
+	--ink: #000000;
+	--ink-rgb: 0, 0, 0;
+	--paper: #ffffff;
+	--paper-rgb: 255, 255, 255;
 
-	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	/* — Canvas. `--bg` is the paper a window is made of; the desktop behind the windows
+	   is a dither of the two inks (`--desk`), never a flat grey. — */
+	--bg: var(--paper);
+	--bg-rgb: var(--paper-rgb);
+	--bg-deep: #e6e6e6;
+	--bg-deep-rgb: 230, 230, 230;
+	--surface: #f1f1f1;
+	--surface-rgb: 241, 241, 241;
+	--surface-hover: #e2e2e2;
+	--surface-hover-rgb: 226, 226, 226;
+	--surface-active: #d0d0d0;
+	--surface-active-rgb: 208, 208, 208;
 
-	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	/* — Ink on paper. Hierarchy comes from weight and size, not from greys: the
+	   secondary tone is still near-black, and muted (meta text only) holds 7:1. — */
+	--text: var(--ink);
+	--text-rgb: var(--ink-rgb);
+	--text-secondary: #262626;
+	--text-secondary-rgb: 38, 38, 38;
+	--text-muted: #555555;
+	--text-muted-rgb: 85, 85, 85;
+	--text-inverse: var(--paper);
+	--text-inverse-rgb: var(--paper-rgb);
+	--text-bright: var(--ink);
+	--text-bright-rgb: var(--ink-rgb);
+	--text-pressed: var(--paper);
+	--text-pressed-rgb: var(--paper-rgb);
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Structure: lines are ink. `--line-soft` is for rules inside running prose. — */
+	--line: var(--ink);
+	--line-rgb: var(--ink-rgb);
+	--line-strong: var(--ink);
+	--line-strong-rgb: var(--ink-rgb);
+	--line-soft: #8c8c8c;
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Accent: the one colour on the machine. Link blue; 9:1 on paper. — */
+	--accent: #0a2cc8;
+	--accent-rgb: 10, 44, 200;
+	--accent-dim: #1a1a8c;
+	--accent-dim-rgb: 26, 26, 140;
+	--accent-wash: rgba(10, 44, 200, 0.08);
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
-
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Retained for the figure components that read them — */
+	--glow-warm: transparent;
+	--glow-cool: transparent;
+	--plate: #ffffff;
+	--series-cool: #b3500a;
+	--series-cool-rgb: 179, 80, 10;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #b3001b;
+	--danger-rgb: 179, 0, 27;
+	--success: #0a6b25;
+	--success-rgb: 10, 107, 37;
 
-	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	/* — Dither. A custom property can hold a whole `background` shorthand, so every
+	   pattern here is built from the two inks and no component paints a literal. — */
+	--dither-50: repeating-conic-gradient(var(--ink) 0 25%, var(--paper) 0 50%) 0 0 / 4px 4px;
+	--dither-25: conic-gradient(from 270deg at 2px 2px, var(--ink) 0 25%, var(--paper) 0) 0 0 / 4px 4px;
+	--stripes: repeating-linear-gradient(to bottom, var(--ink) 0 1px, var(--paper) 1px 3px);
+	--desk: var(--dither-25);
 
-	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	/* — Focus: a heavy black ring with a paper gap, readable on paper and on ink — */
+	--focus-ring: 0 0 0 2px var(--paper), 0 0 0 4px var(--ink);
+
+	/* — Type —
+	   display/chrome: Pixelify Sans — title bars, menus, buttons, labels, headlines
+	   sans: Atkinson Hyperlegible — everything that is meant to be read
+	   mono: JetBrains Mono — code */
+	--font-display: 'Pixelify Sans', 'Chicago', 'Geneva', ui-monospace, monospace;
+	--font-sans: 'Atkinson Hyperlegible', 'Geneva', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
-	--container: 1080px;
+	--container: 1040px;
 	--measure: 62ch;
 	--measure-prose: 68ch;
 	--rail-width: 200px;
-	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
-	   and the post column has to keep its measure with two of these beside it. */
-	--outline-width: 180px;
+	--outline-width: 200px;
 	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* The menu bar's height. Anything that has to clear it measures from here. */
+	--header-h: 2rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -99,26 +107,36 @@
 	--s-10: 8rem;
 	--s-11: 11rem;
 
-	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	/* — Rhythm: windows sit on the desktop a fixed gap apart — */
+	--gap-hero: var(--s-6);
+	--gap-section: var(--s-5);
 
-	/* — Elevation — */
+	/* — Shape: nothing is rounded except push-buttons — */
+	--radius-btn: 8px;
+	--bar-h: 1.75rem;
+
+	/* — Elevation: a window's shadow is a hard offset in ink, never a blur — */
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: 1px 1px 0 var(--ink);
+	--shadow-2: 2px 2px 0 var(--ink);
+	--shadow-3: 3px 3px 0 var(--ink);
+	--shadow-4: 4px 4px 0 var(--ink);
+	--shadow-inset: none;
 
-	/* — Motion — */
-	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	/* — Motion: stepped, like a screen that redraws in a few frames — */
+	--ease-out: steps(4, end);
+	--ease-inout: steps(4, end);
+	--dur-fast: 0ms;
+	--dur-base: 160ms;
+	--dur-slow: 240ms;
 
-	color-scheme: dark;
+	color-scheme: light;
+}
+
+@media (pointer: coarse) {
+	:root {
+		--header-h: 2.75rem;
+	}
 }
 
 /* =============================================================================
@@ -133,57 +151,26 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
+	/* The menu bar is sticky, so an anchor scrolled to the top of the viewport would land
+	   underneath it. Declared on the scroll container so every in-page link gets it. */
 	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
-	background: var(--bg);
+	/* The desktop. */
+	background: var(--desk);
+	background-color: var(--paper);
 	color: var(--text-secondary);
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+	font-size: 1.0625rem;
+	line-height: 1.65;
 	text-rendering: optimizeLegibility;
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -215,8 +202,20 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
-	color: var(--text);
+	background: var(--ink);
+	color: var(--paper);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	white-space: nowrap;
+	border: 0;
 }
 
 /* =============================================================================
@@ -236,33 +235,16 @@ a {
 	max-width: var(--measure);
 }
 
+/* Windows stack on the desktop with a fixed gap. */
 .section {
 	margin-top: var(--gap-section);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
-.rail {
+.page {
 	display: grid;
-	grid-template-columns: var(--rail-width) minmax(0, 1fr);
-	gap: 0;
-}
-
-.rail__label {
-	font-family: var(--font-display);
-	font-size: 0.8125rem;
-	font-weight: 400;
-	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
-	margin: 0;
-}
-
-.rail__body {
-	max-width: var(--measure);
-	min-width: 0;
+	gap: var(--gap-section);
+	padding-top: var(--s-6);
+	align-content: start;
 }
 
 .stack {
@@ -272,8 +254,123 @@ a {
 
 .divider {
 	border: 0;
-	border-top: 1px solid var(--line);
-	margin: var(--s-7) 0;
+	border-top: 1px solid var(--ink);
+	margin: var(--s-6) 0;
+}
+
+/* =============================================================================
+   Window chrome — the central component (DESIGN.md §6)
+   ========================================================================== */
+
+.win {
+	position: relative;
+	background: var(--paper);
+	border: 2px solid var(--ink);
+	box-shadow: var(--shadow-4);
+	min-width: 0;
+}
+
+.win__bar {
+	position: relative;
+	display: grid;
+	grid-template-columns: 1.0625rem minmax(0, 1fr) 1.0625rem;
+	align-items: center;
+	gap: var(--s-2);
+	height: var(--bar-h);
+	padding-inline: 0.4rem;
+	background: var(--paper);
+	border-bottom: 2px solid var(--ink);
+}
+
+/* The pinstripes behind the title. */
+.win__bar::before {
+	content: '';
+	position: absolute;
+	inset: 0.3rem 0.4rem;
+	background: var(--stripes);
+}
+
+.win__title {
+	position: relative;
+	justify-self: center;
+	max-width: 100%;
+	margin: 0;
+	padding: 0 0.625rem;
+	background: var(--paper);
+	color: var(--ink);
+	font-family: var(--font-display);
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: calc(var(--bar-h) - 2px);
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.win__close,
+.win__zoom {
+	position: relative;
+	display: block;
+	width: 1.0625rem;
+	height: 1.0625rem;
+	background: var(--paper);
+	border: 2px solid var(--ink);
+	text-decoration: none;
+	z-index: 1;
+}
+
+/* Zoom box: a square inside a square. */
+.win__zoom::after {
+	content: '';
+	position: absolute;
+	inset: 1px 3px 3px 1px;
+	border: 1px solid var(--ink);
+}
+
+a.win__close:hover,
+a.win__close:active {
+	background: var(--ink);
+}
+
+/* The hit area is larger than the 17px box for coarse pointers. */
+a.win__close::before {
+	content: '';
+	position: absolute;
+	inset: -0.5rem;
+}
+
+a.win__close:focus-visible {
+	outline: none;
+	box-shadow: var(--focus-ring);
+}
+
+.win__body {
+	padding: var(--s-5);
+	min-width: 0;
+}
+
+.win__body--flush {
+	padding: 0;
+}
+
+/* Status strip along the bottom edge: counts, captions, credits. */
+.win__status {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: var(--s-1) var(--s-4);
+	padding: 0.35rem var(--s-4);
+	border-top: 2px solid var(--ink);
+	background: var(--surface);
+	font-family: var(--font-display);
+	font-size: 0.9375rem;
+	line-height: 1.4;
+	color: var(--text);
+}
+
+.win__status a {
+	color: var(--accent);
 }
 
 /* =============================================================================
@@ -282,33 +379,27 @@ a {
 
 .eyebrow {
 	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-size: 1rem;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
-	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text-muted);
 	margin: 0;
 }
 
 .hero-title {
 	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-size: clamp(2.25rem, 6vw, 3.75rem);
+	font-weight: 700;
+	line-height: 1.04;
+	letter-spacing: -0.01em;
+	color: var(--ink);
 }
 
 .page-title {
+	font-family: var(--font-display);
 	font-size: clamp(1.5rem, 3vw, 1.875rem);
 	font-weight: 700;
 	line-height: 1.2;
-	letter-spacing: -0.01em;
 }
 
 .lede {
@@ -317,29 +408,26 @@ a {
 }
 
 .meta {
-	font-family: var(--font-sans);
-	font-size: 0.75rem;
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: 0.9375rem;
+	font-weight: 500;
 	line-height: 1.4;
-	letter-spacing: 0.01em;
 	color: var(--text-muted);
 	margin: 0;
 }
 
 .label {
-	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: 0.9375rem;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
-	text-transform: uppercase;
-	color: var(--text-muted);
+	color: var(--text);
 	margin: 0;
 }
 
 .mono {
 	font-family: var(--font-mono);
-	font-size: 0.75rem;
+	font-size: 0.8125rem;
 	color: var(--text-muted);
 }
 
@@ -347,94 +435,64 @@ a {
    Components
    ========================================================================== */
 
-/* — Buttons — */
+/* — Push-buttons: rounded, ink on paper, inverting when pressed.
+   The primary button is the "default button" of a Mac dialog: ringed twice. — */
 
 .btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: var(--s-2);
-	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: 1rem;
+	font-weight: 600;
 	line-height: 1;
 	padding: 0.6875rem 1.125rem;
 	min-height: 44px;
-	border-radius: 5px;
-	border: 1px solid transparent;
+	border-radius: var(--radius-btn);
+	border: 2px solid var(--ink);
+	background: var(--paper);
+	color: var(--ink);
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
-	transition:
-		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
-		transform var(--dur-fast) var(--ease-out),
-		box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
 	width: 15px;
 	height: 15px;
 	flex: none;
-	transition: transform 220ms var(--ease-out);
 }
 
 .btn--primary {
-	background: var(--text);
-	color: var(--text-inverse);
-}
-
-.btn--secondary {
-	background: var(--surface);
-	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	box-shadow:
+		0 0 0 2px var(--paper),
+		0 0 0 4px var(--ink);
+	margin: 4px;
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
-	}
-	.btn--primary:hover svg {
-		transform: translateX(3px);
-	}
-	.btn--secondary:hover {
+	.btn:hover {
 		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
-	}
-	.btn--secondary:hover svg {
-		transform: translateY(2px);
 	}
 }
 
-.btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
-}
-
-.btn--secondary:active {
-	transform: translateY(0);
-	background: var(--surface-active);
+.btn:active {
+	background: var(--ink);
+	color: var(--paper);
 }
 
 .btn:focus-visible {
-	outline: none;
-	box-shadow: var(--focus-ring);
+	outline: 2px dotted var(--ink);
+	outline-offset: 7px;
 }
 
 .btn:disabled,
 .btn[aria-disabled='true'] {
-	opacity: 0.45;
+	color: var(--text-muted);
+	border-color: var(--text-muted);
 	cursor: not-allowed;
-	transform: none;
 	pointer-events: none;
-	box-shadow: none;
 }
 
 .btn-row {
@@ -443,90 +501,82 @@ a {
 	gap: var(--s-3);
 }
 
-/* — Prose links — */
+/* — Prose links: blue, underlined, inverting on hover — */
 
 .link {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition:
-		background-size 280ms var(--ease-out),
-		color var(--dur-fast) var(--ease-out);
+	color: var(--accent);
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+	text-decoration-thickness: 1px;
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
-		color: var(--accent);
-		background-size: 100% 1px;
+		background: var(--ink);
+		color: var(--paper);
+		text-decoration-color: transparent;
 	}
 }
 
 .link:active {
-	color: var(--accent-dim);
+	background: var(--ink);
+	color: var(--paper);
 }
 
 .link:focus-visible {
-	outline: none;
-	border-radius: 2px;
-	box-shadow: var(--focus-ring);
+	outline: 2px solid var(--ink);
+	outline-offset: 2px;
 }
 
 .link[aria-disabled='true'] {
 	color: var(--text-muted);
 	pointer-events: none;
-	background-image: none;
+	text-decoration: none;
 }
 
-/* — Tags — */
+/* — Tags: Finder-style label chips — */
 
 .tag {
 	display: inline-block;
-	font-family: var(--font-sans);
-	font-size: 0.6875rem;
-	font-weight: 700;
+	font-family: var(--font-display);
+	font-size: 0.9375rem;
+	font-weight: 500;
 	line-height: 1;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
 	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
-	color: var(--text-muted);
-	border: 1px solid var(--line);
+	background: var(--paper);
+	color: var(--ink);
+	border: 1px solid var(--ink);
 	text-decoration: none;
-	transition:
-		color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out),
-		border-color var(--dur-fast) var(--ease-out);
+}
+
+button.tag {
+	cursor: pointer;
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
-		color: var(--accent);
-		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+	button.tag:hover {
+		background: var(--surface-hover);
 	}
 }
 
-.tag:active {
-	background: var(--surface-active);
+button.tag:active {
+	background: var(--ink);
+	color: var(--paper);
 }
 
 .tag:focus-visible {
-	outline: none;
-	box-shadow: var(--focus-ring);
+	outline: 2px dotted var(--ink);
+	outline-offset: 3px;
 }
 
 .tag[aria-pressed='true'] {
-	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	color: var(--paper);
+	background: var(--ink);
 }
 
 .tag[aria-disabled='true'] {
-	opacity: 0.45;
+	color: var(--text-muted);
+	border-color: var(--text-muted);
 	pointer-events: none;
 }
 
@@ -536,21 +586,25 @@ a {
 	gap: var(--s-2);
 }
 
-/* — Timeline entries — */
+/* — Timeline entries: a list of documents inside a window — */
 
 .entry {
-	padding: 0 0 2.25rem;
+	padding: 0 0 var(--s-5);
+	margin-bottom: var(--s-5);
+	border-bottom: 1px dotted var(--ink);
 }
 
 .entry:last-child {
 	padding-bottom: 0;
+	margin-bottom: 0;
+	border-bottom: 0;
 }
 
 .entry__title {
-	font-size: 1.1875rem;
+	font-family: var(--font-display);
+	font-size: 1.3125rem;
 	font-weight: 700;
-	line-height: 1.35;
-	letter-spacing: -0.005em;
+	line-height: 1.3;
 	color: var(--text);
 	margin: 0 0 0.625rem;
 }
@@ -562,8 +616,9 @@ a {
 
 .entry__list {
 	margin: 0 0 var(--s-3);
-	padding-left: 1.1rem;
+	padding-left: 1.25rem;
 	color: var(--text-secondary);
+	list-style: square;
 }
 
 .entry__list li {
@@ -571,7 +626,7 @@ a {
 }
 
 .entry__list li::marker {
-	color: var(--text-muted);
+	color: var(--ink);
 }
 
 /* — Form controls — */
@@ -579,38 +634,26 @@ a {
 .field {
 	width: 100%;
 	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	font-weight: 400;
-	background: var(--surface);
-	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
+	font-size: 1rem;
+	background: var(--paper);
+	color: var(--ink);
+	border: 2px solid var(--ink);
+	border-radius: 0;
 	padding: 0.6875rem 0.875rem;
-	transition:
-		border-color var(--dur-fast) var(--ease-out),
-		background-color var(--dur-fast) var(--ease-out);
+	box-shadow: inset 1px 1px 0 var(--ink);
 }
 
 .field::placeholder {
 	color: var(--text-muted);
 }
 
-.field:hover {
-	border-color: var(--line-strong);
-}
-
-.field:focus {
-	outline: none;
-	border-color: var(--accent-dim);
-	background: var(--surface-hover);
-}
-
 .field:focus-visible {
-	box-shadow: var(--focus-ring);
+	outline: 2px dotted var(--ink);
+	outline-offset: 3px;
 }
 
 .field:disabled {
-	opacity: 0.45;
+	color: var(--text-muted);
 	cursor: not-allowed;
 }
 
@@ -626,14 +669,11 @@ a {
 	top: -100px;
 	z-index: 100;
 	padding: var(--s-3) var(--s-4);
-	background: var(--text);
-	color: var(--text-inverse);
-	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
-	box-shadow: var(--shadow-2);
+	background: var(--ink);
+	color: var(--paper);
+	font-family: var(--font-display);
+	font-size: 1rem;
 	text-decoration: none;
-	transition: top var(--dur-base) var(--ease-out);
 }
 
 .skip-link:focus {
@@ -641,41 +681,37 @@ a {
 }
 
 /* =============================================================================
-   Motion — L1 → low-L2, CSS only (DESIGN.md §7)
+   Motion — a screen that redraws in steps (DESIGN.md §9)
    ========================================================================== */
 
-@keyframes rise {
+@keyframes open {
 	from {
 		opacity: 0;
-		transform: translateY(14px);
+		clip-path: inset(0 0 100% 0);
 	}
 	to {
 		opacity: 1;
-		transform: none;
+		clip-path: inset(0 -8px -8px 0);
 	}
 }
 
 .enter {
 	opacity: 0;
-	animation: rise var(--dur-slow) var(--ease-out) forwards;
-	animation-delay: calc(60ms + var(--i, 0) * 90ms);
+	animation: open var(--dur-slow) steps(5, end) forwards;
+	animation-delay: calc(40ms + var(--i, 0) * 70ms);
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px);
-	transition:
-		opacity var(--dur-slow) var(--ease-out),
-		transform var(--dur-slow) var(--ease-out);
+	transition: opacity var(--dur-slow) steps(3, end);
 }
 
 .reveal.is-visible {
 	opacity: 1;
-	transform: none;
 }
 
 .reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
+	transition-delay: calc(var(--i, 0) * 50ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -690,10 +726,10 @@ a {
 	.enter {
 		opacity: 1;
 		animation: none;
+		clip-path: none;
 	}
 	.reveal {
 		opacity: 1;
-		transform: none;
 	}
 }
 
@@ -738,16 +774,19 @@ a {
 }
 
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
-	margin-top: var(--s-8);
+	font-family: var(--font-display);
+	font-size: 1.625rem;
+	line-height: 1.25;
+	margin-top: var(--s-7);
+	padding-bottom: var(--s-2);
+	border-bottom: 2px solid var(--ink);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	line-height: 1.4;
-	margin-top: var(--s-7);
+	font-family: var(--font-display);
+	font-size: 1.3125rem;
+	line-height: 1.35;
+	margin-top: var(--s-6);
 }
 
 .prose h4 {
@@ -758,30 +797,31 @@ a {
 }
 
 .prose a {
-	color: var(--text);
-	text-decoration: none;
-	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 100% 1px;
-	background-repeat: no-repeat;
-	background-position: 0 100%;
-	transition: color var(--dur-fast) var(--ease-out);
+	color: var(--accent);
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
-		color: var(--accent);
+		background: var(--ink);
+		color: var(--paper);
 	}
 }
 
 .prose a:focus-visible {
-	outline: none;
-	border-radius: 2px;
-	box-shadow: var(--focus-ring);
+	outline: 2px solid var(--ink);
+	outline-offset: 2px;
 }
 
 .prose ul,
 .prose ol {
-	padding-left: 1.25rem;
+	padding-left: 1.5rem;
+}
+
+.prose ul {
+	list-style: square;
 }
 
 .prose li + li {
@@ -789,7 +829,7 @@ a {
 }
 
 .prose li::marker {
-	color: var(--text-muted);
+	color: var(--ink);
 }
 
 .prose strong {
@@ -799,22 +839,22 @@ a {
 
 .prose blockquote {
 	margin-inline: 0;
-	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
-	color: var(--text-secondary);
+	padding: var(--s-1) 0 var(--s-1) var(--s-5);
+	border-left: 6px solid var(--ink);
+	color: var(--text);
 	font-style: italic;
 }
 
 .prose hr {
 	border: 0;
-	border-top: 1px solid var(--line);
-	margin-block: var(--s-8);
+	border-top: 2px solid var(--ink);
+	margin-block: var(--s-7);
 }
 
 .prose img,
 .prose video {
-	border-radius: 6px;
-	border: 1px solid var(--line);
+	border: 2px solid var(--ink);
+	box-shadow: var(--shadow-2);
 }
 
 .prose figure {
@@ -850,22 +890,20 @@ a {
 	text-indent: -1.5em;
 	/* DOIs and URLs are single unbreakable words otherwise. */
 	overflow-wrap: anywhere;
-	border-radius: 3px;
-	transition: background-color var(--dur-fast) var(--ease-out);
 }
 
 /* Following a citation lands here; mark the entry so the eye finds it. */
 .prose .references li:target {
-	background: var(--surface);
+	background: var(--ink);
+	color: var(--paper);
 }
 
 .prose :not(pre) > code {
 	font-family: var(--font-mono);
 	font-size: 0.8125em;
 	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: 3px;
-	padding: 0.1em 0.35em;
+	border: 1px solid var(--ink);
+	padding: 0.05em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
 }
@@ -874,9 +912,9 @@ a {
 	font-family: var(--font-mono);
 	font-size: 0.8125rem;
 	line-height: 1.65;
-	background: var(--bg-deep);
-	border: 1px solid var(--line);
-	border-radius: 6px;
+	background: var(--surface);
+	border: 2px solid var(--ink);
+	box-shadow: var(--shadow-2);
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -943,15 +981,15 @@ a {
 .prose td {
 	text-align: left;
 	padding: var(--s-3) var(--s-4);
-	border-bottom: 1px solid var(--line);
+	border-bottom: 1px solid var(--line-soft);
 }
 
 .prose th {
 	color: var(--text);
-	font-weight: 700;
-	font-size: 0.75rem;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+	font-family: var(--font-display);
+	font-weight: 600;
+	font-size: 0.9375rem;
+	border-bottom: 2px solid var(--ink);
 }
 
 /* A transposed table puts its labels in the first column, where a two-word
@@ -1015,7 +1053,7 @@ a {
 .prose .token.attr-value,
 .prose .token.keyword {
 	color: var(--text);
-	font-weight: 500;
+	font-weight: 700;
 }
 
 .prose .token.function,
@@ -1057,14 +1095,14 @@ a {
 	margin-block: var(--s-6);
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: 10px;
+	border: 2px solid var(--ink);
+	box-shadow: var(--shadow-3);
 }
 
 .prose .widget > figcaption {
 	margin-top: var(--s-4);
 	padding-top: var(--s-3);
-	border-top: 1px solid var(--line);
+	border-top: 1px dotted var(--ink);
 }
 
 .prose .widget h4 {
@@ -1080,15 +1118,15 @@ a {
      button system, and these are small controls inside a figure. — */
 
 .prose .rpm-btn {
-	font-family: var(--font-sans);
-	font-size: 0.8125rem;
+	font-family: var(--font-display);
+	font-size: 0.9375rem;
 	font-weight: 600;
 	line-height: 1.4;
 	padding: 0.4rem 0.85rem;
-	border-radius: 6px;
-	border: 1px solid transparent;
-	background: var(--accent);
-	color: var(--text-inverse);
+	border-radius: var(--radius-btn);
+	border: 2px solid var(--ink);
+	background: var(--ink);
+	color: var(--paper);
 	cursor: pointer;
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
@@ -1096,24 +1134,22 @@ a {
 }
 
 .prose .rpm-btn.ghost {
-	background: var(--surface-active);
-	border-color: var(--line);
-	color: var(--text);
+	background: var(--paper);
+	color: var(--ink);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.prose .rpm-btn:hover {
-		background: var(--accent-dim);
+		background: var(--text-secondary);
 	}
 	.prose .rpm-btn.ghost:hover {
 		background: var(--surface-hover);
-		border-color: var(--line-strong);
 	}
 }
 
 .prose .rpm-btn:focus-visible {
-	outline: none;
-	box-shadow: var(--focus-ring);
+	outline: 2px dotted var(--ink);
+	outline-offset: 3px;
 }
 
 /* — Static diagrams. These are dark-ink figures with no background of their
@@ -1142,9 +1178,9 @@ a {
 .prose .note {
 	padding: var(--s-4) var(--s-5);
 	background: var(--surface);
-	border: 1px solid var(--line);
-	border-left: 3px solid var(--series-cool);
-	border-radius: 8px;
+	border: 2px solid var(--ink);
+	border-left: 8px solid var(--ink);
+	box-shadow: var(--shadow-2);
 	font-size: 0.9375rem;
 }
 
@@ -1152,53 +1188,29 @@ a {
 	margin-top: var(--s-4);
 }
 
+
 /* =============================================================================
-   Responsive (DESIGN.md §9)
+   Responsive (DESIGN.md §10)
    ========================================================================== */
-
-@media (max-width: 1023px) {
-	:root {
-		--gap-hero: var(--s-9);
-		--gap-section: var(--s-8);
-	}
-
-	/* Rail collapses: label sits above its content, keeping its tracking. */
-	.rail {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.rail__label {
-		padding-top: 0;
-		margin-bottom: var(--s-4);
-	}
-
-	.rail__body {
-		max-width: none;
-	}
-}
 
 @media (max-width: 767px) {
 	:root {
-		--gap-hero: var(--s-8);
-		--gap-section: var(--s-7);
+		--gutter: 0.875rem;
+		--gap-section: var(--s-5);
 	}
 
-	body::after {
-		background-size: 18px 18px;
+	.win__body {
+		padding: var(--s-4);
 	}
 
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
+	.page {
+		padding-top: var(--s-5);
 	}
 }
 
 @media (max-width: 479px) {
 	/* Phone measure drops to roughly 40 characters, and justification tears at
-	   that width: too few words per line, so the spaces that absorb the slack
-	   are both fewer and wider. Ragged-right below this tier — hyphenation stays
-	   on, since it still earns its keep on a narrow column. */
+	   that width. Ragged-right below this tier — hyphenation stays on. */
 	.prose > p,
 	.prose > blockquote p {
 		text-align: left;
@@ -1210,15 +1222,13 @@ a {
 	}
 
 	.btn {
-		width: 100%;
+		width: calc(100% - 8px);
 	}
 }
 
 /* Coarse pointers get larger hit areas without changing the visual weight.
-   Only the *interactive* tags need the 44px floor — `span.tag` (skills, post tags)
-   is a label, not a control, and would look bloated at that height.
-   Inline links inside a sentence are exempt from the target-size rule
-   (WCAG 2.5.8, "Inline" exception) and are deliberately left at text size. */
+   Only the *interactive* tags need the 44px floor — `span.tag` is a label, not a
+   control. Inline links inside a sentence are exempt (WCAG 2.5.8). */
 @media (pointer: coarse) {
 	button.tag,
 	a.tag {

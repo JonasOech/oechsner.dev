@@ -153,8 +153,8 @@
 		   control. Formula and note share the narrower box, so both stay on one centre line. */
 		padding-right: var(--s-7);
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
+		border: 2px solid var(--ink);
+		box-shadow: var(--shadow-3);
 	}
 
 	/* KaTeX's display block already scrolls sideways under app.css (`.prose .katex-display`).
@@ -195,39 +195,32 @@
 		top: var(--s-3);
 		right: var(--s-3);
 		z-index: 1;
-		box-shadow: var(--shadow-1);
 		display: grid;
 		place-items: center;
 		width: 2rem;
 		height: 2rem;
 		padding: 0;
-		border: 1px solid var(--line);
-		border-radius: 6px;
-		background: var(--surface-active);
-		color: var(--text-muted);
+		border: 2px solid var(--ink);
+		background: var(--paper);
+		color: var(--ink);
 		cursor: pointer;
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			background-color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.latex__zoom:hover {
-			background: var(--surface-hover);
-			border-color: var(--line-strong);
-			color: var(--text);
+			background: var(--ink);
+			color: var(--paper);
 		}
 	}
 
 	.latex__zoom:active {
-		background: var(--surface-active);
-		color: var(--text-pressed);
+		background: var(--ink);
+		color: var(--paper);
 	}
 
 	.latex__zoom:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
+		outline: 2px dotted var(--ink);
+		outline-offset: 3px;
 	}
 
 	/* — Maximised: the figure itself is promoted, so nothing is duplicated — */
@@ -262,8 +255,9 @@
 		width: 100%;
 		padding: 0;
 		border: 0;
-		background: rgba(var(--bg-deep-rgb), 0.72);
-		backdrop-filter: blur(3px);
+		/* The desktop's own dither, as the scrim — no blur on a 1-bit screen. */
+		background: var(--desk);
+		background-color: var(--paper);
 		cursor: zoom-out;
 	}
 

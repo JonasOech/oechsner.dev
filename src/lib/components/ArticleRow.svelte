@@ -1,24 +1,13 @@
 <script lang="ts">
 	import { formatDate, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
 <a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
+	<span class="card__icon" aria-hidden="true"><Icon name="doc" size={32} /></span>
 
 	<div class="card__text">
 		<h3 class="card__title">{post.title}</h3>
@@ -38,7 +27,7 @@
 		</p>
 	</div>
 
-	{#if !featured && post.cover}
+	{#if post.cover}
 		<div class="card__media">
 			<img
 				class="card__img"
@@ -54,51 +43,79 @@
 </a>
 
 <style>
+	/* One row of the Finder's list view: document icon, name, a thumbnail as the preview.
+	   Selecting a row (hover, focus, press) inverts it, as a selected Mac file does. */
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: 2rem minmax(0, 1fr) 7rem;
+		gap: var(--s-4);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-4) var(--s-5);
+		border-bottom: 1px dotted var(--ink);
 		text-decoration: none;
-		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+		color: var(--text);
+		background: var(--paper);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+	.card--noMedia {
+		grid-template-columns: 2rem minmax(0, 1fr);
 	}
 
-	.card--featured {
-		gap: var(--s-5);
+	.card:last-child {
+		border-bottom: 0;
+	}
+
+	.card__icon {
+		color: var(--ink);
+		padding-top: 0.125rem;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
-		}
-		.card:hover .card__img {
-			transform: scale(1.03);
+			background: var(--ink);
 		}
 	}
 
-	.card:active {
-		background: var(--surface-active);
+	.card:active,
+	.card:focus-visible {
+		background: var(--ink);
 	}
 
 	.card:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		outline: 2px dotted var(--paper);
+		outline-offset: -6px;
+	}
+
+	/* On the inverted row every inherited colour flips with it. */
+	@media (hover: hover) and (pointer: fine) {
+		.card:hover .card__title,
+		.card:hover .card__summary,
+		.card:hover .meta,
+		.card:hover .card__dot,
+		.card:hover .card__icon {
+			color: var(--paper);
+		}
+		.card:hover .card__media {
+			border-color: var(--paper);
+		}
+	}
+
+	.card:active .card__title,
+	.card:active .card__summary,
+	.card:active .meta,
+	.card:active .card__dot,
+	.card:active .card__icon,
+	.card:focus-visible .card__title,
+	.card:focus-visible .card__summary,
+	.card:focus-visible .meta,
+	.card:focus-visible .card__dot,
+	.card:focus-visible .card__icon {
+		color: var(--paper);
+	}
+
+	.card:focus-visible .card__media,
+	.card:active .card__media {
+		border-color: var(--paper);
 	}
 
 	.card__text {
@@ -106,22 +123,19 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
+		font-family: var(--font-display);
+		font-size: 1.3125rem;
 		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		line-height: 1.25;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.card--featured .card__title {
-		font-size: 1.375rem;
+		margin: 0 0 var(--s-2);
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+		margin: 0 0 var(--s-2);
+		font-size: 1rem;
+		line-height: 1.55;
 	}
 
 	.card__dot {
@@ -131,35 +145,26 @@
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
 		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
+		border: 2px solid var(--ink);
+		background: var(--paper);
 	}
 
 	.card__img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
 	}
 
 	@media (max-width: 767px) {
 		.card {
-			grid-template-columns: minmax(0, 1fr);
+			grid-template-columns: 1.75rem minmax(0, 1fr);
+			padding: var(--s-4);
+			gap: var(--s-3);
 		}
-		/* Thumbnail drops below the text at full width. */
+		/* The preview drops out on a phone: the row is a line of text, not a card. */
 		.card__media {
-			aspect-ratio: 16 / 9;
+			display: none;
 		}
 	}
 </style>

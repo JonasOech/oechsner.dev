@@ -5,6 +5,7 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
+	import Window from '$lib/components/Window.svelte';
 	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -81,65 +82,81 @@
 		<PostOutline headings={outline} {activeId} />
 	{/if}
 
-	<article class="post">
-		<header class="post__header enter" style="--i: 0">
-			<a class="post__back" href="/">
-				<Icon name="arrow-left" />
-				All articles
-			</a>
+	<div class="post-win">
+		<Window
+			title="{post.slug}.svx"
+			id="post"
+			heading={false}
+			closeHref="/"
+			closeLabel="Close document, back to all articles"
+			flush
+			enter={0}
+		>
+			<article class="post">
+				<header class="post__header">
+					<a class="post__back" href="/">
+						<Icon name="arrow-left" />
+						All articles
+					</a>
 
-			<h1 class="post__title">{post.title}</h1>
+					<h1 class="post__title">{post.title}</h1>
 
-			{#if post.summary}
-				<p class="post__summary">{post.summary}</p>
-			{/if}
-
-			<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
-			     the measure, and the badge claims the slack the two of them leave behind. -->
-			<div class="post__facts">
-				<div class="post__facts-main">
-					<p class="meta">
-						<time datetime={post.date}>{formatDate(post.date)}</time>
-						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
-						{#if post.nerdyness}
-							<span class="post__dot" aria-hidden="true">·</span>
-							<Nerdyness level={post.nerdyness} />
-						{/if}
-					</p>
-
-					{#if post.tags.length}
-						<div class="tag-row post__tags">
-							{#each post.tags as tag (tag)}
-								<span class="tag">{tag}</span>
-							{/each}
-						</div>
+					{#if post.summary}
+						<p class="post__summary">{post.summary}</p>
 					{/if}
-				</div>
 
-				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
-				{#if post.ai === false}
-					<HumanWritten />
+					<!-- The facts and the laurel share a row: neither the meta line nor the tags fill
+					     the measure, and the badge claims the slack the two of them leave behind. -->
+					<div class="post__facts">
+						<div class="post__facts-main">
+							<p class="meta">
+								<time datetime={post.date}>{formatDate(post.date)}</time>
+								<span class="post__dot" aria-hidden="true">·</span>
+								{post.readingMinutes} min read
+								{#if post.nerdyness}
+									<span class="post__dot" aria-hidden="true">·</span>
+									<Nerdyness level={post.nerdyness} />
+								{/if}
+							</p>
+
+							{#if post.tags.length}
+								<div class="tag-row post__tags">
+									{#each post.tags as tag (tag)}
+										<span class="tag">{tag}</span>
+									{/each}
+								</div>
+							{/if}
+						</div>
+
+						<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
+						{#if post.ai === false}
+							<HumanWritten />
+						{/if}
+					</div>
+				</header>
+
+				{#if post.cover}
+					<img
+						class="post__cover"
+						src={post.cover}
+						alt={post.coverAlt ?? ''}
+						width="1200"
+						height="675"
+						decoding="async"
+					/>
 				{/if}
-			</div>
-		</header>
 
-		{#if post.cover}
-			<img
-				class="post__cover enter"
-				style="--i: 1"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="1200"
-				height="675"
-				decoding="async"
-			/>
-		{/if}
+				<div class="prose post__body">
+					<Content />
+				</div>
+			</article>
 
-		<div class="prose post__body">
-			<Content />
-		</div>
-	</article>
+			{#snippet status()}
+				<span>{formatDate(post.date)}</span>
+				<span>{post.readingMinutes} min read</span>
+			{/snippet}
+		</Window>
+	</div>
 
 	<div class="post__subscribe">
 		<Subscribe />
@@ -149,8 +166,11 @@
 		<nav class="post__nav" aria-label="More articles">
 			{#if neighbours.prev}
 				<a class="post__nav-link" href="/blog/{neighbours.prev.slug}">
-					<span class="label">Newer</span>
-					<span class="post__nav-title">{neighbours.prev.title}</span>
+					<Icon name="doc" size={32} />
+					<span class="post__nav-text">
+						<span class="label">Newer</span>
+						<span class="post__nav-title">{neighbours.prev.title}</span>
+					</span>
 				</a>
 			{:else}
 				<span></span>
@@ -158,8 +178,11 @@
 
 			{#if neighbours.next}
 				<a class="post__nav-link post__nav-link--next" href="/blog/{neighbours.next.slug}">
-					<span class="label">Older</span>
-					<span class="post__nav-title">{neighbours.next.title}</span>
+					<Icon name="doc" size={32} />
+					<span class="post__nav-text">
+						<span class="label">Older</span>
+						<span class="post__nav-title">{neighbours.next.title}</span>
+					</span>
 				</a>
 			{/if}
 		</nav>
@@ -171,7 +194,11 @@
 	   children does the centring; above it, the explicit tracks take over. Written as a
 	   min-width query so the narrow case is the default rather than an override. */
 	.post-layout {
+		/* The measure plus the window's own padding, so the text keeps its 68ch. */
+		--post-width: calc(var(--measure-prose) + 6rem);
 		display: grid;
+		max-width: 1280px;
+		padding-top: var(--s-6);
 	}
 
 	@media (min-width: 1100px) {
@@ -181,28 +208,32 @@
 			   the layout meets its breakpoint instead of overflowing just past it. */
 			grid-template-columns:
 				minmax(0, var(--outline-width))
-				minmax(0, var(--measure-prose))
+				minmax(0, var(--post-width))
 				minmax(0, var(--outline-width));
 			justify-content: center;
-			column-gap: var(--s-5);
+			column-gap: var(--s-6);
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
-	.post {
+	/* A post is a single document window, centred on the desktop. */
+	.post-win {
 		grid-column: 2;
-		padding-top: var(--s-9);
-		max-width: var(--measure-prose);
+		width: 100%;
+		max-width: var(--post-width);
 		margin-inline: auto;
+		min-width: 0;
+	}
+
+	.post {
+		padding: var(--s-6) clamp(var(--s-4), 5vw, var(--s-7)) var(--s-7);
 	}
 
 	.post__header {
 		display: grid;
 		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		margin-bottom: var(--s-6);
+		padding-bottom: var(--s-5);
+		border-bottom: 2px solid var(--ink);
 	}
 
 	.post__back {
@@ -210,56 +241,43 @@
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		text-decoration: none;
-		padding: 0.5rem 0;
+		justify-self: start;
+		font-family: var(--font-display);
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--accent);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
 		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.post__back :global(svg) {
-		transition: transform 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			background: var(--ink);
+			color: var(--paper);
 		}
-		.post__back:hover :global(svg) {
-			transform: translateX(-3px);
-		}
-	}
-
-	.post__back:active {
-		color: var(--text-secondary);
 	}
 
 	.post__back:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+		outline: 2px dotted var(--ink);
+		outline-offset: 2px;
 	}
 
 	.post__title {
+		font-family: var(--font-display);
 		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
 		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		line-height: 1.1;
 	}
 
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
+		font-size: 1.1875rem;
+		line-height: 1.6;
 		color: var(--text-secondary);
 	}
 
 	.post__dot {
 		margin-inline: 0.4em;
-		color: var(--text-muted);
 	}
 
 	.post__facts {
@@ -289,83 +307,92 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		border: 2px solid var(--ink);
+		box-shadow: var(--shadow-2);
+		margin-bottom: var(--s-6);
 	}
 
 	.post__subscribe {
 		grid-column: 2;
 		width: 100%;
-		max-width: var(--measure-prose);
+		max-width: var(--post-width);
 		margin-inline: auto;
-		margin-top: var(--s-8);
+		margin-top: var(--s-6);
 	}
 
 	.post__nav {
 		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
-		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
-		max-width: var(--measure-prose);
+		gap: var(--s-5);
+		margin-top: var(--s-6);
+		width: 100%;
+		max-width: var(--post-width);
 		margin-inline: auto;
 	}
 
 	.post__nav-link {
 		display: grid;
-		gap: var(--s-2);
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: start;
+		gap: var(--s-3);
 		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		background: var(--paper);
+		color: var(--ink);
+		border: 2px solid var(--ink);
+		box-shadow: var(--shadow-3);
 		text-decoration: none;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
 	}
 
-	.post__nav-link--next {
-		text-align: right;
-		justify-items: end;
+	.post__nav-text {
+		display: grid;
+		gap: var(--s-1);
+		min-width: 0;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--ink);
+			color: var(--paper);
+		}
+		.post__nav-link:hover .label,
+		.post__nav-link:hover .post__nav-title {
+			color: var(--paper);
 		}
 	}
 
-	.post__nav-link:active {
-		background: var(--surface-active);
+	.post__nav-link:active,
+	.post__nav-link:focus-visible {
+		background: var(--ink);
+		color: var(--paper);
+	}
+
+	.post__nav-link:active .label,
+	.post__nav-link:active .post__nav-title,
+	.post__nav-link:focus-visible .label,
+	.post__nav-link:focus-visible .post__nav-title {
+		color: var(--paper);
 	}
 
 	.post__nav-link:focus-visible {
-		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		outline: 2px dotted var(--paper);
+		outline-offset: -6px;
 	}
 
 	.post__nav-title {
+		font-family: var(--font-display);
+		font-size: 1.125rem;
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		font-weight: 600;
+		line-height: 1.3;
 	}
 
 	@media (max-width: 767px) {
-		.post {
-			padding-top: var(--s-6);
+		.post-layout {
+			padding-top: var(--s-5);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
-		}
-		.post__nav-link--next {
-			text-align: left;
-			justify-items: start;
 		}
 	}
 </style>

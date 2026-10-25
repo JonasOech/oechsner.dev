@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
+	import Window from '$lib/components/Window.svelte';
 	import { site, cvPath } from '$lib/data/site';
 	import {
 		about,
@@ -19,15 +20,14 @@
 	description="Jonas Öchsner — applied computer science at Universität Bamberg, machine learning and data-protection engineering at LIfBi, ERASMUS at TU Dublin from September 2026."
 />
 
-<div class="container">
-	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
-		<div class="stack enter lede" style="--i: 1">
+<div class="container page">
+	<Window title="About Jonas" id="about" level={1} closeHref="/" closeLabel="Close window, back to writing" enter={0}>
+		<div class="stack lede">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
 			{/each}
 		</div>
-		<div class="btn-row enter" style="--i: 2">
+		<div class="btn-row intro__actions">
 			<a class="btn btn--primary" href="/contact">
 				<Icon name="arrow-right" />
 				Get In Touch
@@ -37,7 +37,7 @@
 				Download CV
 			</a>
 		</div>
-	</section>
+	</Window>
 
 	<Rail label="Experience" id="experience">
 		{#each experience as job (job.title + job.period)}
@@ -91,11 +91,8 @@
 </div>
 
 <style>
-	.intro {
-		display: grid;
-		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+	.intro__actions {
+		margin-top: var(--s-5);
 	}
 
 	.entry__org {
@@ -127,7 +124,7 @@
 		gap: var(--s-4);
 		align-items: baseline;
 		padding: var(--s-3) 0;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px dotted var(--ink);
 	}
 
 	.grades__row:last-child {
@@ -142,13 +139,8 @@
 	.grades dd {
 		margin: 0;
 		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-size: 0.9375rem;
 		color: var(--text);
 	}
 
-	@media (max-width: 767px) {
-		.intro {
-			padding-top: var(--s-6);
-		}
-	}
 </style>
