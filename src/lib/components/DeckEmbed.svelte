@@ -39,8 +39,8 @@
 <style>
 	.frame {
 		aspect-ratio: 16 / 9;
-		border: 1px solid var(--line);
-		border-radius: 8px;
+		border: 2px solid var(--text);
+		border-radius: 0;
 		overflow: hidden;
 		/* The decks are light-plate documents, so the box shows that rather than the page
 		   while the frame is still loading. */

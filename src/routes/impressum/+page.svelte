@@ -149,10 +149,19 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
-		line-height: 1.4;
+		justify-self: start;
+		font-family: var(--font-head);
+		font-size: 1.375rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		line-height: 1.2;
 		color: var(--text);
+		background-image: linear-gradient(
+			transparent 60%,
+			rgba(var(--accent-rgb), 0.6) 60%,
+			rgba(var(--accent-rgb), 0.6) 92%,
+			transparent 92%
+		);
 	}
 
 	.legal address {

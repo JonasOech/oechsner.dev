@@ -78,9 +78,10 @@
 		gap: var(--s-4) var(--s-5);
 		padding: var(--s-5);
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		border: var(--border);
+		border-radius: 0;
+		box-shadow: 6px 6px 0 var(--accent), 6px 6px 0 1px var(--text);
+		transform: rotate(-0.4deg);
 	}
 
 	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
@@ -90,10 +91,11 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
-		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		border-radius: 50%;
+		color: var(--text);
+		background: var(--accent);
+		border: 2px solid var(--text);
+		transform: rotate(-8deg);
 	}
 
 	.subscribe__text {

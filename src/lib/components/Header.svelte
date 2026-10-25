@@ -1,10 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
-
-	let sentinel: HTMLElement;
-	let scrolled = $state(false);
+	import { nav, site } from '$lib/data/site';
 
 	/**
 	 * `nav[0]` (Writing) is the site's root and stays on the bar at every width; the rest
@@ -22,23 +19,6 @@
 	let moreOpen = $state(false);
 	let moreEl: HTMLElement;
 	let moreButton: HTMLButtonElement;
-
-	/**
-	 * Header scroll state via a 1px sentinel at the top of the document rather than a
-	 * `scroll` listener — no per-frame work (DESIGN.md §7).
-	 */
-	$effect(() => {
-		if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				scrolled = !entry.isIntersecting;
-			},
-			{ threshold: 0 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	});
 
 	// Widening past the breakpoint puts the collapsed links back on the bar, so the
 	// disclosure state they belonged to has to go with them.
@@ -85,145 +65,179 @@
 
 <svelte:window onkeydown={onWindowKeydown} />
 
-<div bind:this={sentinel} class="sentinel" aria-hidden="true"></div>
-
-<header class="header" data-scrolled={scrolled}>
+<header class="header">
 	<nav class="container nav" aria-label="Primary">
-		<a
-			class="nav__link"
-			href={primary.href}
-			aria-current={isCurrent(primary.href) ? 'page' : undefined}
-		>
-			{primary.label}
+		<!-- The masthead stamp. It points home like the Writing link does, but it is the
+		     name of the zine, so it earns its own place at the left. -->
+		<a class="nav__brand" href="/" aria-label="{site.shortName} — home">
+			<span class="nav__brand-tape" aria-hidden="true"></span>
+			{site.shortName}
 		</a>
 
-		<!-- `display: contents` above the breakpoint, so these links sit directly in the
-		     nav row and only become a dropdown once the bar runs out of width. -->
-		<div
-			class="more"
-			data-open={moreOpen}
-			bind:this={moreEl}
-			onfocusout={onMoreFocusout}
-		>
-			<button
-				class="nav__link more__button"
-				type="button"
-				bind:this={moreButton}
-				aria-expanded={moreOpen}
-				aria-controls="nav-more"
-				data-current={moreHoldsCurrent ? 'true' : undefined}
-				onclick={() => (moreOpen = !moreOpen)}
+		<div class="nav__links">
+			<a
+				class="nav__link"
+				href={primary.href}
+				aria-current={isCurrent(primary.href) ? 'page' : undefined}
 			>
-				More
-				<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
-					<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-				</svg>
-			</button>
+				{primary.label}
+			</a>
 
-			<div class="more__panel" id="nav-more">
-				{#each collapsible as item (item.href)}
-					<a
-						class="nav__link"
-						href={item.href}
-						aria-current={isCurrent(item.href) ? 'page' : undefined}
-						onclick={() => (moreOpen = false)}
-					>
-						{item.label}
-					</a>
-				{/each}
+			<!-- `display: contents` above the breakpoint, so these links sit directly in the
+			     nav row and only become a dropdown once the bar runs out of width. -->
+			<div class="more" data-open={moreOpen} bind:this={moreEl} onfocusout={onMoreFocusout}>
+				<button
+					class="nav__link more__button"
+					type="button"
+					bind:this={moreButton}
+					aria-expanded={moreOpen}
+					aria-controls="nav-more"
+					data-current={moreHoldsCurrent ? 'true' : undefined}
+					onclick={() => (moreOpen = !moreOpen)}
+				>
+					More
+					<svg class="more__chevron" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+						<path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" stroke-width="2" />
+					</svg>
+				</button>
+
+				<div class="more__panel" id="nav-more">
+					{#each collapsible as item (item.href)}
+						<a
+							class="nav__link"
+							href={item.href}
+							aria-current={isCurrent(item.href) ? 'page' : undefined}
+							onclick={() => (moreOpen = false)}
+						>
+							{item.label}
+						</a>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</nav>
 </header>
 
 <style>
-	.sentinel {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 1px;
-		height: 1px;
-		pointer-events: none;
-	}
-
+	/* A static masthead — not sticky. Zines do not follow you down the page; the footer
+	   repeats the navigation at the other end. */
 	.header {
-		position: sticky;
-		top: 0;
+		position: relative;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
-	}
-
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
 	}
 
 	.nav {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--s-4);
+		padding-block: var(--s-5) var(--s-4);
 	}
 
+	/* The zine's name, typed on a strip of tape. */
+	.nav__brand {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		padding: 0.35rem 0.9rem 0.3rem;
+		font-family: var(--font-type);
+		font-size: 1rem;
+		letter-spacing: 0.06em;
+		color: var(--text);
+		text-decoration: none;
+		white-space: nowrap;
+		transform: rotate(-2deg);
+		transition: transform var(--dur-fast) var(--ease-snap);
+	}
+
+	.nav__brand-tape {
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		background: rgba(var(--accent-rgb), 0.75);
+		clip-path: var(--tape-cut);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.nav__brand:hover {
+			transform: rotate(0deg) scale(1.04);
+		}
+	}
+
+	.nav__brand:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
+	}
+
+	.nav__links {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+		align-items: center;
+		gap: var(--s-1) var(--s-3);
+	}
+
+	/* Each link is a little cut label; the current page is the one marked with highlighter. */
 	.nav__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-head);
+		font-size: 1.0625rem;
+		font-weight: 400;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
+		padding: 0.55rem 0.55rem 0.45rem;
+		border: 0;
+		background: none;
+		transform: rotate(var(--tilt, 0deg));
+		transition:
+			background-color var(--dur-fast) var(--ease-out),
+			color var(--dur-fast) var(--ease-out),
+			transform var(--dur-fast) var(--ease-snap);
 	}
 
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+	.nav__links > .nav__link:nth-child(odd) {
+		--tilt: -1.2deg;
+	}
+
+	.nav__links > .nav__link:nth-child(even),
+	.more__panel .nav__link:nth-child(even) {
+		--tilt: 1deg;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			background: var(--text);
+			color: var(--paper);
+			transform: rotate(0deg);
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		background: var(--text);
+		color: var(--paper);
 	}
 
 	.nav__link[aria-current='page'],
 	.nav__link[data-current='true'] {
-		color: var(--text);
+		background-image: linear-gradient(
+			100deg,
+			transparent 0.1em,
+			rgba(var(--accent-rgb), 0.85) 0.3em,
+			rgba(var(--accent-rgb), 0.85) calc(100% - 0.2em),
+			transparent 100%
+		);
+		background-size: 100% 70%;
+		background-position: 0 70%;
+		background-repeat: no-repeat;
 	}
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -237,8 +251,6 @@
 	   further down cannot resurrect the button on a wide touch screen. */
 	.nav .more__button {
 		display: none;
-		background: none;
-		border: 0;
 		cursor: pointer;
 		align-items: center;
 		gap: 0.3em;
@@ -247,10 +259,7 @@
 	.more__chevron {
 		width: 0.75em;
 		height: 0.75em;
-		/* The glyph rides above the letterspacing's trailing gap; nudge it back to centre. */
-		margin-left: -0.11em;
-		stroke-linecap: round;
-		stroke-linejoin: round;
+		stroke-linecap: square;
 		transition: transform var(--dur-base) var(--ease-out);
 	}
 
@@ -258,14 +267,16 @@
 		transform: rotate(180deg);
 	}
 
-	/* `em`, not `px`: this tracks the label widths, which are `rem`-sized, so text-only zoom
-	   collapses the bar instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
+	/* `em`, not `px`: this tracks the label widths, so text-only zoom collapses the bar
+	   instead of overflowing it. Mirrored by COLLAPSE_QUERY above. */
 	@media (max-width: 35em) {
-		/* Scoped to the collapsed bar, where two items leave ~140px of slack at 320px. The
-		   wide bar keeps `wrap`, so a future fifth entry degrades to a second row rather
-		   than to horizontal overflow (DESIGN.md §9). */
 		.nav {
 			flex-wrap: nowrap;
+		}
+
+		.nav__links {
+			flex-wrap: nowrap;
+			gap: var(--s-1);
 		}
 
 		.nav .more {
@@ -282,27 +293,14 @@
 			position: absolute;
 			z-index: 1;
 			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
+			right: 0;
 			min-width: max-content;
 			max-width: calc(100vw - 2 * var(--gutter));
 			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
+			background: var(--surface);
+			border: var(--border);
 			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			transform: rotate(0.8deg);
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -310,27 +308,25 @@
 		}
 
 		.more__panel .nav__link {
-			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
+			padding: 0.7rem var(--s-3);
 			text-align: center;
 			justify-content: center;
 		}
+	}
 
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
+	@media (max-width: 23em) {
+		.nav__brand {
+			font-size: 0.875rem;
+			padding-inline: 0.6rem;
 		}
 	}
 
 	@media (pointer: coarse) {
-		/* An explicit floor, not padding arithmetic — line-height is 1 here, so padding
-		   alone lands at 36px and misses the 44px target. */
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
-			padding: 0 0.5rem;
+			padding: 0 0.6rem;
 		}
 	}
 </style>

@@ -2,6 +2,7 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
+	import Ransom from '$lib/components/Ransom.svelte';
 	import { site, cvPath } from '$lib/data/site';
 	import {
 		about,
@@ -21,12 +22,15 @@
 
 <div class="container">
 	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
-		<div class="stack enter lede" style="--i: 1">
+		<h1 class="intro__title enter" style="--i: 0"><Ransom text={site.prebyline} offset={2} /></h1>
+		<div class="stack enter lede slip taped taped--one" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
 			{/each}
 		</div>
+		<p class="scrawl intro__note enter" style="--i: 2" aria-hidden="true">
+			that is the short version &#8593;
+		</p>
 		<div class="btn-row enter" style="--i: 2">
 			<a class="btn btn--primary" href="/contact">
 				<Icon name="arrow-right" />
@@ -94,8 +98,25 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-5);
 		max-width: var(--measure);
+	}
+
+	.intro__title {
+		font-size: clamp(2.25rem, 6vw, 3.5rem);
+		line-height: 1.3;
+		text-transform: none;
+	}
+
+	.intro .slip {
+		padding: var(--s-5);
+		transform: rotate(-0.4deg);
+	}
+
+	.intro__note {
+		justify-self: end;
+		font-size: 1.125rem;
+		transform: rotate(-3deg);
 	}
 
 	.entry__org {
@@ -106,7 +127,7 @@
 	.note {
 		margin-top: var(--s-4);
 		font-weight: 400;
-		font-style: italic;
+		font-style: normal;
 	}
 
 	.note--top {
@@ -127,7 +148,7 @@
 		gap: var(--s-4);
 		align-items: baseline;
 		padding: var(--s-3) 0;
-		border-bottom: 1px solid var(--line);
+		border-bottom: 2px dotted var(--text-muted);
 	}
 
 	.grades__row:last-child {

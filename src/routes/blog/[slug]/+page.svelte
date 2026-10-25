@@ -88,7 +88,7 @@
 				All articles
 			</a>
 
-			<h1 class="post__title">{post.title}</h1>
+			<h1 class="post__title"><span class="post__title-text">{post.title}</span></h1>
 
 			{#if post.summary}
 				<p class="post__summary">{post.summary}</p>
@@ -127,7 +127,7 @@
 		{#if post.cover}
 			<img
 				class="post__cover enter"
-				style="--i: 1"
+				style="--i: 1; --r0: -3deg"
 				src={post.cover}
 				alt={post.coverAlt ?? ''}
 				width="1200"
@@ -177,48 +177,53 @@
 	@media (min-width: 1100px) {
 		.post-layout {
 			/* The two flanking tracks are equal, so the middle one lands on the page's centre
-			   line whether or not an outline was rendered into the left. Both may shrink, so
-			   the layout meets its breakpoint instead of overflowing just past it. */
+			   line whether or not an outline was rendered into the left. */
 			grid-template-columns:
 				minmax(0, var(--outline-width))
 				minmax(0, var(--measure-prose))
 				minmax(0, var(--outline-width));
 			justify-content: center;
-			column-gap: var(--s-5);
+			column-gap: var(--s-6);
 		}
 	}
 
-	/* The one page that breaks §5's left-aligned rule: a post is a single column with
-	   nothing beside it, so hanging it off the container's left edge left a wide empty
-	   band on the right at desktop widths. Centred, the measure sits in the optical
-	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		padding-top: var(--s-5);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
+		min-width: 0;
 	}
 
 	.post__header {
 		display: grid;
-		gap: var(--s-4);
-		margin-bottom: var(--s-8);
+		gap: var(--s-5);
+		margin-bottom: var(--s-7);
 	}
 
+	/* "All articles" is a stamp, not a nav bar: small, crooked, and it turns upright
+	   when you reach for it. */
 	.post__back {
 		display: inline-flex;
 		align-items: center;
 		gap: var(--s-2);
 		align-self: start;
-		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		justify-self: start;
+		font-family: var(--font-type);
+		font-size: 0.875rem;
+		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--blue);
 		text-decoration: none;
-		padding: 0.5rem 0;
+		padding: 0.5rem 0.8rem;
 		min-height: 44px;
-		transition: color var(--dur-fast) var(--ease-out);
+		border: 2px solid var(--blue);
+		outline: 1px dashed var(--blue);
+		outline-offset: 2px;
+		transform: rotate(-2deg);
+		transition:
+			transform var(--dur-fast) var(--ease-snap),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	.post__back :global(svg) {
@@ -227,34 +232,54 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__back:hover {
-			color: var(--text);
+			background: var(--blue-wash);
+			transform: rotate(0deg);
 		}
 		.post__back:hover :global(svg) {
 			transform: translateX(-3px);
 		}
 	}
 
-	.post__back:active {
-		color: var(--text-secondary);
-	}
-
 	.post__back:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
+	/* A condensed headline with a highlighter strip run through its lower half. */
 	.post__title {
-		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
-		line-height: 1.15;
-		letter-spacing: -0.02em;
+		font-size: clamp(2.25rem, 6.2vw, 3.75rem);
+		line-height: 1.12;
+		letter-spacing: 0.015em;
+		text-transform: uppercase;
 	}
 
+	.post__title-text {
+		background-image: linear-gradient(
+			100deg,
+			transparent 0.15em,
+			rgba(var(--accent-rgb), 0.7) 0.3em,
+			rgba(var(--accent-rgb), 0.7) calc(100% - 0.2em),
+			transparent 100%
+		);
+		background-size: 100% 0.42em;
+		background-repeat: no-repeat;
+		background-position: 0 88%;
+		-webkit-box-decoration-break: clone;
+		box-decoration-break: clone;
+		padding-inline: 0.08em;
+	}
+
+	/* The summary is typed on a slip, with a heavy rule down the side like a margin. */
 	.post__summary {
-		font-size: 1.0625rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
+		font-family: var(--font-type);
+		font-size: 1.125rem;
+		line-height: 1.65;
+		color: var(--text);
+		padding: var(--s-3) var(--s-4);
+		background: var(--surface);
+		border-left: 6px solid var(--blue);
+		box-shadow: 3px 3px 0 rgba(var(--text-rgb), 0.85);
+		transform: rotate(0.3deg);
 	}
 
 	.post__dot {
@@ -270,13 +295,9 @@
 		flex-wrap: wrap;
 	}
 
-	/* Keeps the header's row rhythm inside the new wrapper: the meta line and the tag row
-	   still sit --s-4 apart, exactly as they did as siblings of the grid. */
 	.post__facts-main {
 		display: grid;
 		gap: var(--s-4);
-		/* Free to shrink so the badge stays on the row as long as it honestly fits, and
-		   drops below the facts rather than crushing the wreath when it does not. */
 		min-width: min(100%, 22rem);
 		flex: 1 1 22rem;
 	}
@@ -285,13 +306,22 @@
 		margin-top: var(--s-1);
 	}
 
+	/* The cover is a photocopy taped to the page: white border, hard shadow, slight lean. */
 	.post__cover {
-		width: 100%;
+		width: calc(100% - 1.2rem);
+		margin: 0 auto var(--s-7);
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
-		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
+		padding: 0.6rem;
+		background: var(--plate);
+		border: 2px solid var(--text);
+		box-shadow: var(--shadow-3);
+		transform: rotate(-0.8deg);
+		filter: grayscale(0.15) contrast(1.05);
+	}
+
+	.post__body {
+		min-width: 0;
 	}
 
 	.post__subscribe {
@@ -306,62 +336,70 @@
 		grid-column: 2;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: var(--s-4);
-		margin-top: var(--s-9);
+		gap: var(--s-6);
+		margin-top: var(--s-8);
 		padding-top: var(--s-6);
-		border-top: 1px solid var(--line);
+		border-top: 2px dashed var(--text-muted);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
+		width: 100%;
 	}
 
+	/* Newer / Older: two torn-off slips. */
 	.post__nav-link {
 		display: grid;
 		gap: var(--s-2);
+		align-content: start;
 		padding: var(--s-4);
-		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
-		border: 1px solid transparent;
+		background: var(--surface);
+		border: 2px solid var(--text);
+		box-shadow: 4px 4px 0 var(--text);
 		text-decoration: none;
+		transform: rotate(-0.6deg);
 		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+			transform var(--dur-base) var(--ease-snap),
+			box-shadow var(--dur-base) var(--ease-out);
 	}
 
 	.post__nav-link--next {
 		text-align: right;
 		justify-items: end;
+		transform: rotate(0.6deg);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.post__nav-link:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			transform: rotate(0deg) translate(-2px, -2px);
+			box-shadow: 7px 7px 0 var(--accent);
 		}
 	}
 
 	.post__nav-link:active {
-		background: var(--surface-active);
+		transform: translate(2px, 2px);
+		box-shadow: 1px 1px 0 var(--text);
 	}
 
 	.post__nav-link:focus-visible {
 		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		box-shadow: 4px 4px 0 var(--text), var(--focus-ring);
 	}
 
 	.post__nav-title {
+		font-family: var(--font-head);
+		font-size: 1.25rem;
+		letter-spacing: 0.02em;
+		text-transform: uppercase;
 		color: var(--text);
-		font-weight: 700;
-		line-height: 1.4;
+		line-height: 1.2;
 	}
 
 	@media (max-width: 767px) {
 		.post {
-			padding-top: var(--s-6);
+			padding-top: var(--s-3);
 		}
 		.post__nav {
 			grid-template-columns: 1fr;
-			gap: var(--s-6);
+			gap: var(--s-5);
 		}
 		.post__nav-link--next {
 			text-align: left;

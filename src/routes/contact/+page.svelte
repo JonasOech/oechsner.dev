@@ -65,10 +65,35 @@
 		max-width: 640px;
 	}
 
+	/* Each channel is a business card pinned down with a strip of tape. */
 	.channel {
+		position: relative;
 		display: grid;
 		gap: var(--s-2);
 		min-width: 0;
+		padding: var(--s-4) var(--s-5);
+		background: var(--surface);
+		border: 2px solid var(--text);
+		box-shadow: 4px 4px 0 var(--text);
+		transform: rotate(-0.7deg);
+	}
+
+	.channel:nth-child(even) {
+		transform: rotate(0.6deg);
+	}
+
+	.channel::before {
+		content: '';
+		position: absolute;
+		top: -0.7rem;
+		left: 50%;
+		width: 4.5rem;
+		height: 1.4rem;
+		margin-left: -2.25rem;
+		background: rgba(var(--accent-rgb), 0.6);
+		clip-path: var(--tape-cut);
+		mix-blend-mode: multiply;
+		transform: rotate(-3deg);
 	}
 
 	.channel dd {
@@ -83,26 +108,27 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-family: var(--font-type);
+		font-size: 1.0625rem;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.2em;
+		text-decoration-color: rgba(var(--blue-rgb), 0.5);
 		overflow-wrap: anywhere;
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.channel__link:hover {
-			color: var(--accent);
+			color: var(--blue);
 		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			text-decoration-color: var(--blue);
+			background: var(--accent-wash);
 		}
 	}
 
@@ -112,14 +138,15 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
-		margin-top: var(--s-4);
-		font-size: 0.8125rem;
-		color: var(--text-muted);
+		margin-top: var(--s-6);
+		font-family: var(--font-marker);
+		font-size: 1.25rem;
+		color: var(--blue);
 		max-width: var(--measure);
+		transform: rotate(-1deg);
 	}
 </style>

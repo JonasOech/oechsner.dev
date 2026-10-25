@@ -34,6 +34,7 @@
 		gap: var(--s-2);
 		/* The badge is one unit — the quill never separates from its claim. */
 		flex: 0 0 auto;
+		transform: rotate(-2deg);
 	}
 
 	/* The art is fine line work: below roughly this height the barbs close up and the
@@ -48,12 +49,12 @@
 
 	.hw__claim {
 		margin: 0;
-		font-family: var(--font-display);
-		font-size: 1rem;
-		font-weight: 500;
+		font-family: var(--font-marker);
+		font-size: 1.125rem;
+		font-weight: 400;
 		line-height: 1.2;
 		letter-spacing: -0.005em;
-		color: var(--accent);
+		color: var(--blue);
 		white-space: nowrap;
 	}
 </style>

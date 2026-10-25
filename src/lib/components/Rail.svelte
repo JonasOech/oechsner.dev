@@ -3,8 +3,8 @@
 	import { reveal } from '$lib/actions/reveal';
 
 	/**
-	 * A labelled section: letterspaced serif rail label on the left, narrow content
-	 * measure on the right. Collapses to label-above-content below 1024px.
+	 * A labelled section: a cut-out headline label stuck in the left column, narrow
+	 * content measure on the right. Collapses to label-above-content below 1024px.
 	 *
 	 * `level` picks the heading rank — pass 1 when this rail is the page's own title
 	 * (Contact), leave it at 2 for sections within a page.

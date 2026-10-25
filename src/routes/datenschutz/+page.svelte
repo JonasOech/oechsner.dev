@@ -132,7 +132,7 @@
 			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
-					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
+					Die Website bindet die Schriftarten „Anton“, „Special Elite“, „Permanent Marker“, „Source Serif 4“ und „JetBrains
 					Mono“ über die Server von Google (<code>fonts.googleapis.com</code> und
 					<code>fonts.gstatic.com</code>) ein. Dabei wird Ihre IP-Adresse an Google
 					übertragen, damit die Schriftdateien an Ihren Browser ausgeliefert werden können.
@@ -193,10 +193,19 @@
 	}
 
 	.legal__h {
-		font-size: 1rem;
-		font-weight: 700;
-		line-height: 1.4;
+		justify-self: start;
+		font-family: var(--font-head);
+		font-size: 1.375rem;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		line-height: 1.2;
 		color: var(--text);
+		background-image: linear-gradient(
+			transparent 60%,
+			rgba(var(--accent-rgb), 0.6) 60%,
+			rgba(var(--accent-rgb), 0.6) 92%,
+			transparent 92%
+		);
 	}
 
 	.legal p {
@@ -229,8 +238,8 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.legal__inline-btn:hover {
-			color: var(--accent);
-			text-decoration-color: var(--accent);
+			color: var(--blue);
+			text-decoration-color: var(--blue);
 		}
 	}
 

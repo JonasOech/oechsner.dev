@@ -114,16 +114,16 @@
 		position: sticky;
 		align-self: start;
 		top: calc(var(--header-h) + var(--s-5));
-		margin-top: var(--s-9);
+		margin-top: var(--s-8);
 		margin-left: -0.75rem;
 		width: calc(100% + 0.75rem);
 		max-height: calc(100dvh - var(--header-h) - var(--s-7));
 		display: flex;
 		flex-direction: column;
 		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 8px;
-		box-shadow: var(--shadow-inset);
+		border: 2px solid var(--text);
+		border-radius: 0;
+		box-shadow: 4px 4px 0 var(--text);
 		overflow: hidden;
 	}
 
@@ -139,11 +139,11 @@
 	}
 
 	.outline__label {
-		font-family: var(--font-display);
+		font-family: var(--font-type);
 		font-size: 0.75rem;
 		font-weight: 400;
 		line-height: 1.3;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.16em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 var(--s-3);
@@ -160,8 +160,8 @@
 
 	.outline__track {
 		flex: 1 1 auto;
-		height: 1px;
-		background: var(--line);
+		height: 4px;
+		background: var(--surface-active);
 		border-radius: 1px;
 		overflow: hidden;
 	}

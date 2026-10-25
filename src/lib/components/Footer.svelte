@@ -9,6 +9,8 @@
 
 <footer class="footer">
 	<div class="container footer__inner">
+		<p class="footer__sign" aria-hidden="true">That's all, folks. Staple it shut.</p>
+
 		<nav class="footer__nav" aria-label="Footer">
 			{#each footerNav as item (item.href)}
 				<a class="footer__link" href={item.href}>{item.label}</a>
@@ -20,14 +22,14 @@
 				data-sveltekit-reload
 				onclick={() => trackFeed('open-rss', 'site-footer')}
 			>
-				<Icon name="rss" size={13} />
+				<Icon name="rss" size={15} />
 				RSS
 			</a>
 		</nav>
 
 		<p class="footer__copy">
 			© {site.startYear === year ? year : `${site.startYear}–${year}`}
-			{site.name} - 
+			{site.name} -
 			<a class="footer__legal-link" href="/impressum">Impressum</a>
 			<span aria-hidden="true">·</span>
 			<a class="footer__legal-link" href="/datenschutz">Datenschutz</a>
@@ -41,19 +43,23 @@
 		</p>
 
 		<p class="footer__colophon">
-			Deployed with SvelteKit on Cloudflare Pages. Built with AI.
+			Colophon: set in Anton, Special Elite, Permanent Marker and Source Serif. Two inks, one
+			cream sheet, a lot of tape. Deployed with SvelteKit on Cloudflare Pages. Built with AI.
 		</p>
 	</div>
 </footer>
 
 <style>
+	/* The back page: a strip of dark ink with a torn top edge, so the last sheet looks
+	   ripped off a bigger one. Type flips to cream; links go orange. */
 	.footer {
 		position: relative;
 		z-index: 1;
 		margin-top: var(--gap-hero);
 		padding-block: var(--s-8) var(--s-7);
 		background: var(--bg-deep);
-		border-top: 1px solid var(--line);
+		color: var(--paper);
+		clip-path: var(--torn-top);
 	}
 
 	.footer__inner {
@@ -63,28 +69,33 @@
 		text-align: center;
 	}
 
+	.footer__sign {
+		font-family: var(--font-marker);
+		font-size: 1.5rem;
+		line-height: 1.2;
+		color: var(--accent);
+		transform: rotate(-2deg);
+	}
+
 	.footer__nav {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: center;
-		gap: var(--s-5);
+		gap: var(--s-2) var(--s-5);
 	}
 
 	.footer__link {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-family: var(--font-head);
+		font-size: 1.125rem;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--paper);
 		text-decoration: none;
-		padding: 0.5rem 0.125rem;
+		padding: 0.6rem 0.25rem;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	/* The icon takes the accent so the feed is findable at a glance; the label stays in
-	   step with the other footer links. */
 	.footer__feed {
 		display: inline-flex;
 		align-items: center;
@@ -92,34 +103,32 @@
 	}
 
 	.footer__feed :global(svg) {
-		color: var(--accent-dim);
-		transition: color var(--dur-fast) var(--ease-out);
+		color: var(--accent);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__link:hover {
-			color: var(--text);
-		}
-		.footer__feed:hover :global(svg) {
 			color: var(--accent);
+			text-decoration: underline;
+			text-decoration-thickness: 3px;
+			text-underline-offset: 0.2em;
 		}
 	}
 
 	.footer__link:active {
-		color: var(--text-secondary);
+		color: var(--accent);
 	}
 
-	.footer__link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+	.footer__link:focus-visible,
+	.footer__legal-link:focus-visible {
+		outline: 3px solid var(--accent);
+		outline-offset: 2px;
 	}
 
 	.footer__copy {
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
+		font-family: var(--font-type);
+		font-size: 0.875rem;
+		color: var(--paper);
 		margin: 0;
 	}
 
@@ -130,12 +139,12 @@
 		background: none;
 		border: none;
 		cursor: pointer;
-		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: var(--text-muted);
+		font-family: var(--font-type);
+		font-size: 0.875rem;
+		color: var(--paper);
 		text-decoration: underline;
-		text-decoration-color: var(--line-strong);
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 2px;
 		text-underline-offset: 3px;
 		padding: 0.5rem 0.125rem;
 		display: inline-block;
@@ -144,23 +153,17 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.footer__legal-link:hover {
-			color: var(--text);
-			text-decoration-color: var(--text);
+			color: var(--accent);
 		}
 	}
 
 	.footer__legal-link:active {
-		color: var(--text-secondary);
-	}
-
-	.footer__legal-link:focus-visible {
-		outline: none;
-		border-radius: 3px;
-		box-shadow: var(--focus-ring);
+		color: var(--accent);
 	}
 
 	@media (pointer: coarse) {
-		.footer__legal-link {
+		.footer__legal-link,
+		.footer__link {
 			display: inline-flex;
 			align-items: center;
 			min-height: 44px;
@@ -169,19 +172,11 @@
 	}
 
 	.footer__colophon {
-		font-size: 0.75rem;
-		color: var(--text-muted);
-		max-width: 46ch;
+		font-family: var(--font-type);
+		font-size: 0.8125rem;
+		color: rgba(var(--paper-rgb), 0.8);
+		max-width: 52ch;
 		line-height: 1.6;
 		margin: 0;
-	}
-
-	@media (pointer: coarse) {
-		.footer__link {
-			display: inline-flex;
-			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
-		}
 	}
 </style>
