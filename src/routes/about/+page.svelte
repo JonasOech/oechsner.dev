@@ -20,8 +20,8 @@
 />
 
 <div class="container">
-	<section class="intro">
-		<!-- <h1 class="eyebrow enter" style="--i: 0">{site.eyebrow}</h1> -->
+	<section class="intro grid">
+		<h1 class="intro__title enter" style="--i: 0">About</h1>
 		<div class="stack enter lede" style="--i: 1">
 			{#each about as paragraph (paragraph)}
 				<p>{paragraph}</p>
@@ -92,10 +92,31 @@
 
 <style>
 	.intro {
-		display: grid;
-		gap: var(--s-5);
-		padding-top: var(--s-9);
-		max-width: var(--measure);
+		row-gap: var(--s-6);
+		padding-top: var(--s-8);
+		padding-bottom: var(--s-2);
+	}
+
+	.intro__title {
+		grid-column: 1 / -1;
+		font-size: clamp(3rem, 10vw, 8.5rem);
+		font-weight: 800;
+		letter-spacing: -0.055em;
+		line-height: 0.92;
+	}
+
+	/* The lede sits on columns 4-10, the same line the section bodies start on. */
+	.intro .lede {
+		grid-column: 4 / span 7;
+		max-width: none;
+		font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+		font-weight: 500;
+		line-height: 1.45;
+		letter-spacing: -0.012em;
+	}
+
+	.intro .btn-row {
+		grid-column: 4 / span 7;
 	}
 
 	.entry__org {
@@ -141,14 +162,20 @@
 
 	.grades dd {
 		margin: 0;
-		font-family: var(--font-mono);
-		font-size: 0.875rem;
+		font-size: 1.125rem;
+		font-weight: 800;
+		letter-spacing: -0.02em;
+		font-feature-settings: 'tnum' 1;
 		color: var(--text);
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
+			padding-top: var(--s-5);
+		}
+		.intro .lede,
+		.intro .btn-row {
+			grid-column: 1;
 		}
 	}
 </style>

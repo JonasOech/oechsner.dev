@@ -9,6 +9,7 @@
 </svelte:head>
 
 <div class="container error">
+	<p class="error__code enter" style="--i: 0" aria-hidden="true">{page.status}</p>
 	<p class="eyebrow enter" style="--i: 0">Error {page.status}</p>
 	<h1 class="hero-title enter" style="--i: 1">
 		{page.status === 404 ? 'Nothing here.' : 'Something broke.'}
@@ -31,20 +32,30 @@
 <style>
 	.error {
 		display: grid;
-		justify-items: center;
-		text-align: center;
+		justify-items: start;
 		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-10);
+		padding-top: var(--s-8);
+		padding-bottom: var(--s-8);
+	}
+
+	/* The status code is the index numeral, set as large as the grid allows. */
+	.error__code {
+		font-size: clamp(7rem, 30vw, 24rem);
+		font-weight: 800;
+		line-height: 0.8;
+		letter-spacing: -0.07em;
+		color: var(--accent);
+		margin: 0;
+	}
+
+	.error .hero-title {
+		font-size: clamp(2.5rem, 7vw, 5.5rem);
 	}
 
 	.lede {
 		max-width: 46ch;
-	}
-
-	@media (max-width: 767px) {
-		.error {
-			padding-top: var(--s-8);
-		}
+		font-size: 1.25rem;
+		font-weight: 500;
+		letter-spacing: -0.01em;
 	}
 </style>

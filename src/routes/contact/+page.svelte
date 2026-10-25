@@ -52,23 +52,25 @@
 <AsciiWall />
 
 <style>
-	.lede {
-		padding-top: var(--s-2);
-		margin-bottom: var(--s-8);
-	}
-
+	/* Each channel is a ruled row: label on the left, address set large on the right. */
 	.channels {
 		margin: 0;
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-		gap: var(--s-6) var(--s-7);
-		max-width: 640px;
+		gap: 0;
 	}
 
 	.channel {
 		display: grid;
-		gap: var(--s-2);
+		grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr);
+		gap: var(--s-4);
+		align-items: center;
 		min-width: 0;
+		padding: var(--s-3) 0;
+		border-top: 1px solid var(--line-strong);
+	}
+
+	.channel:last-child {
+		border-bottom: 1px solid var(--line-strong);
 	}
 
 	.channel dd {
@@ -79,21 +81,18 @@
 	.channel__link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--s-2);
+		gap: var(--s-3);
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: clamp(1.125rem, 2.2vw, 1.625rem);
+		font-weight: 700;
+		letter-spacing: -0.025em;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.channel__value {
-		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
-		background-repeat: no-repeat;
-		background-position: 0 100%;
-		transition: background-size 280ms var(--ease-out);
 		overflow-wrap: anywhere;
 	}
 
@@ -102,7 +101,9 @@
 			color: var(--accent);
 		}
 		.channel__link:hover .channel__value {
-			background-size: 100% 1px;
+			text-decoration: underline;
+			text-decoration-thickness: 2px;
+			text-underline-offset: 0.2em;
 		}
 	}
 
@@ -112,14 +113,21 @@
 
 	.channel__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.note {
-		margin-top: var(--s-4);
-		font-size: 0.8125rem;
+		margin-top: var(--s-5);
+		font-size: 0.9375rem;
+		font-weight: 600;
 		color: var(--text-muted);
 		max-width: var(--measure);
+	}
+
+	@media (max-width: 767px) {
+		.channel {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+		}
 	}
 </style>

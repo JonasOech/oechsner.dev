@@ -13,12 +13,11 @@
 	let activeTag = $state<string | null>(null);
 
 	/**
-	 * The home page *is* the writing index, and the lead post takes the display face that
-	 * used to carry the author's name, so the content occupies the loudest slot on the
-	 * site. `hero` in the front-matter is what grants a post that slot: `posts` is sorted
-	 * newest-first, so the newest one that opted in wins it and everything else stays a
-	 * row. Filtering by tag drops the lead treatment — a filtered view is a list, not a
-	 * front page.
+	 * The home page *is* the writing index, and the lead post takes the largest type on the
+	 * site, so the content occupies the loudest slot. `hero` in the front-matter is what
+	 * grants a post that slot: `posts` is sorted newest-first, so the newest one that opted
+	 * in wins it and everything else stays a row. Filtering by tag drops the lead treatment
+	 * — a filtered view is a list, not a front page.
 	 */
 	const lead = $derived(activeTag ? undefined : posts.find((p) => p.hero));
 	// Not `slice(1)`: the lead is no longer necessarily the first post, so it has to be
@@ -26,6 +25,9 @@
 	const listed = $derived(
 		activeTag ? posts.filter((p) => p.tags.includes(activeTag!)) : posts.filter((p) => p !== lead)
 	);
+
+	/** Running number of a post, oldest = 1. Stable under filtering, so "07" is always the same post. */
+	const numberOf = (post: (typeof posts)[number]) => posts.length - posts.indexOf(post);
 
 	function toggleTag(tag: string) {
 		activeTag = activeTag === tag ? null : tag;
@@ -35,79 +37,80 @@
 <Seo title={site.name} />
 
 <div class="container">
-	<!-- Greeting and byline are one unit: tight internally, ruled off from the lead
-	     below. Previously they sat 6rem apart with only 2rem before the post, so the
-	     byline read as the post's standfirst rather than as the author line. -->
-	
-	<header class="intro enter" style="--i: 0">
-		<h3 class="intro__greeting">{site.intro}</h3>
-		<p class="intro__tagline">
-			Applied CS at Uni Bamberg, currently TU Dublin<br />
-			Software engineer &amp; AI tutor <br />
-			Currently looking for an Internship in Dublin
-		</p>
-		<p class="intro__actions">
-			<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
-				Download CV
-				<Icon name="arrow-right" size={14} />
-			</a>
-			<a
-				class="inline-cta inline-cta--feed"
-				href={feeds.rss}
-				type="application/rss+xml"
-				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'home-intro')}
-			>
-				<Icon name="rss" size={14} />
-				Subscribe
-			</a>
-		</p>
-		<!-- <p class="intro__prebyline">{site.prebyline}</p>
-		<p class="intro__byline">{site.byline}</p> -->
+	<header class="intro grid enter" style="--i: 0">
+		<p class="intro__greeting">{site.intro}</p>
+		<div class="intro__side">
+			<p class="intro__tagline">
+				Applied CS at Uni Bamberg, currently TU Dublin.<br />
+				Software engineer &amp; AI tutor.<br />
+				Currently looking for an Internship in Dublin.
+			</p>
+			<p class="intro__actions">
+				<a class="inline-cta" href={cvPath} target="_blank" rel="noopener">
+					Download CV
+					<Icon name="arrow-right" size={14} />
+				</a>
+				<a
+					class="inline-cta"
+					href={feeds.rss}
+					type="application/rss+xml"
+					data-sveltekit-reload
+					onclick={() => trackFeed('open-rss', 'home-intro')}
+				>
+					Subscribe
+					<Icon name="rss" size={14} />
+				</a>
+			</p>
+		</div>
 	</header>
 
 	{#if lead}
-		<article class="lead">
+		<article class="lead grid">
 			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
 			     newest post on the site. -->
-			<p class="lead__eyebrow enter" style="--i: 1">Featured Blog Post</p>
+			<p class="lead__eyebrow enter" style="--i: 1">
+				<span class="lead__num" aria-hidden="true">{String(numberOf(lead)).padStart(2, '0')}</span>
+				Featured post
+			</p>
 
 			<h2 class="hero-title lead__title enter" style="--i: 2">
 				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
 			</h2>
 
+			<div class="lead__side enter" style="--i: 3">
+				<p class="meta lead__meta">
+					<time datetime={lead.date}>{formatDate(lead.date)}</time>
+					<span class="lead__dot" aria-hidden="true">/</span>
+					{lead.readingMinutes} min read
+					{#if lead.nerdyness}
+						<span class="lead__dot" aria-hidden="true">/</span>
+						<Nerdyness level={lead.nerdyness} />
+					{/if}
+				</p>
+			</div>
+
 			{#if lead.summary}
 				<p class="lead__summary enter" style="--i: 3">{lead.summary}</p>
 			{/if}
-
-			<p class="meta lead__meta enter" style="--i: 4">
-				<time datetime={lead.date}>{formatDate(lead.date)}</time>
-				<span class="lead__dot" aria-hidden="true">·</span>
-				{lead.readingMinutes} min read
-				{#if lead.nerdyness}
-					<span class="lead__dot" aria-hidden="true">·</span>
-					<Nerdyness level={lead.nerdyness} />
-				{/if}
-			</p>
 
 			<!-- The visible affordance. Not a tab stop: the title above is the accessible
 			     link to the same post, and three tab stops to one destination is noise. -->
 			<a
 				class="lead__cta enter"
-				style="--i: 5"
+				style="--i: 4"
 				href="/blog/{lead.slug}"
 				tabindex="-1"
 				aria-hidden="true"
 			>
 				Read the post
-				<Icon name="arrow-right" size={15} />
+				<Icon name="arrow-right" size={16} />
 			</a>
 
 			{#if lead.cover}
 				<!-- Decorative: the title above is the accessible link to the same post. -->
 				<a
 					class="lead__media enter"
-					style="--i: 2"
+					style="--i: 3"
 					href="/blog/{lead.slug}"
 					tabindex="-1"
 					aria-hidden="true"
@@ -153,7 +156,7 @@
 			{:else}
 				{#key activeTag}
 					{#each listed as post (post.slug)}
-						<ArticleRow {post} />
+						<ArticleRow {post} index={numberOf(post)} />
 					{/each}
 				{/key}
 			{/if}
@@ -161,7 +164,7 @@
 	</Rail>
 
 	<Rail label="About" id="about">
-		<p>{about[0]}</p>
+		<p class="about__text">{about[0]}</p>
 		<p class="about__more">
 			<a class="inline-cta" href="/about">
 				Background, projects and CV
@@ -172,223 +175,190 @@
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
+	/* The masthead is a single quiet row: who is writing, and where to follow. Both
+	   halves are body-sized, so nothing above the lead post competes with it. */
 	.intro {
-		display: block;
-		padding-top: var(--s-8);
-		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
-		text-align: center;
+		padding-top: var(--s-6);
+		padding-bottom: var(--s-5);
+		align-items: start;
+		row-gap: var(--s-4);
 	}
 
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
 	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
-		font-weight: 400;
-		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
-		text-wrap: balance;
+		grid-column: 1 / span 6;
+		font-size: 1.125rem;
+		font-weight: 700;
+		line-height: 1.3;
+		letter-spacing: -0.015em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		text-align: center;
-	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
-	.intro__tagline {
-		margin: 0 auto;
-		max-width: 46ch;
-		color: var(--text-secondary);
-		line-height: 1.6;
-		text-align: center;
-		text-wrap: balance;
+		max-width: 28ch;
 	}
 
-	/* Centres the inline CV and feed links under the tagline. */
+	.intro__side {
+		grid-column: 7 / span 6;
+		display: grid;
+		gap: var(--s-3);
+	}
+
+	.intro__tagline {
+		color: var(--text-secondary);
+		font-size: 0.9375rem;
+		line-height: 1.55;
+	}
+
 	.intro__actions {
-		margin: var(--s-4) 0 0;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
 		gap: var(--s-2) var(--s-6);
 	}
 
-	/* The feed icon leads its label rather than trailing it, so it should not take the
-	   arrow's nudge to the right on hover. */
-	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.inline-cta--feed:hover :global(svg) {
-			transform: none;
-			color: var(--accent);
-		}
-	}
-
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
+	/* Two columns inside the 12: the writing across nine, a narrow facts column on the
+	   left. The title spans nearly the full width, set as large as the grid allows. */
 	.lead {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
-		grid-template-areas:
-			'eyebrow media'
-			'title   media'
-			'summary media'
-			'meta    media'
-			'cta     media';
-		column-gap: var(--s-7);
-		row-gap: var(--s-4);
+		row-gap: var(--s-5);
+		padding-top: var(--s-6);
+		border-top: 6px solid var(--line-strong);
 		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
-		padding-top: var(--s-7);
-	}
-
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
-	.lead__title {
-		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
-		margin: 0;
+		grid-template-areas:
+			'eyebrow eyebrow eyebrow title title title title title title title title title'
+			'side    side    side    summary summary summary summary summary summary media media media'
+			'.       .       .       cta     cta     cta     cta     cta     cta     media media media';
 	}
 
 	.lead__eyebrow {
 		grid-area: eyebrow;
-		font-family: var(--font-display);
-		font-size: 0.8125rem;
-		font-weight: 400;
-		line-height: 1.4;
-		letter-spacing: 0.24em;
-		text-transform: uppercase;
-		color: var(--text-muted);
-		margin: 0 0 calc(var(--s-1) * -1);
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-3);
+		font-size: 0.875rem;
+		font-weight: 700;
+		line-height: 1.2;
+		color: var(--text);
+		margin: 0;
+	}
+
+	/* The running number of the post: the big indexing numeral, in red. Smaller than the
+	   title at every width, so the writing still sets the top of the scale. */
+	.lead__num {
+		font-size: clamp(3rem, 7vw, 6rem);
+		font-weight: 800;
+		line-height: 0.82;
+		letter-spacing: -0.06em;
+		font-feature-settings: 'tnum' 1;
+		color: var(--accent);
+	}
+
+	.lead__title {
+		grid-area: title;
+		margin: 0;
 	}
 
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
-		text-decoration-thickness: 1px;
-		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__link:hover {
-			text-decoration-line: underline;
-		}
-	}
-
-	.lead__cta {
-		display: inline-flex;
-		align-items: center;
-		gap: var(--s-2);
-		/* `.lead` is a grid: justify-self shrinks the box to its content, so the
-		   bottom rule sits under the words rather than spanning the whole measure. */
-		justify-self: start;
-		grid-area: cta;
-		margin-top: var(--s-2);
-		min-height: 44px;
-		font-size: 0.875rem;
-		font-weight: 700;
-		color: var(--text);
-		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.lead__cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__cta:hover {
 			color: var(--accent);
-			border-bottom-color: var(--accent);
 		}
-		.lead__cta:hover :global(svg) {
-			transform: translateX(3px);
-		}
-	}
-
-	.lead__cta:active {
-		color: var(--accent-dim);
 	}
 
 	.lead__link:focus-visible {
 		outline: none;
-		border-radius: 4px;
 		box-shadow: var(--focus-ring);
+	}
+
+	.lead__side {
+		grid-area: side;
+		padding-top: 0.3rem;
 	}
 
 	.lead__summary {
 		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
-		color: var(--text-secondary);
-	}
-
-	.lead__meta {
-		grid-area: meta;
+		font-size: clamp(1.125rem, 1.7vw, 1.375rem);
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: -0.015em;
+		color: var(--text);
+		max-width: 38ch;
 	}
 
 	.lead__dot {
-		margin-inline: 0.4em;
-		color: var(--text-muted);
+		margin-inline: 0.35em;
+		color: var(--accent);
+	}
+
+	.lead__cta {
+		grid-area: cta;
+		justify-self: start;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-5);
+		min-height: 48px;
+		padding: 0 var(--s-4);
+		font-size: 0.9375rem;
+		font-weight: 700;
+		color: var(--text-inverse);
+		background: var(--text);
+		text-decoration: none;
+		transition: background-color var(--dur-fast) var(--ease-out);
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.lead__cta:hover {
+			background: var(--accent);
+		}
 	}
 
 	.lead__media {
 		grid-area: media;
 		align-self: start;
 		display: block;
-		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid var(--line);
+		background: var(--surface);
 	}
 
 	.lead__cover {
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
+		filter: grayscale(1) contrast(1.05);
+		transition: filter var(--dur-base) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
+			filter: grayscale(0);
 		}
 	}
 
 	.filter {
-		margin-bottom: var(--s-7);
+		margin-bottom: var(--s-6);
 	}
 
+	/* The index runs the full nine columns of the body. */
 	.articles {
 		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		gap: 0;
+	}
+
+	.articles :global(.card:last-child) {
+		border-bottom: 1px solid var(--line-strong);
 	}
 
 	.empty {
 		color: var(--text-muted);
+	}
+
+	.about__text {
+		font-size: 1.375rem;
+		font-weight: 500;
+		line-height: 1.4;
+		letter-spacing: -0.015em;
+		color: var(--text);
+		max-width: 38ch;
 	}
 
 	.about__more {
@@ -402,25 +372,18 @@
 		min-height: 44px;
 		color: var(--text);
 		font-weight: 700;
-		font-size: 0.875rem;
+		font-size: 0.9375rem;
 		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
+		border-bottom: 2px solid var(--line-strong);
 		transition:
 			color var(--dur-fast) var(--ease-out),
 			border-color var(--dur-fast) var(--ease-out);
-	}
-
-	.inline-cta :global(svg) {
-		transition: transform 220ms var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.inline-cta:hover {
 			color: var(--accent);
 			border-bottom-color: var(--accent);
-		}
-		.inline-cta:hover :global(svg) {
-			transform: translateX(3px);
 		}
 	}
 
@@ -430,32 +393,46 @@
 
 	.inline-cta:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
 	@media (max-width: 1023px) {
 		.lead {
-			grid-template-columns: minmax(0, 1fr) 260px;
-			column-gap: var(--s-6);
+			grid-template-areas:
+				'eyebrow eyebrow eyebrow title title title title title title title title title'
+				'side    side    side    summary summary summary summary summary summary summary summary summary'
+				'.       .       .       media   media   media   media   media   media   .       .       .'
+				'.       .       .       cta     cta     cta     cta     cta     cta     cta     cta     cta';
 		}
 	}
 
 	@media (max-width: 767px) {
 		.intro {
-			padding-top: var(--s-6);
-			padding-bottom: var(--s-5);
+			padding-top: var(--s-4);
 		}
-		/* Stack, with the cover sitting between the meta line and the CTA. */
+		.intro__greeting,
+		.intro__side {
+			grid-column: 1;
+		}
 		.lead {
 			grid-template-columns: minmax(0, 1fr);
 			grid-template-areas:
 				'eyebrow'
 				'title'
 				'summary'
-				'meta'
+				'side'
 				'media'
 				'cta';
+		}
+		.lead__eyebrow {
+			flex-direction: row;
+			align-items: baseline;
+		}
+		.lead__num {
+			font-size: 2.75rem;
+		}
+		.lead__side {
+			padding-top: 0;
 		}
 		.lead__cover {
 			aspect-ratio: 16 / 9;

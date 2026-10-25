@@ -20,7 +20,7 @@
 />
 
 <div class="container">
-	<Rail label="Projects" id="projects">
+	<Rail label="Projects" id="projects" level={1}>
 		{#each projects as project (project.title)}
 			<article class="entry">
 				<h3 class="entry__title">{project.title}</h3>

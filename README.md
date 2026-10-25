@@ -4,14 +4,14 @@ Personal portfolio and blog for Jonas Öchsner. **SvelteKit**, fully prerendered
 **Cloudflare Pages** through Cloudflare's own Git integration — no API tokens, no deploy
 credentials anywhere.
 
-The visual design is specified in [`DESIGN.md`](DESIGN.md) and derived from the
-[Elevate portfolio template](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)
-by Gaël Duval. **Read DESIGN.md before changing any styling** — it is the contract the CSS
+The visual design is specified in [`DESIGN.md`](DESIGN.md): an International Typographic
+(Swiss) style on a twelve-column grid, one neo-grotesque family, black on white with a single
+signal red. **Read DESIGN.md before changing any styling** — it is the contract the CSS
 implements, including the rule that no component may hard-code a colour.
 
 **The site leads with the writing, not the author.** `/` is the post index; the newest post's
 title takes the largest type on the site. The portfolio is a complete page at `/about`, one
-click from anywhere, but it does not lead. `DESIGN.md` §11 states the rule and what depends on
+click from anywhere, but it does not lead. `DESIGN.md` §10 states the rule and what depends on
 it — read it before moving anything above the fold.
 
 ## What's in here
