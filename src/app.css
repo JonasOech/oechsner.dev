@@ -1,90 +1,92 @@
 /* =============================================================================
-   oechsner.dev — implementation of DESIGN.md
+   oechsner.dev — implementation of DESIGN.md ("Stationery")
    Every colour in this project resolves to a variable declared in this block.
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import '@fontsource-variable/source-serif-4/opsz.css';
+@import '@fontsource-variable/source-serif-4/opsz-italic.css';
+@import '@fontsource-variable/jetbrains-mono/index.css';
 
 :root {
-	/* — Canvas — */
-	--bg: #0e0f12;
-	--bg-rgb: 14, 15, 18;
-	--bg-deep: #0a0b0d;
-	--bg-deep-rgb: 10, 11, 13;
-	--surface: #16171b;
-	--surface-rgb: 22, 23, 27;
-	--surface-hover: #1c1d22;
-	--surface-hover-rgb: 28, 29, 34;
-	--surface-active: #212228;
-	--surface-active-rgb: 33, 34, 40;
+	/* — Paper — ivory laid stock; the sheet itself is a shade lighter than the desk — */
+	--bg: #f6f1e6;
+	--bg-rgb: 246, 241, 230;
+	--bg-deep: #eee7d6;
+	--bg-deep-rgb: 238, 231, 214;
+	--surface: #fbf8f0;
+	--surface-rgb: 251, 248, 240;
+	--surface-hover: #f0e9d9;
+	--surface-hover-rgb: 240, 233, 217;
+	--surface-active: #e8dfca;
+	--surface-active-rgb: 232, 223, 202;
 
-	/* — Ink — */
-	--text: #f4f4f6;
-	--text-rgb: 244, 244, 246;
-	--text-secondary: #a3a4ac;
-	--text-secondary-rgb: 163, 164, 172;
-	--text-muted: #80818a;
-	--text-muted-rgb: 128, 129, 138;
-	--text-inverse: #0a0b0d;
-	--text-inverse-rgb: 10, 11, 13;
-	--text-bright: #ffffff;
-	--text-bright-rgb: 255, 255, 255;
-	--text-pressed: #e8e8ea;
-	--text-pressed-rgb: 232, 232, 234;
+	/* — Ink — deep navy, three strengths — */
+	--text: #14203b;
+	--text-rgb: 20, 32, 59;
+	--text-secondary: #2b3750;
+	--text-secondary-rgb: 43, 55, 80;
+	--text-muted: #596378;
+	--text-muted-rgb: 89, 99, 120;
+	--text-inverse: #f6f1e6;
+	--text-inverse-rgb: 246, 241, 230;
+	--text-bright: #0b1428;
+	--text-bright-rgb: 11, 20, 40;
+	--text-pressed: #1f2d4d;
+	--text-pressed-rgb: 31, 45, 77;
 
-	/* — Structure — */
-	--line: #24252b;
-	--line-rgb: 36, 37, 43;
-	--line-strong: #34353d;
-	--line-strong-rgb: 52, 53, 61;
+	/* — Rules — hairlines are warm grey-brown, never pure black — */
+	--line: #d9d0bb;
+	--line-rgb: 217, 208, 187;
+	--line-strong: #b5a98b;
+	--line-strong-rgb: 181, 169, 139;
+	/* Edges of form controls need 3:1 against the paper (WCAG 1.4.11). */
+	--line-control: #857a5e;
+	--line-control-rgb: 133, 122, 94;
 
-	/* — Accent — */
-	--accent: #e0a85c;
-	--accent-rgb: 224, 168, 92;
-	--accent-dim: #a87a3c;
-	--accent-dim-rgb: 168, 122, 60;
-	--accent-wash: rgba(224, 168, 92, 0.1);
+	/* — Accent — gold-brown, tiny details only: link underlines, numerals, the monogram's
+	   diaeresis, hover. Never a fill behind running text. — */
+	--accent: #826428;
+	--accent-rgb: 130, 100, 40;
+	--accent-dim: #6a501f;
+	--accent-dim-rgb: 106, 80, 31;
+	--accent-wash: rgba(130, 100, 40, 0.1);
 
-	/* — Ambient glows — */
-	--glow-warm: rgba(176, 108, 46, 0.16);
-	--glow-cool: rgba(86, 108, 148, 0.13);
+	/* — Figure plate — the lightest sheet; diagrams drawn in dark ink sit on it — */
+	--plate: #fdfbf5;
 
-	/* — Figure plate — diagrams drawn in dark ink need a light ground under them,
-	   even on a dark page. Also backs the SVG panels in the post widgets. — */
-	--plate: #f2f2ef;
-
-	/* — Chart series — two-series figures need a second hue the gold cannot
-	   supply; this is the cool counterpart to --accent. — */
-	--series-cool: #7aa7d9;
-	--series-cool-rgb: 122, 167, 217;
+	/* — Chart series — a second ink for two-series figures: blue-black ink against the gold — */
+	--series-cool: #2c4a82;
+	--series-cool-rgb: 44, 74, 130;
 
 	/* — Feedback — */
-	--danger: #e5484d;
-	--danger-rgb: 229, 72, 77;
-	--success: #46a758;
-	--success-rgb: 70, 167, 88;
+	--danger: #9a2b2b;
+	--danger-rgb: 154, 43, 43;
+	--success: #2c6a3d;
+	--success-rgb: 44, 106, 61;
 
 	/* — Focus — */
-	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
+	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--text);
 
-	/* — Type — */
-	--font-display: 'Playfair Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
-	--font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-	--font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	/* — Type — one serif for everything, mono for code only.
+	   --font-display and --font-sans are kept as names because components reference them;
+	   in this design both resolve to the serif. — */
+	--font-serif: 'Source Serif 4 Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+	--font-display: var(--font-serif);
+	--font-sans: var(--font-serif);
+	--font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* — Layout — */
-	--container: 1080px;
+	--container: 1040px;
 	--measure: 62ch;
-	--measure-prose: 68ch;
-	--rail-width: 200px;
+	--measure-prose: 66ch;
+	--rail-width: 190px;
 	/* Narrower than the rail: the outline holds wrapped links rather than one short label,
 	   and the post column has to keep its measure with two of these beside it. */
 	--outline-width: 180px;
 	--gutter: 1.5rem;
-	/* The sticky header's own height — nav padding (2 × --s-5) plus a link box (0.75rem of
-	   text at line-height 1, with 0.5rem padding above and below). Anything that has to
-	   clear the header, or sit just under it, measures from here. */
-	--header-h: 4.75rem;
+	/* The letterhead scrolls away with the page (it is stationery, not chrome), so anchors
+	   only need a little air above them. */
+	--header-h: 0rem;
 
 	/* — Spacing — */
 	--s-1: 0.25rem;
@@ -100,25 +102,26 @@
 	--s-11: 11rem;
 
 	/* — Section rhythm (stepped down at the breakpoints below) — */
-	--gap-hero: var(--s-11);
-	--gap-section: var(--s-10);
+	--gap-hero: var(--s-9);
+	--gap-section: var(--s-8);
 
-	/* — Elevation — */
+	/* — Elevation — paper does not cast shadows. The two "lift" values are for the one
+	   thing that really floats above the page (the consent notice, an expanded equation). — */
 	--shadow-0: none;
-	--shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--shadow-2: 0 4px 12px rgba(0, 0, 0, 0.45);
-	--shadow-3: 0 12px 32px rgba(0, 0, 0, 0.55);
-	--shadow-4: 0 24px 64px rgba(0, 0, 0, 0.65);
-	--shadow-inset: inset 0 1px 0 rgba(var(--text-rgb), 0.04);
+	--shadow-1: none;
+	--shadow-2: none;
+	--shadow-3: 0 1px 0 rgba(var(--text-rgb), 0.06), 0 10px 28px rgba(var(--text-rgb), 0.1);
+	--shadow-4: 0 1px 0 rgba(var(--text-rgb), 0.06), 0 14px 36px rgba(var(--text-rgb), 0.14);
+	--shadow-inset: none;
 
 	/* — Motion — */
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 	--ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
-	--dur-fast: 180ms;
-	--dur-base: 260ms;
-	--dur-slow: 620ms;
+	--dur-fast: 160ms;
+	--dur-base: 220ms;
+	--dur-slow: 520ms;
 
-	color-scheme: dark;
+	color-scheme: light;
 }
 
 /* =============================================================================
@@ -133,57 +136,27 @@
 
 html {
 	scroll-behavior: smooth;
-	/* The header is sticky, so an anchor that scrolls to the top of the viewport lands
-	   underneath it. Declared on the scroll container rather than as `scroll-margin` on
-	   each target, so every in-page link on the site gets it — including the outline's. */
 	scroll-padding-top: calc(var(--header-h) + var(--s-5));
 	-webkit-text-size-adjust: 100%;
 }
 
 body {
 	margin: 0;
-	/* Flex column so short pages (contact, 404) still push the footer to the bottom
-	   instead of leaving a lighter strip of --bg below the --bg-deep footer band. */
+	/* Flex column so short pages (contact, 404) still push the footer to the bottom. */
 	display: flex;
 	flex-direction: column;
 	min-height: 100dvh;
 	background: var(--bg);
 	color: var(--text-secondary);
-	font-family: var(--font-sans);
-	font-size: 0.9375rem;
-	line-height: 1.75;
+	font-family: var(--font-serif);
+	font-optical-sizing: auto;
+	font-size: 1.0625rem;
+	line-height: 1.7;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
+	font-variant-numeric: lining-nums;
 	overflow-x: hidden;
-}
-
-/* Ambient composition: two diffuse corner glows plus a masked dot grid.
-   One fixed, non-interactive layer — nothing here animates. */
-body::before {
-	content: '';
-	position: fixed;
-	inset: 0;
-	z-index: 0;
-	pointer-events: none;
-	background:
-		radial-gradient(60vw 45vw at 15% -10%, var(--glow-cool), transparent 70%),
-		radial-gradient(55vw 40vw at 85% -5%, var(--glow-warm), transparent 70%);
-}
-
-body::after {
-	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 140vh;
-	z-index: 0;
-	pointer-events: none;
-	background-image: radial-gradient(circle, rgba(var(--text-rgb), 0.045) 1px, transparent 1px);
-	background-size: 24px 24px;
-	/* Mask gradients are alpha-only — the colour is never painted, so these two
-	   literals are not design colours and intentionally sit outside the palette. */
-	-webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
 }
 
 h1,
@@ -193,7 +166,7 @@ h4,
 h5,
 h6 {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 600;
 	margin: 0;
 	text-wrap: balance;
 }
@@ -215,7 +188,7 @@ a {
 }
 
 ::selection {
-	background: rgba(var(--accent-rgb), 0.28);
+	background: rgba(var(--accent-rgb), 0.22);
 	color: var(--text);
 }
 
@@ -240,23 +213,25 @@ a {
 	margin-top: var(--gap-section);
 }
 
-/* The template's signature construct: a letterspaced serif label in its own
-   column, with a narrow content measure beside it. */
+/* A section of the letter: a hairline across the sheet, a small tracked label in the
+   margin column, and the paragraph beside it. */
 .rail {
 	display: grid;
 	grid-template-columns: var(--rail-width) minmax(0, 1fr);
 	gap: 0;
+	padding-top: var(--s-5);
+	border-top: 1px solid var(--line);
 }
 
 .rail__label {
-	font-family: var(--font-display);
-	font-size: 0.8125rem;
-	font-weight: 400;
+	font-family: var(--font-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.2em;
 	text-transform: uppercase;
 	color: var(--text-muted);
-	padding-top: 0.35rem; /* optically aligns with the first content line */
+	padding-top: 0.3rem; /* optically aligns with the first content line */
 	margin: 0;
 }
 
@@ -281,34 +256,30 @@ a {
    ========================================================================== */
 
 .eyebrow {
-	font-family: var(--font-display);
-	font-size: 0.875rem;
-	font-weight: 400;
+	font-family: var(--font-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.24em;
+	letter-spacing: 0.2em;
 	text-transform: uppercase;
-	color: var(--text-secondary);
+	color: var(--text-muted);
 	margin: 0;
 }
 
 .hero-title {
-	font-family: var(--font-display);
-	font-size: clamp(2.5rem, 6.5vw, 4.25rem);
-	font-weight: 400;
-	line-height: 1.06;
-	letter-spacing: -0.015em;
-	/* The single permitted text treatment — a barely-there falloff, per DESIGN.md §3. */
-	background: linear-gradient(180deg, var(--text) 0%, rgba(var(--text-rgb), 0.82) 100%);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+	font-family: var(--font-serif);
+	font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+	font-weight: 500;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	color: var(--text);
 }
 
 .page-title {
-	font-size: clamp(1.5rem, 3vw, 1.875rem);
-	font-weight: 700;
+	font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+	font-weight: 500;
 	line-height: 1.2;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.015em;
 }
 
 .lede {
@@ -317,21 +288,22 @@ a {
 }
 
 .meta {
-	font-family: var(--font-sans);
-	font-size: 0.75rem;
-	font-weight: 700;
-	line-height: 1.4;
+	font-family: var(--font-serif);
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.5;
 	letter-spacing: 0.01em;
+	font-variant-numeric: tabular-nums lining-nums;
 	color: var(--text-muted);
 	margin: 0;
 }
 
 .label {
-	font-family: var(--font-sans);
+	font-family: var(--font-serif);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1.4;
-	letter-spacing: 0.11em;
+	letter-spacing: 0.18em;
 	text-transform: uppercase;
 	color: var(--text-muted);
 	margin: 0;
@@ -347,31 +319,30 @@ a {
    Components
    ========================================================================== */
 
-/* — Buttons — */
+/* — Buttons — square, ruled, inverted on hover. Primary is a filled navy sheet. — */
 
 .btn {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	gap: var(--s-2);
-	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	font-weight: 700;
+	font-family: var(--font-serif);
+	font-size: 0.75rem;
+	font-weight: 600;
 	line-height: 1;
-	padding: 0.6875rem 1.125rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	padding: 0.6875rem 1.25rem;
 	min-height: 44px;
-	border-radius: 5px;
+	border-radius: 2px;
 	border: 1px solid transparent;
 	cursor: pointer;
 	text-decoration: none;
 	white-space: nowrap;
-	box-shadow: var(--shadow-1);
 	transition:
 		background-color var(--dur-fast) var(--ease-out),
 		border-color var(--dur-fast) var(--ease-out),
-		color var(--dur-fast) var(--ease-out),
-		transform var(--dur-fast) var(--ease-out),
-		box-shadow var(--dur-fast) var(--ease-out);
+		color var(--dur-fast) var(--ease-out);
 }
 
 .btn svg {
@@ -384,28 +355,27 @@ a {
 .btn--primary {
 	background: var(--text);
 	color: var(--text-inverse);
+	border-color: var(--text);
 }
 
 .btn--secondary {
-	background: var(--surface);
+	background: transparent;
 	color: var(--text);
-	border-color: var(--line);
-	box-shadow: var(--shadow-1), var(--shadow-inset);
+	border-color: var(--line-control);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.btn--primary:hover {
-		background: var(--text-bright);
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-2);
+		background: transparent;
+		color: var(--text);
 	}
 	.btn--primary:hover svg {
 		transform: translateX(3px);
 	}
 	.btn--secondary:hover {
-		background: var(--surface-hover);
-		border-color: var(--line-strong);
-		transform: translateY(-1px);
+		background: var(--text);
+		border-color: var(--text);
+		color: var(--text-inverse);
 	}
 	.btn--secondary:hover svg {
 		transform: translateY(2px);
@@ -413,14 +383,13 @@ a {
 }
 
 .btn--primary:active {
-	transform: translateY(0);
-	background: var(--text-pressed);
-	box-shadow: var(--shadow-1);
+	background: var(--surface-active);
+	color: var(--text);
 }
 
 .btn--secondary:active {
-	transform: translateY(0);
-	background: var(--surface-active);
+	background: var(--text-pressed);
+	color: var(--text-inverse);
 }
 
 .btn:focus-visible {
@@ -432,9 +401,7 @@ a {
 .btn[aria-disabled='true'] {
 	opacity: 0.45;
 	cursor: not-allowed;
-	transform: none;
 	pointer-events: none;
-	box-shadow: none;
 }
 
 .btn-row {
@@ -443,24 +410,21 @@ a {
 	gap: var(--s-3);
 }
 
-/* — Prose links — */
+/* — Prose links — ink with a gold-brown hairline underline — */
 
 .link {
 	color: var(--text);
 	text-decoration: none;
 	background-image: linear-gradient(var(--accent), var(--accent));
-	background-size: 0% 1px;
+	background-size: 100% 1px;
 	background-repeat: no-repeat;
 	background-position: 0 100%;
-	transition:
-		background-size 280ms var(--ease-out),
-		color var(--dur-fast) var(--ease-out);
+	transition: color var(--dur-fast) var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
 	.link:hover {
-		color: var(--accent);
-		background-size: 100% 1px;
+		color: var(--accent-dim);
 	}
 }
 
@@ -480,21 +444,21 @@ a {
 	background-image: none;
 }
 
-/* — Tags — */
+/* — Tags — a ruled box, not a chip — */
 
 .tag {
 	display: inline-block;
-	font-family: var(--font-sans);
+	font-family: var(--font-serif);
 	font-size: 0.6875rem;
-	font-weight: 700;
+	font-weight: 600;
 	line-height: 1;
-	letter-spacing: 0.08em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
-	padding: 0.375rem 0.625rem;
-	border-radius: 3px;
-	background: var(--surface);
+	padding: 0.4375rem 0.625rem;
+	border-radius: 0;
+	background: transparent;
 	color: var(--text-muted);
-	border: 1px solid var(--line);
+	border: 1px solid var(--line-strong);
 	text-decoration: none;
 	transition:
 		color var(--dur-fast) var(--ease-out),
@@ -503,10 +467,10 @@ a {
 }
 
 @media (hover: hover) and (pointer: fine) {
-	.tag:hover {
-		color: var(--accent);
-		background: var(--accent-wash);
-		border-color: var(--accent-dim);
+	button.tag:hover,
+	a.tag:hover {
+		color: var(--text);
+		border-color: var(--text);
 	}
 }
 
@@ -521,8 +485,8 @@ a {
 
 .tag[aria-pressed='true'] {
 	color: var(--text-inverse);
-	background: var(--accent);
-	border-color: var(--accent);
+	background: var(--text);
+	border-color: var(--text);
 }
 
 .tag[aria-disabled='true'] {
@@ -547,12 +511,12 @@ a {
 }
 
 .entry__title {
-	font-size: 1.1875rem;
-	font-weight: 700;
+	font-size: 1.25rem;
+	font-weight: 600;
 	line-height: 1.35;
 	letter-spacing: -0.005em;
 	color: var(--text);
-	margin: 0 0 0.625rem;
+	margin: 0 0 0.5rem;
 }
 
 .entry__body {
@@ -571,20 +535,20 @@ a {
 }
 
 .entry__list li::marker {
-	color: var(--text-muted);
+	color: var(--accent);
 }
 
 /* — Form controls — */
 
 .field {
 	width: 100%;
-	font-family: var(--font-sans);
-	font-size: 0.9375rem;
+	font-family: var(--font-serif);
+	font-size: 1rem;
 	font-weight: 400;
 	background: var(--surface);
 	color: var(--text);
-	border: 1px solid var(--line);
-	border-radius: 5px;
+	border: 1px solid var(--line-control);
+	border-radius: 2px;
 	padding: 0.6875rem 0.875rem;
 	transition:
 		border-color var(--dur-fast) var(--ease-out),
@@ -596,13 +560,13 @@ a {
 }
 
 .field:hover {
-	border-color: var(--line-strong);
+	border-color: var(--text-muted);
 }
 
 .field:focus {
 	outline: none;
-	border-color: var(--accent-dim);
-	background: var(--surface-hover);
+	border-color: var(--text);
+	background: var(--plate);
 }
 
 .field:focus-visible {
@@ -629,9 +593,8 @@ a {
 	background: var(--text);
 	color: var(--text-inverse);
 	font-size: 0.8125rem;
-	font-weight: 700;
-	border-radius: 5px;
-	box-shadow: var(--shadow-2);
+	font-weight: 600;
+	border-radius: 2px;
 	text-decoration: none;
 	transition: top var(--dur-base) var(--ease-out);
 }
@@ -641,13 +604,13 @@ a {
 }
 
 /* =============================================================================
-   Motion — L1 → low-L2, CSS only (DESIGN.md §7)
+   Motion — a quiet fade, CSS only (DESIGN.md §8)
    ========================================================================== */
 
 @keyframes rise {
 	from {
 		opacity: 0;
-		transform: translateY(14px);
+		transform: translateY(6px);
 	}
 	to {
 		opacity: 1;
@@ -658,12 +621,12 @@ a {
 .enter {
 	opacity: 0;
 	animation: rise var(--dur-slow) var(--ease-out) forwards;
-	animation-delay: calc(60ms + var(--i, 0) * 90ms);
+	animation-delay: calc(40ms + var(--i, 0) * 70ms);
 }
 
 .reveal {
 	opacity: 0;
-	transform: translateY(18px);
+	transform: translateY(8px);
 	transition:
 		opacity var(--dur-slow) var(--ease-out),
 		transform var(--dur-slow) var(--ease-out);
@@ -675,7 +638,7 @@ a {
 }
 
 .reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
+	transition-delay: calc(var(--i, 0) * 50ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -703,8 +666,8 @@ a {
 
 .prose {
 	max-width: var(--measure-prose);
-	font-size: 1.0625rem;
-	line-height: 1.8;
+	font-size: 1.1875rem;
+	line-height: 1.7;
 	color: var(--text-secondary);
 }
 
@@ -738,21 +701,27 @@ a {
 }
 
 .prose h2 {
-	font-size: 1.375rem;
-	line-height: 1.3;
-	letter-spacing: -0.01em;
+	font-size: 1.625rem;
+	font-weight: 500;
+	line-height: 1.25;
+	letter-spacing: -0.015em;
 	margin-top: var(--s-8);
+	padding-top: var(--s-5);
+	border-top: 1px solid var(--line);
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	line-height: 1.4;
+	font-size: 1.3125rem;
+	font-weight: 600;
+	line-height: 1.35;
 	margin-top: var(--s-7);
 }
 
 .prose h4 {
-	font-size: 1.0625rem;
+	font-size: 0.8125rem;
 	font-weight: 600;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
 	line-height: 1.4;
 	margin-top: var(--s-6);
 }
@@ -769,7 +738,7 @@ a {
 
 @media (hover: hover) and (pointer: fine) {
 	.prose a:hover {
-		color: var(--accent);
+		color: var(--accent-dim);
 	}
 }
 
@@ -789,19 +758,20 @@ a {
 }
 
 .prose li::marker {
-	color: var(--text-muted);
+	color: var(--accent);
 }
 
 .prose strong {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 650;
 }
 
+/* A quotation, set like a letter's enclosed extract: indented, italic, one gold hairline. */
 .prose blockquote {
 	margin-inline: 0;
 	padding-left: var(--s-5);
-	border-left: 2px solid var(--accent-dim);
-	color: var(--text-secondary);
+	border-left: 1px solid var(--accent);
+	color: var(--text);
 	font-style: italic;
 }
 
@@ -813,7 +783,7 @@ a {
 
 .prose img,
 .prose video {
-	border-radius: 6px;
+	border-radius: 0;
 	border: 1px solid var(--line);
 }
 
@@ -823,7 +793,8 @@ a {
 
 .prose figcaption {
 	margin-top: var(--s-3);
-	font-size: 0.8125rem;
+	font-size: 0.875rem;
+	font-style: italic;
 	color: var(--text-muted);
 }
 
@@ -850,7 +821,7 @@ a {
 	text-indent: -1.5em;
 	/* DOIs and URLs are single unbreakable words otherwise. */
 	overflow-wrap: anywhere;
-	border-radius: 3px;
+	border-radius: 0;
 	transition: background-color var(--dur-fast) var(--ease-out);
 }
 
@@ -864,7 +835,7 @@ a {
 	font-size: 0.8125em;
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 3px;
+	border-radius: 2px;
 	padding: 0.1em 0.35em;
 	color: var(--text);
 	overflow-wrap: anywhere;
@@ -876,7 +847,7 @@ a {
 	line-height: 1.65;
 	background: var(--bg-deep);
 	border: 1px solid var(--line);
-	border-radius: 6px;
+	border-radius: 0;
 	padding: var(--s-4);
 	/* Wide code scrolls inside its own box — the page body never does. */
 	overflow-x: auto;
@@ -948,9 +919,9 @@ a {
 
 .prose th {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 600;
 	font-size: 0.75rem;
-	letter-spacing: 0.08em;
+	letter-spacing: 0.14em;
 	text-transform: uppercase;
 }
 
@@ -988,12 +959,12 @@ a {
 .prose .token.constant,
 .prose .token.symbol,
 .prose .token.deleted {
-	color: var(--accent);
+	color: var(--accent-dim);
 }
 
 .prose .token.boolean,
 .prose .token.number {
-	color: var(--accent);
+	color: var(--accent-dim);
 }
 
 .prose .token.selector,
@@ -1026,7 +997,7 @@ a {
 .prose .token.regex,
 .prose .token.important,
 .prose .token.variable {
-	color: var(--accent-dim);
+	color: var(--series-cool);
 }
 
 /* =============================================================================
@@ -1058,7 +1029,7 @@ a {
 	padding: var(--s-5) var(--s-5) var(--s-4);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: 0;
 }
 
 .prose .widget > figcaption {
@@ -1085,9 +1056,9 @@ a {
 	font-weight: 600;
 	line-height: 1.4;
 	padding: 0.4rem 0.85rem;
-	border-radius: 6px;
+	border-radius: 2px;
 	border: 1px solid transparent;
-	background: var(--accent);
+	background: var(--text);
 	color: var(--text-inverse);
 	cursor: pointer;
 	transition:
@@ -1103,7 +1074,7 @@ a {
 
 @media (hover: hover) and (pointer: fine) {
 	.prose .rpm-btn:hover {
-		background: var(--accent-dim);
+		background: var(--text-pressed);
 	}
 	.prose .rpm-btn.ghost:hover {
 		background: var(--surface-hover);
@@ -1143,9 +1114,9 @@ a {
 	padding: var(--s-4) var(--s-5);
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-left: 3px solid var(--series-cool);
-	border-radius: 8px;
-	font-size: 0.9375rem;
+	border-left: 1px solid var(--accent);
+	border-radius: 0;
+	font-size: 1rem;
 }
 
 .prose .note > * + * {
@@ -1181,16 +1152,6 @@ a {
 	:root {
 		--gap-hero: var(--s-8);
 		--gap-section: var(--s-7);
-	}
-
-	body::after {
-		background-size: 18px 18px;
-	}
-
-	body::before {
-		background:
-			radial-gradient(80vw 50vw at 15% -10%, var(--glow-cool), transparent 70%),
-			radial-gradient(75vw 45vw at 85% -5%, var(--glow-warm), transparent 70%);
 	}
 }
 

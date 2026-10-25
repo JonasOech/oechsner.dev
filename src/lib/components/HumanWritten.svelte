@@ -49,8 +49,9 @@
 	.hw__claim {
 		margin: 0;
 		font-family: var(--font-display);
-		font-size: 1rem;
+		font-size: 1.0625rem;
 		font-weight: 500;
+		font-style: italic;
 		line-height: 1.2;
 		letter-spacing: -0.005em;
 		color: var(--accent);

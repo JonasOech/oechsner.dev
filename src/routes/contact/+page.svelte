@@ -2,7 +2,6 @@
 	import Seo from '$lib/components/Seo.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Rail from '$lib/components/Rail.svelte';
-	import AsciiWall from '$lib/components/AsciiWall.svelte';
 	import { contacts } from '$lib/data/site';
 
 	function isExternal(href: string): boolean {
@@ -49,8 +48,6 @@
 	</Rail>
 </div>
 
-<AsciiWall />
-
 <style>
 	.lede {
 		padding-top: var(--s-2);
@@ -83,14 +80,14 @@
 		min-height: 44px;
 		color: var(--text);
 		text-decoration: none;
-		font-size: 0.9375rem;
+		font-size: 1.0625rem;
 		max-width: 100%;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.channel__value {
 		background-image: linear-gradient(var(--accent), var(--accent));
-		background-size: 0% 1px;
+		background-size: 100% 1px;
 		background-repeat: no-repeat;
 		background-position: 0 100%;
 		transition: background-size 280ms var(--ease-out);
@@ -99,7 +96,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.channel__link:hover {
-			color: var(--accent);
+			color: var(--accent-dim);
 		}
 		.channel__link:hover .channel__value {
 			background-size: 100% 1px;
@@ -118,7 +115,8 @@
 
 	.note {
 		margin-top: var(--s-4);
-		font-size: 0.8125rem;
+		font-size: 0.9375rem;
+		font-style: italic;
 		color: var(--text-muted);
 		max-width: var(--measure);
 	}

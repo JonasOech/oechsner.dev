@@ -130,17 +130,12 @@ Consequences worth knowing:
   bumping `privacy.updated` in `src/lib/data/site.ts`. Consent is only valid for what the
   visitor was actually told.
 
-### One open legal item
+### Fonts
 
-- **Google Fonts is loaded from Google's CDN** (`@import` in `src/app.css`), which sends every
-  visitor's IP address to Google **on every page load, before and regardless of the consent
-  banner**. This is the exact fact pattern in *LG München I, 3 O 17493/20*, where remote Google
-  Fonts embedding without consent was held to violate the GDPR. The consent gate does not touch
-  it, and it cannot be put behind consent — declining would leave the site unstyled. The remedy
-  is self-hosting the font files, which also removes a third-party connection from the critical
-  path. Not done here because it puts font binaries in the repo, which is your call. Until then
-  `src/routes/datenschutz/+page.svelte` describes the embedding truthfully, under Art. 6 Abs. 1
-  lit. f.
+- Fonts are self-hosted through `@fontsource-variable/source-serif-4` and
+  `@fontsource-variable/jetbrains-mono` (imported in `src/app.css`), so no visitor IP address
+  reaches a third party for typography. If the font stack changes, update the "Schriftarten"
+  paragraph in `src/routes/datenschutz/+page.svelte` and bump `privacy.updated`.
 
 ## Connecting the Pages project
 

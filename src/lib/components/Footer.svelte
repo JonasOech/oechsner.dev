@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
+	import Monogram from '$lib/components/Monogram.svelte';
 	import { feeds, footerNav, site } from '$lib/data/site';
 	import { trackFeed } from '$lib/track';
 	import { reopenConsent } from '$lib/consent.svelte';
@@ -9,6 +10,13 @@
 
 <footer class="footer">
 	<div class="container footer__inner">
+		<div class="footer__sign">
+			<Monogram size={32} />
+			<p class="footer__colophon">
+				Deployed with SvelteKit on Cloudflare Pages. Built with AI.
+			</p>
+		</div>
+
 		<nav class="footer__nav" aria-label="Footer">
 			{#each footerNav as item (item.href)}
 				<a class="footer__link" href={item.href}>{item.label}</a>
@@ -39,10 +47,6 @@
 				Cookie settings
 			</button>
 		</p>
-
-		<p class="footer__colophon">
-			Deployed with SvelteKit on Cloudflare Pages. Built with AI.
-		</p>
 	</div>
 </footer>
 
@@ -51,31 +55,41 @@
 		position: relative;
 		z-index: 1;
 		margin-top: var(--gap-hero);
-		padding-block: var(--s-8) var(--s-7);
-		background: var(--bg-deep);
-		border-top: 1px solid var(--line);
+		padding-block: 0 var(--s-7);
 	}
 
+	/* The foot of the letter: ruled off in ink, a sign-off line, the nav, the small print. */
 	.footer__inner {
 		display: grid;
-		justify-items: center;
-		gap: var(--s-5);
-		text-align: center;
+		justify-items: start;
+		gap: var(--s-4);
+		padding-top: var(--s-5);
+		/* A rule the width of the text, not of the padded container. */
+		background: linear-gradient(var(--text), var(--text)) no-repeat center top /
+			calc(100% - 2 * var(--gutter)) 1px;
+	}
+
+	.footer__sign {
+		display: flex;
+		align-items: center;
+		gap: var(--s-4);
 	}
 
 	.footer__nav {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
 		gap: var(--s-5);
+		padding: var(--s-2) 0;
+		border-block: 1px solid var(--line);
+		width: 100%;
 	}
 
 	.footer__link {
 		font-family: var(--font-sans);
 		font-size: 0.75rem;
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1;
-		letter-spacing: 0.11em;
+		letter-spacing: 0.18em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -92,7 +106,7 @@
 	}
 
 	.footer__feed :global(svg) {
-		color: var(--accent-dim);
+		color: var(--accent);
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
@@ -101,7 +115,7 @@
 			color: var(--text);
 		}
 		.footer__feed:hover :global(svg) {
-			color: var(--accent);
+			color: var(--accent-dim);
 		}
 	}
 
@@ -117,8 +131,8 @@
 
 	.footer__copy {
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.8125rem;
+		font-weight: 400;
 		color: var(--text-muted);
 		margin: 0;
 	}
@@ -131,8 +145,8 @@
 		border: none;
 		cursor: pointer;
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.8125rem;
+		font-weight: 400;
 		color: var(--text-muted);
 		text-decoration: underline;
 		text-decoration-color: var(--line-strong);
@@ -169,7 +183,8 @@
 	}
 
 	.footer__colophon {
-		font-size: 0.75rem;
+		font-size: 0.8125rem;
+		font-style: italic;
 		color: var(--text-muted);
 		max-width: 46ch;
 		line-height: 1.6;

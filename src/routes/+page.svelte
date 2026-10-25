@@ -172,75 +172,58 @@
 </div>
 
 <style>
-	/* The breathing room now sits above the pair rather than between them, and a rule
-	   closes the block off from the lead post. */
+	/* The salutation: a short italic line and a standfirst, ruled off in ink from the lead
+	   below. Small on purpose — DESIGN.md §10: the largest type on the page is the writing. */
 	.intro {
 		display: block;
 		padding-top: var(--s-8);
 		padding-bottom: var(--s-6);
-		border-bottom: 1px solid var(--line);
-		text-align: center;
+		text-align: left;
 	}
 
-	/* Keeps the serif of `.eyebrow`, but at full ink instead of --text-secondary.
-	   Contrast, not size, is what lifts it: §11 reserves the largest type on the page
-	   for the writing, never a greeting. The old fixed 3rem broke that ordering on
-	   desktop and inverted it outright on mobile, where it sat at 47px against a 30px
-	   lead title. Fluid now, and capped below `.lead__title`
-	   (`clamp(1.875rem, 3.6vw, 3.25rem)`) at every viewport width. */
 	.intro__greeting {
-		font-family: var(--font-display);
-		font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+		font-family: var(--font-serif);
+		font-size: clamp(1.25rem, 2.2vw, 1.5rem);
 		font-weight: 400;
+		font-style: italic;
 		line-height: 1.4;
-		/* No tracking. Letterspaced uppercase is what made this overflow narrow
-		   viewports; the base rule had already dropped it, only the mobile override
-		   still put it back. */
-		text-transform: uppercase;
 		text-wrap: balance;
 		color: var(--text);
 		margin: 0 0 var(--s-3);
-		text-align: center;
 	}
-	/* Short standfirst under the greeting: who I am and what I do, kept to two lines so
-	   it stays a caption rather than a wall. Secondary ink so the greeting still leads. */
+
 	.intro__tagline {
-		margin: 0 auto;
+		margin: 0;
 		max-width: 46ch;
 		color: var(--text-secondary);
 		line-height: 1.6;
-		text-align: center;
-		text-wrap: balance;
 	}
 
-	/* Centres the inline CV and feed links under the tagline. */
 	.intro__actions {
-		margin: var(--s-4) 0 0;
+		margin: var(--s-3) 0 0;
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: center;
-		gap: var(--s-2) var(--s-6);
+		gap: 0 var(--s-6);
 	}
 
 	/* The feed icon leads its label rather than trailing it, so it should not take the
 	   arrow's nudge to the right on hover. */
 	.inline-cta--feed :global(svg) {
-		color: var(--accent-dim);
+		color: var(--accent);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.inline-cta--feed:hover :global(svg) {
 			transform: none;
-			color: var(--accent);
 		}
 	}
 
-	/* Two columns: the writing on the left, the cover beside it. Explicit areas rather
-	   than source order, so the mobile stack can put the image between the meta line
-	   and the call to action without reordering the markup. */
+	/* Two columns: the writing on the left, the cover beside it as an enclosure. Explicit
+	   areas rather than source order, so the mobile stack can put the image between the
+	   meta line and the call to action without reordering the markup. */
 	.lead {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 360px;
+		grid-template-columns: minmax(0, 1fr) 340px;
 		grid-template-areas:
 			'eyebrow media'
 			'title   media'
@@ -250,29 +233,24 @@
 		column-gap: var(--s-7);
 		row-gap: var(--s-4);
 		align-items: start;
-		/* Wider than the intro's own bottom padding, so the rule reads as belonging to
-		   the block above it and the post clearly starts a new zone. */
-		padding-top: var(--s-7);
+		padding-top: var(--s-6);
+		border-top: 3px double var(--text);
 	}
 
-	/* The lead title inherits the display face and the one permitted text treatment from
-	   .hero-title. Left-aligned, not centred — it is content now, and content on this
-	   site aligns to the rail. */
 	.lead__title {
 		grid-area: title;
-		/* Smaller than the old full-bleed hero, but still the largest type on the site —
-		   a post-page h1 tops out at 2.75rem. DESIGN.md §11 depends on that ordering. */
-		font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+		/* Still the largest type on the site — a post-page h1 tops out at 2.75rem. */
+		font-size: clamp(2rem, 4vw, 3.25rem);
 		margin: 0;
+		text-wrap: balance;
 	}
 
 	.lead__eyebrow {
 		grid-area: eyebrow;
-		font-family: var(--font-display);
-		font-size: 0.8125rem;
-		font-weight: 400;
+		font-size: 0.75rem;
+		font-weight: 600;
 		line-height: 1.4;
-		letter-spacing: 0.24em;
+		letter-spacing: 0.2em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		margin: 0 0 calc(var(--s-1) * -1);
@@ -281,12 +259,9 @@
 	.lead__link {
 		color: inherit;
 		text-decoration: none;
-		/* Underline only on hover — a rule under four lines of 68px Didone is heavy
-		   at rest, and the persistent CTA below already carries the affordance. */
-		text-decoration-color: var(--accent-dim);
+		text-decoration-color: var(--accent);
 		text-decoration-thickness: 1px;
 		text-underline-offset: 0.14em;
-		transition: text-decoration-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
@@ -305,14 +280,14 @@
 		grid-area: cta;
 		margin-top: var(--s-2);
 		min-height: 44px;
-		font-size: 0.875rem;
-		font-weight: 700;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
 		color: var(--text);
 		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
+		border-bottom: 1px solid var(--accent);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.lead__cta :global(svg) {
@@ -321,8 +296,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.lead__cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
+			color: var(--accent-dim);
 		}
 		.lead__cta:hover :global(svg) {
 			transform: translateX(3px);
@@ -335,14 +309,13 @@
 
 	.lead__link:focus-visible {
 		outline: none;
-		border-radius: 4px;
 		box-shadow: var(--focus-ring);
 	}
 
 	.lead__summary {
 		grid-area: summary;
-		font-size: 1rem;
-		line-height: 1.7;
+		font-size: 1.125rem;
+		line-height: 1.65;
 		color: var(--text-secondary);
 	}
 
@@ -359,40 +332,36 @@
 		grid-area: media;
 		align-self: start;
 		display: block;
-		border-radius: 6px;
 		overflow: hidden;
-		border: 1px solid var(--line);
+		border: 1px solid var(--line-strong);
+		padding: var(--s-2);
+		background: var(--surface);
 	}
 
 	.lead__cover {
 		width: 100%;
 		aspect-ratio: 4 / 3;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (hover: hover) and (pointer: fine) {
-		.lead__media:hover .lead__cover {
-			transform: scale(1.02);
-		}
+		border: 1px solid var(--line);
 	}
 
 	.filter {
-		margin-bottom: var(--s-7);
+		margin-bottom: var(--s-6);
 	}
 
 	.articles {
 		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		gap: 0;
+		max-width: none;
 	}
 
 	.empty {
 		color: var(--text-muted);
+		font-style: italic;
 	}
 
 	.about__more {
-		margin-top: var(--s-5);
+		margin-top: var(--s-4);
 	}
 
 	.inline-cta {
@@ -401,13 +370,12 @@
 		gap: var(--s-2);
 		min-height: 44px;
 		color: var(--text);
-		font-weight: 700;
-		font-size: 0.875rem;
+		font-weight: 600;
+		font-size: 0.75rem;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
 		text-decoration: none;
-		border-bottom: 1px solid var(--line-strong);
-		transition:
-			color var(--dur-fast) var(--ease-out),
-			border-color var(--dur-fast) var(--ease-out);
+		transition: color var(--dur-fast) var(--ease-out);
 	}
 
 	.inline-cta :global(svg) {
@@ -416,8 +384,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.inline-cta:hover {
-			color: var(--accent);
-			border-bottom-color: var(--accent);
+			color: var(--accent-dim);
 		}
 		.inline-cta:hover :global(svg) {
 			transform: translateX(3px);
@@ -430,7 +397,6 @@
 
 	.inline-cta:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 

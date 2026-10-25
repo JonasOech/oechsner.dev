@@ -5,20 +5,9 @@
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
+<!-- One line of the table of correspondence: date | subject and summary | enclosure. -->
 <a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
+	<time class="card__date" datetime={post.date}>{formatDate(post.date)}</time>
 
 	<div class="card__text">
 		<h3 class="card__title">{post.title}</h3>
@@ -26,8 +15,6 @@
 			<p class="card__summary">{post.summary}</p>
 		{/if}
 		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
 			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
 			     leave a dangling dot at the end of the line. -->
@@ -38,7 +25,7 @@
 		</p>
 	</div>
 
-	{#if !featured && post.cover}
+	{#if post.cover}
 		<div class="card__media">
 			<img
 				class="card__img"
@@ -56,49 +43,41 @@
 <style>
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: 7.5rem minmax(0, 1fr) 132px;
+		gap: var(--s-5);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+	}
+
+	:global(.articles) > .card:last-child {
+		border-bottom: 1px solid var(--line);
 	}
 
 	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
+	.card--noMedia {
+		grid-template-columns: 7.5rem minmax(0, 1fr);
 	}
 
-	.card--featured {
-		gap: var(--s-5);
+	.card__date {
+		font-size: 0.875rem;
+		line-height: 1.5;
+		padding-top: 0.2rem;
+		font-variant-numeric: tabular-nums lining-nums;
+		color: var(--text-muted);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+		.card:hover .card__title {
+			text-decoration-line: underline;
 		}
-		.card:hover .card__img {
-			transform: scale(1.03);
-		}
-	}
-
-	.card:active {
-		background: var(--surface-active);
 	}
 
 	.card:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
-		background: var(--surface);
 	}
 
 	.card__text {
@@ -106,22 +85,23 @@
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
-		letter-spacing: -0.005em;
+		font-size: 1.3125rem;
+		font-weight: 600;
+		line-height: 1.3;
+		letter-spacing: -0.01em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.card--featured .card__title {
-		font-size: 1.375rem;
+		margin: 0 0 var(--s-2);
+		text-decoration-line: none;
+		text-decoration-color: var(--accent);
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.2em;
 	}
 
 	.card__summary {
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+		font-size: 1rem;
+		line-height: 1.6;
+		margin: 0 0 var(--s-2);
 	}
 
 	.card__dot {
@@ -131,35 +111,32 @@
 
 	.card__media {
 		overflow: hidden;
-		border-radius: 4px;
+		border: 1px solid var(--line);
 		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
 	}
 
 	.card__img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
 	}
 
 	@media (max-width: 767px) {
 		.card {
+			grid-template-columns: minmax(0, 1fr) 96px;
+			gap: var(--s-1) var(--s-4);
+		}
+		.card--noMedia {
 			grid-template-columns: minmax(0, 1fr);
 		}
-		/* Thumbnail drops below the text at full width. */
+		/* Date on its own line above the subject; the enclosure shrinks to a stamp at the side. */
+		.card__date {
+			grid-column: 1 / -1;
+			padding-top: 0;
+		}
 		.card__media {
-			aspect-ratio: 16 / 9;
+			grid-column: 2;
+			grid-row: 2;
 		}
 	}
 </style>

@@ -31,15 +31,15 @@
 <style>
 	.error {
 		display: grid;
-		justify-items: center;
-		text-align: center;
+		justify-items: start;
 		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-10);
+		padding-top: var(--s-9);
+		padding-bottom: var(--s-9);
 	}
 
 	.lede {
 		max-width: 46ch;
+		font-style: italic;
 	}
 
 	@media (max-width: 767px) {

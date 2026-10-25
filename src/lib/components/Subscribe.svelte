@@ -76,11 +76,9 @@
 		grid-template-columns: auto minmax(0, 1fr) auto;
 		align-items: center;
 		gap: var(--s-4) var(--s-5);
-		padding: var(--s-5);
-		background: var(--surface);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		box-shadow: var(--shadow-inset);
+		padding: var(--s-5) 0;
+		border-top: 1px solid var(--line-strong);
+		border-bottom: 1px solid var(--line);
 	}
 
 	/* The accent is kept for the one mark that says "feed" — the rest of the block is the
@@ -90,10 +88,9 @@
 		place-items: center;
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 8px;
+		border-radius: 0;
 		color: var(--accent);
-		background: var(--accent-wash);
-		border: 1px solid rgba(var(--accent-rgb), 0.25);
+		border: 1px solid var(--line-strong);
 	}
 
 	.subscribe__text {
@@ -103,7 +100,7 @@
 
 	.subscribe__copy {
 		margin: 0;
-		font-size: 0.9375rem;
+		font-size: 1rem;
 		line-height: 1.6;
 		color: var(--text-secondary);
 	}
@@ -134,7 +131,7 @@
 
 	@media (hover: hover) and (pointer: fine) {
 		.subscribe__links a:hover {
-			color: var(--accent);
+			color: var(--accent-dim);
 			text-decoration-color: var(--accent);
 		}
 	}

@@ -122,7 +122,7 @@
 
 	.chip[data-open='true'] {
 		background: var(--surface-active);
-		color: var(--accent);
+		color: var(--text);
 		box-shadow: inset 0 -2px 0 var(--accent);
 	}
 
@@ -134,7 +134,7 @@
 
 		.chip[data-open='true']:hover {
 			background: var(--surface-active);
-			color: var(--accent);
+			color: var(--text);
 		}
 	}
 

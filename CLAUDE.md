@@ -32,12 +32,12 @@ in the project. Non-negotiables that come out of it:
 - **No component hard-codes a colour.** Everything resolves to a `var(--…)` token declared
   in `src/app.css`. (`src/lib/components/rpm/` is a deliberate exception — that figure set
   renders on a light plate and in feed readers.)
-- **Dark is the only theme.** Do not add a light mode or a theme toggle.
-- Type roles are fixed: Playfair Display for the lead-post title and rail labels only,
-  DM Sans for everything else, JetBrains Mono for code. `--text-muted` is meta text only
+- **Light "stationery" is the only theme.** Do not add a dark mode or a theme toggle.
+- Type roles are fixed: Source Serif 4 for all text (self-hosted via `@fontsource-variable`),
+  JetBrains Mono for code. `--text-muted` is meta text only
   and has no contrast headroom — re-measure against both `--bg` and `--surface` if changed.
 - Icons are inline SVG in `src/lib/components/Icon.svelte`. No emoji, no icon font.
-- §11 ("content-first hierarchy") governs the home page: the largest type on the site is
+- §10 ("content-first hierarchy") governs the home page: the largest type on the site is
   always a piece of writing, never the author's name. Read it before moving anything above
   the fold.
 
