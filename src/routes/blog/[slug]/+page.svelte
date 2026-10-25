@@ -194,7 +194,7 @@
 	   middle of the page instead. */
 	.post {
 		grid-column: 2;
-		padding-top: var(--s-9);
+		padding-top: var(--s-6);
 		max-width: var(--measure-prose);
 		margin-inline: auto;
 	}
@@ -211,8 +211,8 @@
 		gap: var(--s-2);
 		align-self: start;
 		font-size: 0.75rem;
-		font-weight: 700;
-		letter-spacing: 0.11em;
+		font-weight: 600;
+		letter-spacing: 0.1em;
 		text-transform: uppercase;
 		color: var(--text-muted);
 		text-decoration: none;
@@ -246,7 +246,7 @@
 
 	.post__title {
 		font-size: clamp(1.875rem, 4.5vw, 2.75rem);
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1.15;
 		letter-spacing: -0.02em;
 	}
@@ -289,7 +289,7 @@
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
-		border-radius: 6px;
+		border-radius: var(--radius);
 		border: 1px solid var(--line);
 		margin-bottom: var(--s-8);
 	}
@@ -307,7 +307,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: var(--s-4);
-		margin-top: var(--s-9);
+		margin-top: var(--s-7);
 		padding-top: var(--s-6);
 		border-top: 1px solid var(--line);
 		max-width: var(--measure-prose);
@@ -319,7 +319,7 @@
 		gap: var(--s-2);
 		padding: var(--s-4);
 		margin: calc(var(--s-4) * -1);
-		border-radius: 8px;
+		border-radius: var(--radius);
 		border: 1px solid transparent;
 		text-decoration: none;
 		transition:
@@ -351,7 +351,7 @@
 
 	.post__nav-title {
 		color: var(--text);
-		font-weight: 700;
+		font-weight: 600;
 		line-height: 1.4;
 	}
 

@@ -4,9 +4,7 @@ Personal portfolio and blog for Jonas Öchsner. **SvelteKit**, fully prerendered
 **Cloudflare Pages** through Cloudflare's own Git integration — no API tokens, no deploy
 credentials anywhere.
 
-The visual design is specified in [`DESIGN.md`](DESIGN.md) and derived from the
-[Elevate portfolio template](https://dribbble.com/shots/20829830-Portfolio-Template-Elevate)
-by Gaël Duval. **Read DESIGN.md before changing any styling** — it is the contract the CSS
+The visual design ("sheets on a desk") is specified in [`DESIGN.md`](DESIGN.md). **Read DESIGN.md before changing any styling** — it is the contract the CSS
 implements, including the rule that no component may hard-code a colour.
 
 **The site leads with the writing, not the author.** `/` is the post index; the newest post's
@@ -130,17 +128,11 @@ Consequences worth knowing:
   bumping `privacy.updated` in `src/lib/data/site.ts`. Consent is only valid for what the
   visitor was actually told.
 
-### One open legal item
+### Fonts
 
-- **Google Fonts is loaded from Google's CDN** (`@import` in `src/app.css`), which sends every
-  visitor's IP address to Google **on every page load, before and regardless of the consent
-  banner**. This is the exact fact pattern in *LG München I, 3 O 17493/20*, where remote Google
-  Fonts embedding without consent was held to violate the GDPR. The consent gate does not touch
-  it, and it cannot be put behind consent — declining would leave the site unstyled. The remedy
-  is self-hosting the font files, which also removes a third-party connection from the critical
-  path. Not done here because it puts font binaries in the repo, which is your call. Until then
-  `src/routes/datenschutz/+page.svelte` describes the embedding truthfully, under Art. 6 Abs. 1
-  lit. f.
+IBM Plex Sans and IBM Plex Mono are self-hosted through the `@fontsource` packages (imported at
+the top of `src/app.css`), so no visitor IP address goes to a font CDN. The Datenschutz
+"Schriftarten" paragraph says exactly that; keep it in step if the fonts change.
 
 ## Connecting the Pages project
 

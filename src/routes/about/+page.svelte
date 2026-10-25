@@ -94,7 +94,7 @@
 	.intro {
 		display: grid;
 		gap: var(--s-5);
-		padding-top: var(--s-9);
+		padding-top: var(--s-6);
 		max-width: var(--measure);
 	}
 

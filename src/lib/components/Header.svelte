@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { afterNavigate } from '$app/navigation';
-	import { nav } from '$lib/data/site';
+	import { nav, site } from '$lib/data/site';
 
 	let sentinel: HTMLElement;
 	let scrolled = $state(false);
@@ -89,6 +89,11 @@
 
 <header class="header" data-scrolled={scrolled}>
 	<nav class="container nav" aria-label="Primary">
+		<a class="brand" href="/" aria-label="{site.shortName}, home">
+			<span class="brand__mark" aria-hidden="true"></span>
+			{site.shortName}
+		</a>
+
 		<a
 			class="nav__link"
 			href={primary.href}
@@ -146,84 +151,88 @@
 		pointer-events: none;
 	}
 
+	/* The menu bar: a slim full-width strip, like the one above a native document window. */
 	.header {
 		position: sticky;
 		top: 0;
 		z-index: 50;
-		background: transparent;
-		border-bottom: 1px solid transparent;
-		transition:
-			background-color var(--dur-base) var(--ease-out),
-			border-color var(--dur-base) var(--ease-out),
-			box-shadow var(--dur-base) var(--ease-out);
-	}
-
-	.header[data-scrolled='true'] {
-		background: rgba(var(--bg-rgb), 0.78);
-		/* Capped at 12px and confined to a thin bar — DESIGN.md §8, Don't #3. */
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-bottom-color: var(--line);
-		box-shadow: var(--shadow-3);
+		background: var(--surface);
+		border-bottom: 1px solid var(--line-strong);
 	}
 
 	.nav {
 		display: flex;
-		justify-content: center;
-		gap: 1.75rem;
-		padding-block: var(--s-5);
+		align-items: center;
+		justify-content: flex-start;
+		gap: 0.25rem;
+		height: var(--header-h);
+		padding-block: 0;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-right: auto;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: var(--text);
+		text-decoration: none;
+		white-space: nowrap;
+		padding: 0.25rem 0.25rem;
+		border-radius: var(--radius);
+	}
+
+	/* A small blue square, the one place the accent is used as a fill. It is the document
+	   icon in the title bar. */
+	.brand__mark {
+		width: 0.625rem;
+		height: 0.75rem;
+		background: var(--accent);
+		border-radius: 1px;
+	}
+
+	.brand:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
 	}
 
 	.nav__link {
 		font-family: var(--font-sans);
-		font-size: 0.75rem;
-		font-weight: 700;
+		font-size: 0.8125rem;
+		font-weight: 500;
 		line-height: 1;
-		letter-spacing: 0.11em;
-		text-transform: uppercase;
-		color: var(--text-muted);
+		color: var(--text-secondary);
 		text-decoration: none;
 		white-space: nowrap;
 		position: relative;
-		padding: 0.5rem 0.125rem;
-		transition: color var(--dur-fast) var(--ease-out);
-	}
-
-	.nav__link::after {
-		content: '';
-		position: absolute;
-		left: 0;
-		bottom: 0.125rem;
-		width: 100%;
-		height: 1px;
-		background: currentColor;
-		transform: scaleX(0);
-		transform-origin: right;
-		transition: transform var(--dur-base) var(--ease-out);
+		padding: 0.4375rem 0.625rem;
+		border-radius: var(--radius);
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out);
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.nav__link:hover {
-			color: var(--text-secondary);
-		}
-		.nav__link:hover::after {
-			transform: scaleX(1);
-			transform-origin: left;
+			color: var(--text);
+			background: var(--surface-active);
 		}
 	}
 
 	.nav__link:active {
-		color: var(--text);
+		background: var(--surface-active);
 	}
 
 	.nav__link[aria-current='page'],
 	.nav__link[data-current='true'] {
-		color: var(--text);
+		color: var(--accent-dim);
+		background: var(--accent-wash);
 	}
 
 	.nav__link:focus-visible {
 		outline: none;
-		border-radius: 3px;
 		box-shadow: var(--focus-ring);
 	}
 
@@ -281,28 +290,16 @@
 			display: grid;
 			position: absolute;
 			z-index: 1;
-			top: calc(100% + var(--s-2));
-			left: 50%;
-			transform: translateX(-50%);
-			min-width: max-content;
+			top: calc(100% + var(--s-1));
+			right: 0;
+			min-width: 9rem;
 			max-width: calc(100vw - 2 * var(--gutter));
-			padding: var(--s-2);
-			/* Translucent, on the header's terms: same 12px blur cap, and a slightly heavier
-			   tint than the bar's 0.78 so the labels keep their contrast over prose. */
-			background: rgba(var(--surface-rgb), 0.82);
-			backdrop-filter: blur(12px);
-			-webkit-backdrop-filter: blur(12px);
-			border: 1px solid var(--line);
-			border-radius: 6px;
-			box-shadow: var(--shadow-3);
-		}
-
-		/* Without backdrop-filter the tint alone would let text show through, so fall back
-		   to the opaque surface. */
-		@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-			.nav .more__panel {
-				background: var(--surface);
-			}
+			padding: var(--s-1);
+			/* A menu is a small sheet: opaque white, hairline, the site's one shadow. */
+			background: var(--sheet);
+			border: 1px solid var(--line-strong);
+			border-radius: var(--radius);
+			box-shadow: var(--shadow-sheet);
 		}
 
 		.nav .more:not([data-open='true']) .more__panel {
@@ -311,15 +308,8 @@
 
 		.more__panel .nav__link {
 			padding: 0.625rem var(--s-3);
-			/* Grid blockifies the link; `justify-content` is the one that bites once the
-			   coarse-pointer rule below turns it into a flex box. */
-			text-align: center;
-			justify-content: center;
-		}
-
-		/* The underline is a bar affordance; inside the panel the row itself is the target. */
-		.more__panel .nav__link::after {
-			content: none;
+			text-align: left;
+			justify-content: flex-start;
 		}
 	}
 
@@ -329,8 +319,8 @@
 		.nav__link {
 			display: inline-flex;
 			align-items: center;
-			min-height: 44px;
-			padding: 0 0.5rem;
+			min-height: 40px;
+			padding: 0 0.625rem;
 		}
 	}
 </style>

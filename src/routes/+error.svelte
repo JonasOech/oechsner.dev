@@ -34,8 +34,8 @@
 		justify-items: center;
 		text-align: center;
 		gap: var(--s-5);
-		padding-top: var(--s-10);
-		padding-bottom: var(--s-10);
+		padding-top: var(--s-8);
+		padding-bottom: var(--s-8);
 	}
 
 	.lede {

@@ -2,32 +2,19 @@
 	import { formatDate, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
-	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
+	let { post }: { post: Post } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
-
+<a class="card" class:card--noMedia={!post.cover} href="/blog/{post.slug}">
 	<div class="card__text">
-		<h3 class="card__title">{post.title}</h3>
+		<div class="card__head">
+			<h3 class="card__title">{post.title}</h3>
+			<time class="card__date" datetime={post.date}>{formatDate(post.date)}</time>
+		</div>
 		{#if post.summary}
 			<p class="card__summary">{post.summary}</p>
 		{/if}
 		<p class="meta">
-			<time datetime={post.date}>{formatDate(post.date)}</time>
-			<span class="card__dot" aria-hidden="true">·</span>
 			{post.readingMinutes} min read
 			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
 			     leave a dangling dot at the end of the line. -->
@@ -38,7 +25,7 @@
 		</p>
 	</div>
 
-	{#if !featured && post.cover}
+	{#if post.cover}
 		<div class="card__media">
 			<img
 				class="card__img"
@@ -54,40 +41,38 @@
 </a>
 
 <style>
+	/* One row of the list pane: thumbnail, then title / summary / meta, the date set apart
+	   in mono at the right edge. Hairline between rows; the hover wash is the selection. */
 	.card {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
+		grid-template-columns: 112px minmax(0, 1fr);
+		grid-template-areas: 'media text';
+		gap: var(--s-4);
 		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
-		border-radius: 8px;
+		padding: var(--s-4);
 		background: transparent;
-		border: 1px solid transparent;
+		border-bottom: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
-		transition:
-			background-color 220ms var(--ease-out),
-			border-color 220ms var(--ease-out);
+		transition: background-color var(--dur-fast) var(--ease-out);
+	}
+
+	.card:last-child {
+		border-bottom: 0;
 	}
 
 	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
+	.card--noMedia {
 		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.card--featured {
-		gap: var(--s-5);
+		grid-template-areas: 'text';
 	}
 
 	@media (hover: hover) and (pointer: fine) {
 		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			background: var(--accent-wash);
 		}
-		.card:hover .card__img {
-			transform: scale(1.03);
+		.card:hover .card__title {
+			color: var(--accent-dim);
 		}
 	}
 
@@ -97,31 +82,52 @@
 
 	.card:focus-visible {
 		outline: none;
-		box-shadow: var(--focus-ring);
-		background: var(--surface);
+		box-shadow: inset 0 0 0 2px rgba(var(--accent-rgb), 0.8);
+		background: var(--accent-wash);
 	}
 
 	.card__text {
+		grid-area: text;
 		min-width: 0;
+		display: grid;
+		gap: var(--s-1);
+	}
+
+	.card__head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		column-gap: var(--s-4);
+		row-gap: 0;
 	}
 
 	.card__title {
-		font-size: 1.1875rem;
-		font-weight: 700;
-		line-height: 1.35;
+		flex: 1 1 16rem;
+		min-width: 0;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.4;
 		letter-spacing: -0.005em;
 		color: var(--text);
-		margin: 0 0 var(--s-3);
+		margin: 0;
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	.card--featured .card__title {
-		font-size: 1.375rem;
+	.card__date {
+		flex: none;
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		color: var(--text-muted);
+		white-space: nowrap;
 	}
 
 	.card__summary {
+		font-size: 0.875rem;
+		line-height: 1.55;
 		color: var(--text-secondary);
-		margin: 0 0 var(--s-3);
+		margin: 0 0 var(--s-1);
 	}
 
 	.card__dot {
@@ -130,36 +136,33 @@
 	}
 
 	.card__media {
+		grid-area: media;
 		overflow: hidden;
-		border-radius: 4px;
+		border-radius: 2px;
+		border: 1px solid var(--line);
 		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
-		aspect-ratio: 16 / 9;
-		order: -1;
 	}
 
 	.card__img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		transition: transform 480ms var(--ease-out);
 	}
 
-	@media (max-width: 1023px) {
+	@media (max-width: 599px) {
 		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
+			grid-template-columns: 76px minmax(0, 1fr);
+			gap: var(--s-3);
+			padding: var(--s-3);
 		}
-	}
-
-	@media (max-width: 767px) {
-		.card {
+		.card--noMedia {
 			grid-template-columns: minmax(0, 1fr);
 		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
+		.card__head {
+			flex-direction: column;
+		}
+		.card__title {
+			flex-basis: auto;
 		}
 	}
 </style>

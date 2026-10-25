@@ -154,7 +154,7 @@
 		padding-right: var(--s-7);
 		background: var(--surface);
 		border: 1px solid var(--line);
-		border-radius: 10px;
+		border-radius: var(--radius);
 	}
 
 	/* KaTeX's display block already scrolls sideways under app.css (`.prose .katex-display`).
