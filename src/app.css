@@ -836,6 +836,27 @@ a {
 	text-underline-offset: 0.2em;
 }
 
+/* Cross-references to the C1–C5 challenges and S1–S5 solutions in the Tuvalu case study.
+   They are plain Markdown links, so they are picked out by target. Same quiet treatment
+   as a citation, but a solid grey underline instead of the accent one. */
+.prose :is(a[href='#c1'], a[href='#c2'], a[href='#c3'], a[href='#c4'], a[href='#c5'], a[href='#s1'], a[href='#s2'], a[href='#s3'], a[href='#s4'], a[href='#s5']) {
+	background-image: linear-gradient(var(--text-muted), var(--text-muted));
+}
+
+/* Following a cross-reference lands on the definition; mark it the way a followed
+   citation marks its bibliography entry. */
+.prose .def {
+	border-radius: 3px;
+	transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.prose .def:target {
+	background: var(--accent-wash);
+	box-shadow: 0 0 0 0.25em var(--accent-wash);
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
+
 /* The bibliography the plugin appends. APA sets it with a hanging indent and no
    numbering, and it is reference material, so a step down from the body copy. */
 .prose .references {
