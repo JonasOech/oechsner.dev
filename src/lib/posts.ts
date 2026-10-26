@@ -7,6 +7,10 @@ export type PostMeta = {
 	tags: string[];
 	cover?: string;
 	coverAlt?: string;
+	/** A PDF in `static/` to offer for download under the post's facts; omit for no button. */
+	download?: string;
+	/** The button's label. Defaults to "Download PDF". */
+	downloadLabel?: string;
 	draft?: boolean;
 	/** How deep the post goes, 1–3. Shown as 🤓 beside the read time; omit to hide it. */
 	nerdyness?: 1 | 2 | 3;
@@ -80,6 +84,8 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			tags: meta.tags ?? [],
 			cover: meta.cover,
 			coverAlt: meta.coverAlt,
+			download: meta.download,
+			downloadLabel: meta.downloadLabel,
 			draft: meta.draft ?? false,
 			nerdyness: meta.nerdyness,
 			// Deliberately not defaulted: `undefined` and `false` mean different things here.

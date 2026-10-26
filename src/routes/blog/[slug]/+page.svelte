@@ -122,6 +122,15 @@
 					<HumanWritten />
 				{/if}
 			</div>
+
+			{#if post.download}
+				<div class="btn-row">
+					<a class="btn btn--secondary" href={post.download} download>
+						<Icon name="arrow-down" />
+						{post.downloadLabel ?? 'Download PDF'}
+					</a>
+				</div>
+			{/if}
 		</header>
 
 		{#if post.cover}

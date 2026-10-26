@@ -5,18 +5,22 @@ summary: >-
   Tuvalu wants to become the world's first digital nation before rising seas take its land.
   My case study for a Digital Transformation module: the drivers, five unresolved challenges,
   five proposed solutions and how they fit national goals.
-tags: ['digital transformation', 'case study']
+tags: ['case study', 'opinion']
 nerdyness: 1
 draft: false
 hero: false
 cover: /img/tuvalu/cover.svg
+download: /downloads/digital-transformation-in-tuvalu.pdf
+downloadLabel: Download the paper
 coverAlt: >-
   The flag of Tuvalu on a dark background: a light blue field with the Union Jack in the upper
   left corner and nine yellow stars, one for each island
 ai: true
 ---
 
-> *A case study on the digitalisation of a small island state facing existential threat: my report for the module CRDD H1200 Digital Transformation at TU Dublin.*
+> A case study on the digitalisation of a small island state facing existential threat: my report for the module CRDD H1200 Digital Transformation at TU Dublin.
+> This is neither proper scientific work nor peer reviewed. CHECK SOURCES!
+
 
 ## Introduction
 
