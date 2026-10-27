@@ -190,32 +190,15 @@ supplies all the contrast the headline needs.
 }
 ```
 
-### Cards (article row)
+### Cards (article tile)
 
-The article row is **not** a bordered card. It is an invisible hit area that tints on hover —
-exactly the behaviour visible on the second row of the reference home page.
+The home page lists posts as a grid of tiles: `repeat(auto-fill, minmax(17rem, 1fr))`, `--s-5`
+gap, tiles in a row stretched to equal height. A tile is a `--surface` panel with a 1px
+`--line` border, the 16:9 cover on top and title, summary and meta below. Hover strengthens the
+border to `--line-strong` and zooms the cover; it never gains a shadow.
 
-```css
-.card {
-  display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 2rem;
-  padding: 1.5rem; margin: 0 -1.5rem; border-radius: 8px;
-  background: transparent; border: 1px solid transparent;
-  text-decoration: none; color: inherit;
-  transition: background-color 220ms var(--ease-out), border-color 220ms var(--ease-out);
-}
-.card:hover              { background: var(--surface); border-color: var(--line); }
-.card:hover .card__img   { transform: scale(1.03); }
-.card:active             { background: var(--surface-active); }
-.card:focus-visible      { outline: none; box-shadow: var(--focus-ring); background: var(--surface); }
-.card__title { color: var(--text); transition: color 180ms var(--ease-out); }
-.card:hover .card__title { color: var(--text); }
-.card__media { overflow: hidden; border-radius: 4px; aspect-ratio: 4 / 3; }
-.card__img   { width: 100%; height: 100%; object-fit: cover;
-               transition: transform 480ms var(--ease-out); }
-```
-
-A post with no cover image omits `.card__media` entirely and the grid collapses to one column —
-never a solid color block standing in for a photo.
+A post with no cover image omits `.card__media` entirely — never a solid color block standing
+in for a photo.
 
 ### Navigation
 

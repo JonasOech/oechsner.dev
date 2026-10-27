@@ -410,11 +410,12 @@
 
 	.articles {
 		display: grid;
-		gap: var(--s-2);
-		max-width: var(--measure);
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+		gap: var(--s-5);
 	}
 
 	.empty {
+		grid-column: 1 / -1;
 		color: var(--text-muted);
 	}
 

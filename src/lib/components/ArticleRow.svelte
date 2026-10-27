@@ -2,18 +2,18 @@
 	import { formatDate, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 
-	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
+	let { post }: { post: Post } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
-	{#if featured && post.cover}
-		<div class="card__media card__media--wide">
+<a class="card" href="/blog/{post.slug}">
+	{#if post.cover}
+		<div class="card__media">
 			<img
 				class="card__img"
 				src={post.cover}
 				alt={post.coverAlt ?? ''}
-				width="720"
-				height="405"
+				width="380"
+				height="285"
 				loading="lazy"
 				decoding="async"
 			/>
@@ -37,33 +37,20 @@
 			{/if}
 		</p>
 	</div>
-
-	{#if !featured && post.cover}
-		<div class="card__media">
-			<img
-				class="card__img"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="380"
-				height="285"
-				loading="lazy"
-				decoding="async"
-			/>
-		</div>
-	{/if}
 </a>
 
 <style>
+	/* A tile: cover on top, text below, every tile in a row stretched to the same height
+	   by the parent grid. */
 	.card {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) 190px;
-		gap: var(--s-6);
-		align-items: start;
-		padding: var(--s-5);
-		margin-inline: calc(var(--s-5) * -1);
+		display: flex;
+		flex-direction: column;
+		gap: var(--s-4);
+		height: 100%;
+		padding: var(--s-4);
 		border-radius: 8px;
-		background: transparent;
-		border: 1px solid transparent;
+		background: var(--surface);
+		border: 1px solid var(--line);
 		text-decoration: none;
 		color: inherit;
 		transition:
@@ -71,20 +58,9 @@
 			border-color 220ms var(--ease-out);
 	}
 
-	/* No cover image means no media column — never a solid block standing in for a photo. */
-	.card--noMedia,
-	.card--featured {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.card--featured {
-		gap: var(--s-5);
-	}
-
 	@media (hover: hover) and (pointer: fine) {
 		.card:hover {
-			background: var(--surface);
-			border-color: var(--line);
+			border-color: var(--line-strong);
 		}
 		.card:hover .card__img {
 			transform: scale(1.03);
@@ -115,10 +91,6 @@
 		transition: color var(--dur-fast) var(--ease-out);
 	}
 
-	.card--featured .card__title {
-		font-size: 1.375rem;
-	}
-
 	.card__summary {
 		color: var(--text-secondary);
 		margin: 0 0 var(--s-3);
@@ -132,12 +104,7 @@
 	.card__media {
 		overflow: hidden;
 		border-radius: 4px;
-		aspect-ratio: 4 / 3;
-	}
-
-	.card__media--wide {
 		aspect-ratio: 16 / 9;
-		order: -1;
 	}
 
 	.card__img {
@@ -145,21 +112,5 @@
 		height: 100%;
 		object-fit: cover;
 		transition: transform 480ms var(--ease-out);
-	}
-
-	@media (max-width: 1023px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr) 150px;
-		}
-	}
-
-	@media (max-width: 767px) {
-		.card {
-			grid-template-columns: minmax(0, 1fr);
-		}
-		/* Thumbnail drops below the text at full width. */
-		.card__media {
-			aspect-ratio: 16 / 9;
-		}
 	}
 </style>
