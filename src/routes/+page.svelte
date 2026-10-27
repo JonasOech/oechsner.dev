@@ -30,6 +30,32 @@
 	function toggleTag(tag: string) {
 		activeTag = activeTag === tag ? null : tag;
 	}
+
+	const feedUrl = `${site.url}${feeds.rss}`;
+
+	let copied = $state(false);
+	let copyTimer: ReturnType<typeof setTimeout> | undefined;
+
+	/**
+	 * A plain click copies the feed URL instead of navigating to raw XML. The href stays, so
+	 * modified clicks (new tab, download) and a refused clipboard fall through to the link.
+	 */
+	async function copyFeed(e: MouseEvent) {
+		if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+		e.preventDefault();
+		try {
+			await navigator.clipboard.writeText(feedUrl);
+		} catch {
+			location.href = feeds.rss;
+			return;
+		}
+		trackFeed('copy-url', 'home-intro');
+		copied = true;
+		clearTimeout(copyTimer);
+		copyTimer = setTimeout(() => (copied = false), 2200);
+	}
+
+	$effect(() => () => clearTimeout(copyTimer));
 </script>
 
 <Seo title={site.name} />
@@ -56,10 +82,11 @@
 				href={feeds.rss}
 				type="application/rss+xml"
 				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'home-intro')}
+				onclick={copyFeed}
 			>
-				<Icon name="rss" size={14} />
-				Subscribe
+				<Icon name={copied ? 'check' : 'rss'} size={14} />
+				<!-- Announced on change, so a screen reader hears the confirmation it cannot see. -->
+				<span aria-live="polite">{copied ? 'RSS URL copied' : 'Subscribe'}</span>
 			</a>
 		</p>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
