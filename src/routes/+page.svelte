@@ -30,6 +30,32 @@
 	function toggleTag(tag: string) {
 		activeTag = activeTag === tag ? null : tag;
 	}
+
+	const feedUrl = `${site.url}${feeds.rss}`;
+
+	let toast = $state(false);
+	let toastTimer: ReturnType<typeof setTimeout> | undefined;
+
+	/**
+	 * A plain click copies the feed URL instead of navigating to raw XML. The href stays, so
+	 * modified clicks (new tab, download) and a refused clipboard fall through to the link.
+	 */
+	async function copyFeed(e: MouseEvent) {
+		if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+		e.preventDefault();
+		try {
+			await navigator.clipboard.writeText(feedUrl);
+		} catch {
+			location.href = feeds.rss;
+			return;
+		}
+		trackFeed('copy-url', 'home-intro');
+		toast = true;
+		clearTimeout(toastTimer);
+		toastTimer = setTimeout(() => (toast = false), 2200);
+	}
+
+	$effect(() => () => clearTimeout(toastTimer));
 </script>
 
 <Seo title={site.name} />
@@ -56,11 +82,18 @@
 				href={feeds.rss}
 				type="application/rss+xml"
 				data-sveltekit-reload
-				onclick={() => trackFeed('open-rss', 'home-intro')}
+				onclick={copyFeed}
 			>
 				<Icon name="rss" size={14} />
 				Subscribe
 			</a>
+		</p>
+		<!-- Always mounted so the live region is announced reliably; shown by class. -->
+		<p class="toast" class:toast--show={toast} role="status">
+			{#if toast}
+				<Icon name="check" size={16} />
+				Copied RSS feed URL
+			{/if}
 		</p>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p> -->
@@ -220,6 +253,40 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: var(--s-2) var(--s-6);
+	}
+
+	.toast {
+		position: fixed;
+		left: 50%;
+		bottom: var(--s-6);
+		z-index: 100;
+		display: inline-flex;
+		align-items: center;
+		gap: var(--s-2);
+		margin: 0;
+		padding: var(--s-3) var(--s-4);
+		font-size: 0.875rem;
+		font-weight: 700;
+		color: var(--text);
+		background: var(--surface);
+		border: 1px solid var(--line-strong);
+		border-radius: 999px;
+		box-shadow: var(--shadow-3);
+		opacity: 0;
+		pointer-events: none;
+		transform: translate(-50%, 8px);
+		transition:
+			opacity var(--dur-base) var(--ease-out),
+			transform var(--dur-base) var(--ease-out);
+	}
+
+	.toast--show {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+
+	.toast :global(svg) {
+		color: var(--success);
 	}
 
 	/* The feed icon leads its label rather than trailing it, so it should not take the
