@@ -9,7 +9,6 @@
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate } from '$lib/posts';
 	import { trackFeed } from '$lib/track';
-	import { fly } from 'svelte/transition';
 
 	let activeTag = $state<string | null>(null);
 
@@ -34,8 +33,8 @@
 
 	const feedUrl = `${site.url}${feeds.rss}`;
 
-	let toast = $state(false);
-	let toastTimer: ReturnType<typeof setTimeout> | undefined;
+	let copied = $state(false);
+	let copyTimer: ReturnType<typeof setTimeout> | undefined;
 
 	/**
 	 * A plain click copies the feed URL instead of navigating to raw XML. The href stays, so
@@ -51,12 +50,12 @@
 			return;
 		}
 		trackFeed('copy-url', 'home-intro');
-		toast = true;
-		clearTimeout(toastTimer);
-		toastTimer = setTimeout(() => (toast = false), 2200);
+		copied = true;
+		clearTimeout(copyTimer);
+		copyTimer = setTimeout(() => (copied = false), 2200);
 	}
 
-	$effect(() => () => clearTimeout(toastTimer));
+	$effect(() => () => clearTimeout(copyTimer));
 </script>
 
 <Seo title={site.name} />
@@ -85,19 +84,11 @@
 				data-sveltekit-reload
 				onclick={copyFeed}
 			>
-				<Icon name="rss" size={14} />
-				Subscribe
+				<Icon name={copied ? 'check' : 'rss'} size={14} />
+				<!-- Announced on change, so a screen reader hears the confirmation it cannot see. -->
+				<span aria-live="polite">{copied ? 'RSS URL copied' : 'Subscribe'}</span>
 			</a>
 		</p>
-		<!-- Always mounted so the live region is announced reliably. -->
-		<div class="toast" role="status">
-			{#if toast}
-				<div class="toast__panel" transition:fly={{ y: 12, duration: 260 }}>
-					<Icon name="check" size={16} />
-					Copied RSS feed URL
-				</div>
-			{/if}
-		</div>
 		<!-- <p class="intro__prebyline">{site.prebyline}</p>
 		<p class="intro__byline">{site.byline}</p> -->
 	</header>
@@ -256,45 +247,6 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: var(--s-2) var(--s-6);
-	}
-
-	/* Same placement and surface as the consent banner (ConsentBanner.svelte): a full-width
-	   fixed strip along the bottom, with a translucent panel centred in the container. */
-	.toast {
-		position: fixed;
-		z-index: 90;
-		inset: auto 0 0 0;
-		padding: var(--s-4) var(--gutter);
-		padding-bottom: max(var(--s-4), env(safe-area-inset-bottom));
-		pointer-events: none;
-	}
-
-	.toast__panel {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--s-3);
-		max-width: var(--container);
-		margin-inline: auto;
-		padding: var(--s-4) var(--s-5);
-		font-size: 0.9375rem;
-		font-weight: 700;
-		color: var(--text);
-		border: 1px solid var(--line);
-		border-radius: 10px;
-		background: rgba(var(--surface-rgb), 0.92);
-		backdrop-filter: blur(12px);
-		box-shadow: var(--shadow-4);
-	}
-
-	@supports not (backdrop-filter: blur(12px)) {
-		.toast__panel {
-			background: var(--surface);
-		}
-	}
-
-	.toast__panel :global(svg) {
-		color: var(--success);
 	}
 
 	/* The feed icon leads its label rather than trailing it, so it should not take the
