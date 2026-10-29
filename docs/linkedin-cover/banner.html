@@ -1,0 +1,53 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<style>
+:root{--bg:#0e0f12;--text:#f4f4f6;--text-secondary:#a3a4ac;--text-muted:#80818a;--line:#24252b;--line-strong:#34353d;--accent:#e0a85c;--accent-rgb:224,168,92}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1584px;height:396px;background:var(--bg);overflow:hidden}
+.c{position:relative;width:1584px;height:396px;overflow:hidden;
+ background:
+  radial-gradient(ellipse 900px 520px at 4% -10%, rgba(86,108,148,.30), transparent 70%),
+  radial-gradient(ellipse 900px 560px at 100% -6%, rgba(176,108,46,.30), transparent 70%),
+  var(--bg)}
+.dots{position:absolute;inset:0;background-image:radial-gradient(circle at 1px 1px, rgba(244,244,246,.06) 1px, transparent 1.4px);background-size:24px 24px}
+svg.net{position:absolute;left:0;top:0}
+.copy{position:absolute;left:610px;right:176px;top:50%;transform:translateY(-50%)}
+.rail{font-family:'Playfair Display',serif;font-size:15px;letter-spacing:.24em;text-transform:uppercase;color:var(--text-muted);display:flex;align-items:center;gap:16px}
+.rail i{display:block;width:32px;height:1px;background:var(--accent)}
+h1{margin-top:22px;font-family:'Playfair Display',serif;font-weight:400;font-size:56px;line-height:1.06;letter-spacing:-.015em;
+ background:linear-gradient(180deg,var(--text),rgba(244,244,246,.82));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin-top:22px;font-family:'DM Sans',sans-serif;font-size:19px;line-height:1.5;color:var(--text-secondary)}
+.sub b{color:var(--accent);font-weight:400;padding:0 .55em}
+.meta{margin-top:30px;padding-top:18px;border-top:1px solid var(--line-strong);display:flex;justify-content:space-between;
+ font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--text-muted)}
+.meta span:last-child{font-family:'JetBrains Mono',monospace;font-weight:400;letter-spacing:0;text-transform:none;font-size:13px;color:var(--text-secondary)}
+</style></head><body>
+<div class="c">
+ <div class="dots"></div>
+ <svg class="net" width="1584" height="396" id="net"></svg>
+ <div class="copy">
+  <div class="rail"><i></i>Writing &amp; projects</div>
+  <h1>Interested in the concepts<br>behind the software.</h1>
+  <p class="sub">Machine learning<b>·</b>Statistics<b>·</b>Distributed systems</p>
+  <div class="meta"><span>B.Sc. Applied Computer Science — Universität Bamberg</span><span>oechsner.dev</span></div>
+ </div>
+</div>
+<script>
+// Seeded node graph on the left: points jittered on a grid, each joined to its 2 nearest
+// neighbours. Fades out toward the text so it never competes with it.
+let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647;
+const P=[];for(let gx=0;gx<11;gx++)for(let gy=0;gy<6;gy++){const x=40+gx*52+(r()-.5)*40,y=30+gy*64+(r()-.5)*44;if(r()<.72)P.push([x,y])}
+const ns='http://www.w3.org/2000/svg',svg=document.getElementById('net');
+const fade=x=>Math.max(0,Math.min(1,(600-x)/360));
+const seen=new Set();
+P.forEach((p,i)=>{P.map((q,j)=>[j,Math.hypot(p[0]-q[0],p[1]-q[1])]).filter(d=>d[0]!==i).sort((a,b)=>a[1]-b[1]).slice(0,2).forEach(([j])=>{
+ const k=i<j?i+'-'+j:j+'-'+i;if(seen.has(k))return;seen.add(k);const q=P[j];
+ const l=document.createElementNS(ns,'line');l.setAttribute('x1',p[0]);l.setAttribute('y1',p[1]);l.setAttribute('x2',q[0]);l.setAttribute('y2',q[1]);
+ l.setAttribute('stroke','#34353d');l.setAttribute('stroke-width','1');l.setAttribute('opacity',(.9*fade((p[0]+q[0])/2)).toFixed(2));svg.appendChild(l)})});
+const hot=P.reduce((b,p)=>Math.abs(p[0]-300)+Math.abs(p[1]-120)<Math.abs(b[0]-300)+Math.abs(b[1]-120)?p:b);
+P.forEach(p=>{const c=document.createElementNS(ns,'circle');const h=p===hot;c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',h?4:2.2);
+ c.setAttribute('fill',h?'#e0a85c':'#80818a');c.setAttribute('opacity',h?1:(.85*fade(p[0])).toFixed(2));svg.appendChild(c);
+ if(h){const g=document.createElementNS(ns,'circle');g.setAttribute('cx',p[0]);g.setAttribute('cy',p[1]);g.setAttribute('r',11);g.setAttribute('fill','none');g.setAttribute('stroke','rgba(224,168,92,.35)');svg.insertBefore(g,c)}});
+</script>
+</body></html>
