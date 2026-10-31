@@ -1,6 +1,7 @@
 import type { Handle, HandleServerError, RequestEvent } from '@sveltejs/kit';
 import { building, dev } from '$app/environment';
 import { site } from '$lib/data/site';
+import { singleCopy } from '$lib/server/workers-ai';
 
 /**
  * The site chat (chat-aide), answered by Cloudflare Workers AI through the `AI` binding in
@@ -77,7 +78,8 @@ async function createChat(ai: Ai): Promise<Handle> {
 		provider: {
 			name: 'custom',
 			model: MODEL,
-			instance: createWorkersAI({ binding: ai })(MODEL)
+			// Workers AI streams this model in two formats at once; see singleCopy.
+			instance: createWorkersAI({ binding: singleCopy(ai) })(MODEL)
 		},
 		// Never taken from the request's Host header. In `vite dev` nothing is prerendered, so
 		// every page can be read in process and no origin is needed.
@@ -86,7 +88,12 @@ async function createChat(ai: Ai): Promise<Handle> {
 			tone: 'plain, concise and friendly',
 			audience: 'readers of a personal blog and portfolio: recruiters, students and engineers'
 		},
-		facts: `This is the personal site of ${site.name}: ${site.role}. Refer to him as Jonas.`,
+		facts: [
+			`This is the personal site of ${site.name}: ${site.role}.`,
+			// The pages are written in his first person, and a small model will otherwise
+			// answer "Hi! I'm Jonas" after reading them.
+			'You are an assistant on his site, not Jonas himself. Always speak about him in the third person as "Jonas"; where a page says "I", that is Jonas.'
+		],
 		pages: {
 			// The postal address and phone number live on /impressum and nowhere else
 			// (DESIGN.md §8, Don't #10). The chat would otherwise repeat them on request.

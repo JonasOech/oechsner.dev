@@ -210,6 +210,10 @@ past that fails instead of being billed, and the chat says it could not answer.
   to a deliberate "server code in the browser" error. And the hook imports the library
   dynamically, because it calls `crypto.randomUUID()` at module scope, which Workers forbid in
   global scope.
+- **A provider bug.** Workers AI streams Qwen3 with every token in two formats at once, and
+  `workers-ai-provider` 4.0.1 prints both ("HiHi!! I I'm'm"). `src/lib/server/workers-ai.ts`
+  strips the duplicate before the provider sees it; delete it once the provider ships the fix
+  (cloudflare/ai#615 or #663).
 - **Privacy.** `/datenschutz` has a section on the chat. It is accurate only while the chat
   runs on Cloudflare; another provider is a new processor and needs new text there.
 
