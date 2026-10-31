@@ -89,6 +89,11 @@ Two traps worth knowing up front:
   rewritten for feed readers in `src/lib/server/feed-content.ts`. **If you add an
   interactive figure component, check how it degrades there** — it either needs a flattened
   form (like `PluginRack`) or falls back to a link to the post.
+- The "Ask this site" chat is chat-aide: `src/hooks.server.ts` (server, Workers AI via the `AI`
+  binding — no key) and `src/lib/components/SiteChat.svelte` (widget, loaded on first press).
+  README "The site chat" covers why it needs Node 24, `remoteBindings: false` in
+  `svelte.config.js`, `ssr.noExternal` in `vite.config.ts`, and a dynamic import in the hook.
+  Changing the provider means changing `/datenschutz` too.
 - Runes mode is forced project-wide (`compilerOptions.runes` in `svelte.config.js`), so
   use `$props`/`$state`/`$derived`, never the legacy `export let` / `$:` forms.
 - `src/lib/data/site.ts` is the single source of identity, nav and contact links.

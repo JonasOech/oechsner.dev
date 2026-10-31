@@ -95,7 +95,7 @@ export const cvPath = '/resume-en.pdf';
  * to what Analytics is configured to keep. Wording fixes do not count.
  */
 export const privacy = {
-	updated: '2026-09-27'
+	updated: '2026-10-31'
 } as const;
 
 /**

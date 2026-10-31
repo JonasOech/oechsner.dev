@@ -33,7 +33,7 @@
 
 <Seo
 	title="Datenschutz"
-	description="Datenschutzerklärung nach Art. 13 DSGVO für oechsner.dev — Hosting, Reichweitenmessung und Einwilligung."
+	description="Datenschutzerklärung nach Art. 13 DSGVO für oechsner.dev — Hosting, KI-Chat, Reichweitenmessung und Einwilligung."
 />
 
 <div class="container">
@@ -130,6 +130,43 @@
 			</section>
 
 			<section>
+				<h2 class="legal__h">KI-Chat „Ask this site“</h2>
+				<p>
+					Über die Schaltfläche „Ask this site“ unten rechts können Sie einen Chat öffnen,
+					der Fragen zu den Inhalten dieser Website beantwortet. Die Nutzung ist freiwillig.
+					Solange Sie den Chat nicht öffnen, wird dafür nichts nachgeladen und nichts
+					übertragen.
+				</p>
+				<p>
+					Beim Öffnen wird die Adresse der gerade angezeigten Seite an den Server dieser
+					Website übermittelt. Mit jeder Nachricht werden zusätzlich Ihr eingegebener Text,
+					die bisherigen Nachrichten des Gesprächs und eine zufällige Gesprächskennung
+					übertragen, in einzelnen Fällen auch der sichtbare Text der aktuellen Seite. Die
+					Antwort erzeugt ein frei verfügbares Sprachmodell über den Dienst „Workers AI“ der
+					Cloudflare, Inc. — desselben Anbieters, der die Website ausliefert. Das Modell läuft
+					auf der Infrastruktur von Cloudflare; an den Hersteller des Modells oder andere
+					Anbieter werden keine Daten weitergegeben. Cloudflare verwendet die Inhalte nach
+					eigenen Angaben nicht zum Training von KI-Modellen und bewahrt Ein- und Ausgaben
+					nicht über die Bearbeitung der Anfrage hinaus auf. Ich selbst speichere keine
+					Gesprächsinhalte.
+				</p>
+				<p>
+					Um die Zahl der Anfragen pro Besucher zu begrenzen, bildet der Server aus Ihrer
+					IP-Adresse mit einem zufälligen Schlüssel einen nicht umkehrbaren Hashwert. Er wird
+					nur im Arbeitsspeicher gehalten, dient ausschließlich dieser Zählung und verfällt
+					spätestens mit Ende des Kalendertags (UTC).
+				</p>
+				<p>
+					Bitte geben Sie im Chat keine personenbezogenen Daten ein. Die Antworten werden
+					automatisch erzeugt und können fehlerhaft sein. Rechtsgrundlage ist Art. 6 Abs. 1
+					lit. f DSGVO; das berechtigte Interesse liegt darin, Fragen zu den Inhalten dieser
+					Website auf Ihre Anfrage hin zu beantworten. Für die Verarbeitung durch Cloudflare
+					gelten der Auftragsverarbeitungsvertrag und die Garantien für die Übermittlung in
+					die USA, die oben unter „Hosting und Server-Logs“ beschrieben sind.
+				</p>
+			</section>
+
+			<section>
 				<h2 class="legal__h">Schriftarten</h2>
 				<p>
 					Die Website bindet die Schriftarten „Playfair Display“, „DM Sans“ und „JetBrains
@@ -152,6 +189,14 @@
 					Nr. 2 TTDSG, verlässt Ihren Browser nicht und wird nach einem Jahr als abgelaufen
 					behandelt — danach fragt das Banner erneut. Sie können ihn jederzeit über die
 					Einstellungen Ihres Browsers löschen.
+				</p>
+				<p>
+					Erst wenn Sie den KI-Chat öffnen, legt er im Sitzungsspeicher
+					(<code>sessionStorage</code>) unter dem Schlüssel <code>aide:session</code> die
+					zufällige Gesprächskennung ab. Sie ist für die von Ihnen aufgerufene Chat-Funktion
+					technisch erforderlich im Sinne von § 25 Abs. 2 Nr. 2 TTDSG und wird gelöscht,
+					sobald Sie den Tab schließen. Der Gesprächsverlauf selbst wird nicht auf Ihrem
+					Gerät gespeichert und endet mit dem Neuladen der Seite.
 				</p>
 			</section>
 

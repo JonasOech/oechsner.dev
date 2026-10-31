@@ -613,7 +613,14 @@ const config = {
 	},
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter({
+			// The adapter emulates `platform` through Wrangler during dev *and* prerendering.
+			// The Workers AI binding only exists remotely, so with remote bindings on, every
+			// build would try to open a session to Cloudflare — and fail on the Pages build
+			// image, which has no API token. The chat is not prerendered, so the build loses
+			// nothing; in `npm run dev` the chat is simply absent (src/hooks.server.ts).
+			platformProxy: { remoteBindings: false }
+		})
 	}
 };
 

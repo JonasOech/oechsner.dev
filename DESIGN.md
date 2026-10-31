@@ -345,6 +345,27 @@ elevation step, because it floats over content rather than sitting in the flow. 
 after hydration has read the stored decision (`consent.ready`); every page here is prerendered,
 so markup in the HTML would flash on every load for everyone who already answered.
 
+### Site chat ("Ask this site")
+
+A fixed `.btn--secondary` at the bottom right (`--gutter` in, `--s-5` up), with the `message`
+icon and `--shadow-3` because it floats. It keeps its natural width below 480px, where `.btn`
+otherwise goes full width, and its icon does not drop on hover, because a speech bubble has no
+direction. Like the consent banner, it renders only after hydration. It also steps aside while
+the banner is asking: both live at the bottom edge, and the banner is the one that needs an
+answer.
+
+The window is chat-aide's plain theme, re-skinned in `SiteChat.svelte` by mapping its `--aide-*`
+properties onto §2's tokens, so no colour is introduced:
+
+- The window is `--bg`, with a `--line` border, a 10px radius (the consent panel's) and
+  `--shadow-4`, because it is a modal dialog.
+- Visitor messages are `--surface-active` with `--text`. Answers are `--surface` with
+  `--text-secondary`, because they are prose.
+- `--accent` appears only on links, focus and the composer's focus border, never as a fill.
+- Every radius is 5px, matching the buttons, so suggestions are not pills.
+
+Below 480px the window is full screen. Reduced motion is honoured by the theme itself.
+
 ### Rail section (the template's signature construct)
 
 ```css
@@ -468,7 +489,9 @@ exist only where an element genuinely floats.
 | Page content | `1` | `--shadow-0` |
 | Article row on hover | `1` | tint only, no shadow |
 | Sticky header (scrolled) | `50` | `--shadow-3` + 12px backdrop blur |
+| Chat launcher | `80` | `--shadow-3` |
 | Consent banner | `90` | `--shadow-4` + 12px backdrop blur |
+| Chat window (open) | `95` | `--shadow-4` — opened on purpose, so it covers the banner |
 | Skip link on focus | `100` | `--shadow-2` |
 
 **Rule**: no element gains more than one elevation step on hover, and cards never gain a shadow
@@ -712,6 +735,9 @@ a no-JS visitor receives a fully rendered page.
 7. **A Projects section is added to About.** The reference has Experiences and Formations only.
    Both flagship projects here are closed source, so these are prose write-ups with no repo
    links — deliberately not linked cards with GitHub icons.
+8. **A floating chat launcher is added.** The reference has no floating controls. It is kept to
+   one secondary button that ships no JavaScript until it is pressed, and it never outranks
+   the writing: it is small, bottom-right, and has no badge, pulse or greeting bubble (§11).
 
 ---
 

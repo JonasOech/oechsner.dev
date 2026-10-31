@@ -4,6 +4,7 @@
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import ConsentBanner from '$lib/components/ConsentBanner.svelte';
+	import SiteChat from '$lib/components/SiteChat.svelte';
 
 	let { children } = $props();
 </script>
@@ -30,6 +31,10 @@
 </main>
 
 <Footer />
+
+<!-- Last in the tab order: an optional aside to the page, fixed to the viewport, so its
+     position here costs the layout nothing. -->
+<SiteChat />
 
 <style>
 	main {
