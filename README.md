@@ -56,6 +56,21 @@ draft: true                       # optional — hidden in production, visible i
 ```
 
 Read time is computed at build time from the word count; it is not a front-matter field.
+
+### Link posts
+
+A post with a `link` is a pointer to something elsewhere — a running experiment, a tool, a
+talk — rather than something read here:
+
+```yaml
+link: https://example.com/my-experiment   # absolute http(s) URL; a bad one fails the build
+linkLabel: Try the experiment              # optional button label, defaults to "Visit"
+hero: true                                 # optional, as usual — puts it in the lead slot
+```
+
+Listings and the feeds send readers straight to the URL (in a new tab on the site), and the
+meta line shows the target's domain instead of a read time. `/blog/<slug>` still renders, as a
+landing page: the body becomes a short note under a button out, so it can be empty.
 Because posts are `.svx`, a post can `import` and render a Svelte component inline when prose
 isn't enough.
 

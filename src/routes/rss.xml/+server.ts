@@ -1,6 +1,6 @@
 import { posts } from '$lib/posts';
 import { site } from '$lib/data/site';
-import { escapeXml as escape, postInstant, postUrl } from '$lib/feed';
+import { entryUrl, escapeXml as escape, postInstant, postUrl } from '$lib/feed';
 import { feedContent } from '$lib/server/feed-content';
 import type { RequestHandler } from './$types';
 
@@ -14,7 +14,7 @@ export const GET: RequestHandler = () => {
 		.map(
 			(post) => `    <item>
       <title>${escape(post.title)}</title>
-      <link>${postUrl(post.slug)}</link>
+      <link>${escape(entryUrl(post))}</link>
       <guid isPermaLink="true">${postUrl(post.slug)}</guid>
       <description>${escape(post.summary)}</description>
       <content:encoded>${cdata(feedContent(post))}</content:encoded>

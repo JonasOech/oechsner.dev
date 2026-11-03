@@ -12,6 +12,15 @@ export type PostMeta = {
 	/** The button's label. Defaults to "Download PDF". */
 	downloadLabel?: string;
 	draft?: boolean;
+	/**
+	 * Makes this a link post: an entry that points somewhere else (a running experiment, a
+	 * tool, a talk) instead of being read here. Listings and feeds send the reader straight to
+	 * this URL; `/blog/<slug>` still renders, as a landing page with the body as a short note
+	 * and a button out. Must be an absolute `http(s)` URL.
+	 */
+	link?: string;
+	/** The link post's button label. Defaults to "Visit". */
+	linkLabel?: string;
 	/** How deep the post goes, 1–3. Shown as 🤓 beside the read time; omit to hide it. */
 	nerdyness?: 1 | 2 | 3;
 	/**
@@ -67,6 +76,23 @@ function slugFromPath(path: string): string {
 		.replace(/^\d{4}-\d{2}-\d{2}-/, '');
 }
 
+/**
+ * A link post's URL leaves the site from every listing, so a typo would only surface as a
+ * dead link in production. Fail the build instead — the same bargain as the title guard.
+ */
+function checkedLink(slug: string, link: string): string {
+	let url: URL;
+	try {
+		url = new URL(link);
+	} catch {
+		throw new Error(`Post "${slug}" has a \`link\` that is not an absolute URL: ${link}`);
+	}
+	if (url.protocol !== 'https:' && url.protocol !== 'http:') {
+		throw new Error(`Post "${slug}" has a \`link\` that is not http(s): ${link}`);
+	}
+	return link;
+}
+
 const entries: { post: Post; component: Component }[] = Object.entries(modules)
 	.map(([path, mod]) => {
 		const slug = slugFromPath(path);
@@ -86,6 +112,8 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			coverAlt: meta.coverAlt,
 			download: meta.download,
 			downloadLabel: meta.downloadLabel,
+			link: meta.link ? checkedLink(slug, meta.link) : undefined,
+			linkLabel: meta.linkLabel,
 			draft: meta.draft ?? false,
 			nerdyness: meta.nerdyness,
 			// Deliberately not defaulted: `undefined` and `false` mean different things here.
@@ -120,6 +148,16 @@ export function getNeighbours(slug: string): { prev?: Post; next?: Post } {
 	const i = posts.findIndex((p) => p.slug === slug);
 	if (i === -1) return {};
 	return { prev: posts[i - 1], next: posts[i + 1] };
+}
+
+/** Where a listing should send the reader: off-site for a link post, the post page otherwise. */
+export function postHref(post: Pick<Post, 'slug' | 'link'>): string {
+	return post.link ?? `/blog/${post.slug}`;
+}
+
+/** `https://www.example.com/x` → `example.com`, for the meta line where read time would be. */
+export function linkHost(link: string): string {
+	return new URL(link).hostname.replace(/^www\./, '');
 }
 
 export const allTags: string[] = [...new Set(posts.flatMap((p) => p.tags))].sort();

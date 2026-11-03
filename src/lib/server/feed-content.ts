@@ -20,7 +20,7 @@
 import { render } from 'svelte/server';
 import { parseFragment, serialize, type DefaultTreeAdapterMap } from 'parse5';
 import { site } from '$lib/data/site';
-import { formatDate, getPostComponent, type Post } from '$lib/posts';
+import { formatDate, getPostComponent, linkHost, type Post } from '$lib/posts';
 import { escapeXml, postUrl } from '$lib/feed';
 
 type Node = DefaultTreeAdapterMap['childNode'];
@@ -194,7 +194,7 @@ export function feedContent(post: Post): string {
 	const url = postUrl(post.slug);
 	const facts = [
 		formatDate(post.date),
-		`${post.readingMinutes} min read`,
+		post.link ? linkHost(post.link) : `${post.readingMinutes} min read`,
 		post.nerdyness && `${'🤓'.repeat(post.nerdyness)} ${post.nerdyness}/3 nerds`,
 		post.ai === false && '✒️ 100% human-written'
 	]
@@ -215,6 +215,8 @@ export function feedContent(post: Post): string {
 		post.summary &&
 			`<p style="font-size: 1.1em; line-height: 1.7; padding-left: 1em; border-left: 3px solid ${ACCENT}">${escapeXml(post.summary)}</p>`,
 		cover,
+		post.link &&
+			`<p><a href="${escapeXml(post.link)}" style="font-weight: 700; color: ${ACCENT}">${escapeXml(post.linkLabel ?? 'Visit')} → ${escapeXml(linkHost(post.link))}</a></p>`,
 		body(post.slug),
 		`<hr style="border: 0; border-top: 1px solid ${RULE}; margin: 2.5em 0 1em" />`,
 		`<p style="font-size: 0.9em; color: ${MUTED}">Originally published on <a href="${url}">${site.shortName}</a>. Read it there →</p>`

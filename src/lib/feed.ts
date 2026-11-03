@@ -15,6 +15,12 @@ export const escapeXml = (s: string) =>
 
 export const postUrl = (slug: string) => `${site.url}/blog/${slug}`;
 
+/**
+ * Where a feed entry's title link goes. A link post points at its target, as linkblogs do;
+ * the guid / id stays the permalink, so it never changes even if the target moves.
+ */
+export const entryUrl = (post: Pick<Post, 'slug' | 'link'>) => post.link ?? postUrl(post.slug);
+
 /** Post dates are `YYYY-MM-DD`; feeds treat them as midnight UTC (RFC 3339). */
 export const postInstant = (date: string) => `${date}T00:00:00Z`;
 

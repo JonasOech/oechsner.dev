@@ -5,7 +5,7 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
-	import { formatDate, getPostComponent, getNeighbours } from '$lib/posts';
+	import { formatDate, getPostComponent, getNeighbours, linkHost } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
 	// Math is rendered to static HTML at build time, so posts only need KaTeX's stylesheet —
@@ -101,7 +101,7 @@
 					<p class="meta">
 						<time datetime={post.date}>{formatDate(post.date)}</time>
 						<span class="post__dot" aria-hidden="true">·</span>
-						{post.readingMinutes} min read
+						{post.link ? linkHost(post.link) : `${post.readingMinutes} min read`}
 						{#if post.nerdyness}
 							<span class="post__dot" aria-hidden="true">·</span>
 							<Nerdyness level={post.nerdyness} />
@@ -123,12 +123,22 @@
 				{/if}
 			</div>
 
-			{#if post.download}
+			<!-- A link post's page is a landing page: the button out is the point of it, so it
+			     leads the row and takes the primary style. -->
+			{#if post.link || post.download}
 				<div class="btn-row">
-					<a class="btn btn--secondary" href={post.download} download>
-						<Icon name="arrow-down" />
-						{post.downloadLabel ?? 'Download PDF'}
-					</a>
+					{#if post.link}
+						<a class="btn btn--primary" href={post.link} target="_blank" rel="noopener">
+							{post.linkLabel ?? 'Visit'}
+							<Icon name="external" />
+						</a>
+					{/if}
+					{#if post.download}
+						<a class="btn btn--secondary" href={post.download} download>
+							<Icon name="arrow-down" />
+							{post.downloadLabel ?? 'Download PDF'}
+						</a>
+					{/if}
 				</div>
 			{/if}
 		</header>

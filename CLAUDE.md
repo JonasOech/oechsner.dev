@@ -54,6 +54,9 @@ the file `.svx`, and keep the body valid plain Markdown so it still renders in O
   omitted means not eligible. `ai: false` is the only value that earns the human-written
   laurel. `readingMinutes` and `headings` are injected at build time — never write them
   by hand.
+- `link: <url>` makes a link post (optional `linkLabel`): every listing and feed entry goes
+  straight to the URL, and `/blog/<slug>` becomes a landing page with a button out. Always
+  route listing hrefs through `postHref()` in `src/lib/posts.ts`, never `/blog/${slug}`.
 - `src/posts/archive/` is outside the glob, so archived posts do not publish.
 - Citations are pandoc-style (`[@key]`, `-@key`, bare `@key`) against the shared
   `src/posts/references.bib`, which also lives in the vault. An unknown key fails the build.

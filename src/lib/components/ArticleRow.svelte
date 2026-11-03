@@ -1,11 +1,20 @@
 <script lang="ts">
-	import { formatDate, type Post } from '$lib/posts';
+	import { formatDate, linkHost, postHref, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
 
-<a class="card" class:card--featured={featured} class:card--noMedia={!post.cover} href="/blog/{post.slug}">
+<!-- A link post leaves the site, so it opens in a new tab and says where it goes. -->
+<a
+	class="card"
+	class:card--featured={featured}
+	class:card--noMedia={!post.cover}
+	href={postHref(post)}
+	target={post.link ? '_blank' : undefined}
+	rel={post.link ? 'noopener' : undefined}
+>
 	{#if featured && post.cover}
 		<div class="card__media card__media--wide">
 			<img
@@ -28,7 +37,14 @@
 		<p class="meta">
 			<time datetime={post.date}>{formatDate(post.date)}</time>
 			<span class="card__dot" aria-hidden="true">·</span>
-			{post.readingMinutes} min read
+			{#if post.link}
+				<span class="card__host">
+					{linkHost(post.link)}
+					<Icon name="external" size={12} />
+				</span>
+			{:else}
+				{post.readingMinutes} min read
+			{/if}
 			<!-- Separator lives inside the guard: a post without a nerdyness rating must not
 			     leave a dangling dot at the end of the line. -->
 			{#if post.nerdyness}
@@ -127,6 +143,12 @@
 	.card__dot {
 		margin-inline: 0.4em;
 		color: var(--text-muted);
+	}
+
+	.card__host {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3em;
 	}
 
 	.card__media {

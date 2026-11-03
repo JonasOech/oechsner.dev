@@ -7,7 +7,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { site, cvPath, feeds } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
-	import { posts, allTags, formatDate } from '$lib/posts';
+	import { posts, allTags, formatDate, linkHost, postHref } from '$lib/posts';
 	import { trackFeed } from '$lib/track';
 
 	let activeTag = $state<string | null>(null);
@@ -21,6 +21,10 @@
 	 * front page.
 	 */
 	const lead = $derived(activeTag ? undefined : posts.find((p) => p.hero));
+	// A link post in the lead slot sends every one of its links off-site, in a new tab.
+	const leadOut = $derived(
+		lead?.link ? { target: '_blank', rel: 'noopener' } : { target: undefined, rel: undefined }
+	);
 	// Not `slice(1)`: the lead is no longer necessarily the first post, so it has to be
 	// removed by identity or it both duplicates itself and swallows the newest post.
 	const listed = $derived(
@@ -97,10 +101,12 @@
 		<article class="lead">
 			<!-- Not "Latest": the lead is the newest *hero* post, which is not always the
 			     newest post on the site. -->
-			<p class="lead__eyebrow enter" style="--i: 1">Featured Blog Post</p>
+			<p class="lead__eyebrow enter" style="--i: 1">
+				{lead.link ? 'Featured Link' : 'Featured Blog Post'}
+			</p>
 
 			<h2 class="hero-title lead__title enter" style="--i: 2">
-				<a class="lead__link" href="/blog/{lead.slug}">{lead.title}</a>
+				<a class="lead__link" href={postHref(lead)} {...leadOut}>{lead.title}</a>
 			</h2>
 
 			{#if lead.summary}
@@ -110,7 +116,7 @@
 			<p class="meta lead__meta enter" style="--i: 4">
 				<time datetime={lead.date}>{formatDate(lead.date)}</time>
 				<span class="lead__dot" aria-hidden="true">·</span>
-				{lead.readingMinutes} min read
+				{lead.link ? linkHost(lead.link) : `${lead.readingMinutes} min read`}
 				{#if lead.nerdyness}
 					<span class="lead__dot" aria-hidden="true">·</span>
 					<Nerdyness level={lead.nerdyness} />
@@ -122,12 +128,13 @@
 			<a
 				class="lead__cta enter"
 				style="--i: 5"
-				href="/blog/{lead.slug}"
+				href={postHref(lead)}
+				{...leadOut}
 				tabindex="-1"
 				aria-hidden="true"
 			>
-				Read the post
-				<Icon name="arrow-right" size={15} />
+				{lead.link ? (lead.linkLabel ?? 'Visit') : 'Read the post'}
+				<Icon name={lead.link ? 'external' : 'arrow-right'} size={15} />
 			</a>
 
 			{#if lead.cover}
@@ -135,7 +142,8 @@
 				<a
 					class="lead__media enter"
 					style="--i: 2"
-					href="/blog/{lead.slug}"
+					href={postHref(lead)}
+					{...leadOut}
 					tabindex="-1"
 					aria-hidden="true"
 				>
