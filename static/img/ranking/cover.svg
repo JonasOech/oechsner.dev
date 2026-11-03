@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675" role="img" aria-label="A stack of cards with the top one swiped away, feeding a leaderboard of ranked items">
+  <defs>
+    <radialGradient id="rkGlowA" cx="14%" cy="8%" r="70%">
+      <stop offset="0%" stop-color="#566c94" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#566c94" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rkGlowB" cx="88%" cy="94%" r="65%">
+      <stop offset="0%" stop-color="#b06c2e" stop-opacity="0.40"/>
+      <stop offset="100%" stop-color="#b06c2e" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="rkDots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#f4f4f6" opacity="0.05"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="675" fill="#0e0f12"/>
+  <rect width="1200" height="675" fill="url(#rkDots)"/>
+  <rect width="1200" height="675" fill="url(#rkGlowA)"/>
+  <rect width="1200" height="675" fill="url(#rkGlowB)"/>
+
+  <!-- the deck still to judge -->
+  <rect x="236" y="198" width="220" height="290" rx="12" fill="#16171b" stroke="#24252b" stroke-width="2"
+        transform="rotate(-10 346 343)"/>
+  <rect x="236" y="198" width="220" height="290" rx="12" fill="#16171b" stroke="#34353d" stroke-width="2"
+        transform="rotate(-4 346 343)"/>
+
+  <!-- the card mid-swipe -->
+  <g transform="translate(30 -14) rotate(9 346 343)">
+    <rect x="236" y="198" width="220" height="290" rx="12" fill="#0a0b0d" stroke="#34353d" stroke-width="2"/>
+    <rect x="256" y="218" width="180" height="150" rx="6" fill="#16171b"/>
+    <circle cx="346" cy="293" r="40" fill="none" stroke="#e0a85c" stroke-width="2"/>
+    <circle cx="346" cy="293" r="8" fill="#e0a85c"/>
+    <g stroke-linecap="round">
+      <path d="M256 400h132" stroke="#f4f4f6" stroke-width="9" opacity="0.85"/>
+      <path d="M256 430h168" stroke="#34353d" stroke-width="6"/>
+      <path d="M256 452h112" stroke="#34353d" stroke-width="6"/>
+    </g>
+    <!-- verdict stamp -->
+    <g transform="rotate(-14 300 240)">
+      <rect x="252" y="222" width="96" height="38" rx="5" fill="#0a0b0d" fill-opacity="0.6"
+            stroke="#e0a85c" stroke-width="2.5"/>
+      <text x="300" y="249" text-anchor="middle" font-family="ui-monospace, Menlo, monospace"
+            font-size="18" font-weight="700" letter-spacing="3" fill="#e0a85c">COOL</text>
+    </g>
+  </g>
+
+  <!-- swipe → rank -->
+  <g stroke="#a3a4ac" stroke-width="2">
+    <path d="M548 340h80"/>
+  </g>
+  <path d="M634 340l-11-6v12z" fill="#a3a4ac"/>
+  <text x="548" y="322" font-family="ui-monospace, Menlo, monospace" font-size="14" fill="#6d6e77">rank</text>
+
+  <!-- the leaderboard -->
+  <rect x="664" y="158" width="340" height="364" rx="10" fill="#16171b" fill-opacity="0.75"
+        stroke="#34353d" stroke-width="2"/>
+  <text x="692" y="196" font-family="ui-monospace, Menlo, monospace" font-size="16" fill="#6d6e77"
+        letter-spacing="2">rankings</text>
+  <path d="M692 214h284" stroke="#24252b" stroke-width="2"/>
+
+  <g font-family="ui-monospace, Menlo, monospace" font-size="17" fill="#6d6e77">
+    <text x="692" y="262" fill="#e0a85c">1</text>
+    <text x="692" y="318">2</text>
+    <text x="692" y="374">3</text>
+    <text x="692" y="430">4</text>
+    <text x="692" y="486">5</text>
+  </g>
+
+  <!-- item glyphs -->
+  <g fill="none" stroke="#a3a4ac" stroke-width="2">
+    <g stroke="#e0a85c">
+      <circle cx="738" cy="256" r="13"/>
+      <circle cx="738" cy="256" r="3" fill="#e0a85c"/>
+    </g>
+    <rect x="726" y="300" width="24" height="24" rx="2"/>
+    <path d="M738 355l13 22h-26z"/>
+    <path d="M738 410l13 14-13 14-13-14z"/>
+    <circle cx="738" cy="480" r="12" stroke-dasharray="4 4"/>
+  </g>
+
+  <!-- scores -->
+  <g stroke-linecap="round" stroke-width="10">
+    <path d="M772 256h176" stroke="#e0a85c"/>
+    <path d="M772 312h142" stroke="#a3a4ac" opacity="0.7"/>
+    <path d="M772 368h112" stroke="#a3a4ac" opacity="0.5"/>
+    <path d="M772 424h80" stroke="#34353d"/>
+    <path d="M772 480h46" stroke="#34353d"/>
+  </g>
+
+  <!-- movement -->
+  <path d="M968 306l-6 10h12z" fill="#46a758" opacity="0.85"/>
+  <path d="M968 430l-6-10h12z" fill="#e5484d" opacity="0.85"/>
+</svg>

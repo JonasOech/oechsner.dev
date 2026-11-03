@@ -1,0 +1,21 @@
+---
+title: 'Ranking Everything'
+date: '2026-11-03'
+summary: >-
+  A tinder-like app for literally everything. Will be used to conduct A/B tests, analyse user behaviour and find opinion clustors. Does your opinion on Minecraft correlate with if you like Pineapple on pizza?
+tags: ['experiment', 'sidequest']
+link: https://rankingeverything.oechsner.dev
+running: true
+linkLabel: Try the experiment
+hero: false
+cover: /img/ranking/cover.svg
+coverAlt: >-
+  A stack of cards with the top one stamped "cool" and swiped away, feeding a leaderboard of
+  five ranked items
+ai: true
+---
+
+Ranking Everything is live and still running. Swipe through items, then check the rankings to
+see what came out coolest, least cool and most controversial, and how your own picks compare.
+
+How did you get here? 🫢
