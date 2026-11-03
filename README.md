@@ -71,6 +71,12 @@ hero: true                                 # optional, as usual — puts it in t
 Listings and the feeds send readers straight to the URL (in a new tab on the site), and the
 meta line shows the target's domain instead of a read time. `/blog/<slug>` still renders, as a
 landing page: the body becomes a short note under a button out, so it can be empty.
+
+### Running projects
+
+`running: true` marks a project that is still live — any post, link post or not. Every listing
+and the post page then show a pulsing yellow "Experiment Running" marker right after the title. Remove the
+field (or set it to `false`) when the project ends; the post stays, the marker goes.
 Because posts are `.svx`, a post can `import` and render a Svelte component inline when prose
 isn't enough.
 

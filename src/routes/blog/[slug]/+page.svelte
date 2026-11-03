@@ -5,6 +5,7 @@
 	import HumanWritten from '$lib/components/HumanWritten.svelte';
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
+	import Running from '$lib/components/Running.svelte';
 	import { formatDate, getPostComponent, getNeighbours, linkHost } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -88,7 +89,10 @@
 				All articles
 			</a>
 
-			<h1 class="post__title">{post.title}</h1>
+			<h1 class="post__title">
+				{post.title}
+				{#if post.running}<Running />{/if}
+			</h1>
 
 			{#if post.summary}
 				<p class="post__summary">{post.summary}</p>

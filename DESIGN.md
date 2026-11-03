@@ -10,7 +10,8 @@
 
 **Design philosophy** — *Quiet authority.* A near-black canvas with almost nothing on it, so the
 few things that are there carry all the weight. Content sits in one narrow column with a serif
-rail label to its left, like a printed monograph. Nothing moves unless you move it.
+rail label to its left, like a printed monograph. Nothing moves unless you move it — with one
+signal-carrying exception, the "Experiment Running" marker on live projects (§7, special effect 3).
 
 **Atmosphere keywords**: nocturnal · editorial · precise · warm-cool ambient · unhurried · engineered
 
@@ -63,6 +64,7 @@ second hex. **Dark is the only theme** — this design commits to it (see §8, D
   /* — Feedback ——————————————————————————————— */
   --danger:          #e5484d;   --danger-rgb:          229, 72, 77;
   --success:         #46a758;   --success-rgb:         70, 167, 88;
+  --live:            #f2cc4b;   --live-rgb:            242, 204, 75;   /* "Experiment Running" dot */
 
   /* — Focus —————————————————————————————————— */
   --focus-ring:      0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);
@@ -555,11 +557,24 @@ Every interactive element defines all five states in §4. Rules:
 
 ### Special effects
 
-Exactly two, both essentially free:
+Exactly three, all essentially free:
 
 1. **Ambient background glows** — two static `radial-gradient`s, no animation at all. This is
    what gives the page its warmth in the reference shots.
 2. **Article thumbnail zoom** — `scale(1.03)` on the image inside an `overflow: hidden` frame.
+3. **"Experiment Running" marker** — the only looping animation on the site, and only on
+   posts with `running: true` (`src/lib/components/Running.svelte`). It sits inline right after
+   the post title — row, lead and post page alike — as a 7px `--live` dot followed by *Experiment Running* in meta styling (DM Sans, `0.75rem`/700, `--text-muted`) whatever face the title
+   around it uses, so the state never depends on colour or motion alone. A ring of the same
+   yellow scales out of the dot (`1 → 2.8`, opacity
+   `0.55 → 0`) over the first 70% of a 2.6s cycle and then rests, so it reads as a slow
+   heartbeat rather than a flicker. It animates `transform` and `opacity` on a pseudo-element
+   only — no layout, no blur. Under reduced motion the ring is removed and the dot sits still.
+
+   Why its own yellow and not copper: `--accent` means *you can click this*; the marker is
+   status, so it gets a status token that is visibly distinct from the accent. It is a shape,
+   not text, and clears 3:1 against both `--bg` and `--surface` with ample headroom. Motion is earned here because it carries the message — *this
+   is live right now* — which a static badge says less well. Do not reuse the loop as decoration.
 
 Explicitly *not* implemented: blur on moving elements, particle fields, 3D transforms, cursor
 followers, text scramble, marquees, or a WebGL layer.

@@ -63,6 +63,10 @@
 	--danger-rgb: 229, 72, 77;
 	--success: #46a758;
 	--success-rgb: 70, 167, 88;
+	/* Live status — the "Experiment Running" dot. A clear yellow, kept apart from the copper
+	   --accent so it never reads as a link. */
+	--live: #f2cc4b;
+	--live-rgb: 242, 204, 75;
 
 	/* — Focus — */
 	--focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px rgba(var(--accent-rgb), 0.75);

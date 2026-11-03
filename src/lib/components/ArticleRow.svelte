@@ -2,6 +2,7 @@
 	import { formatDate, linkHost, postHref, type Post } from '$lib/posts';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import Running from '$lib/components/Running.svelte';
 
 	let { post, featured = false }: { post: Post; featured?: boolean } = $props();
 </script>
@@ -30,7 +31,10 @@
 	{/if}
 
 	<div class="card__text">
-		<h3 class="card__title">{post.title}</h3>
+		<h3 class="card__title">
+			{post.title}
+			{#if post.running}<Running />{/if}
+		</h3>
 		{#if post.summary}
 			<p class="card__summary">{post.summary}</p>
 		{/if}

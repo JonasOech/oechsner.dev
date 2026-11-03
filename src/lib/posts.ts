@@ -21,6 +21,11 @@ export type PostMeta = {
 	link?: string;
 	/** The link post's button label. Defaults to "Visit". */
 	linkLabel?: string;
+	/**
+	 * Marks a project that is still live. Every listing and the post page show a pulsing
+	 * "Running" marker at the head of the meta line; drop the field once the project ends.
+	 */
+	running?: boolean;
 	/** How deep the post goes, 1–3. Shown as 🤓 beside the read time; omit to hide it. */
 	nerdyness?: 1 | 2 | 3;
 	/**
@@ -114,6 +119,7 @@ const entries: { post: Post; component: Component }[] = Object.entries(modules)
 			downloadLabel: meta.downloadLabel,
 			link: meta.link ? checkedLink(slug, meta.link) : undefined,
 			linkLabel: meta.linkLabel,
+			running: meta.running ?? false,
 			draft: meta.draft ?? false,
 			nerdyness: meta.nerdyness,
 			// Deliberately not defaulted: `undefined` and `false` mean different things here.

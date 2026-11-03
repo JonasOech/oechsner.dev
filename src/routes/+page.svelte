@@ -5,6 +5,7 @@
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
+	import Running from '$lib/components/Running.svelte';
 	import { site, cvPath, feeds } from '$lib/data/site';
 	import { about } from '$lib/data/resume';
 	import { posts, allTags, formatDate, linkHost, postHref } from '$lib/posts';
@@ -107,6 +108,7 @@
 
 			<h2 class="hero-title lead__title enter" style="--i: 2">
 				<a class="lead__link" href={postHref(lead)} {...leadOut}>{lead.title}</a>
+				{#if lead.running}<Running />{/if}
 			</h2>
 
 			{#if lead.summary}
