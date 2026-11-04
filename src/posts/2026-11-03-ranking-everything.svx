@@ -7,7 +7,7 @@ tags: ['experiment', 'sidequest']
 link: https://rankingeverything.oechsner.dev
 running: true
 linkLabel: Try the experiment
-hero: false
+hero: true
 cover: /img/ranking/cover.svg
 coverAlt: >-
   A stack of cards with the top one stamped "cool" and swiped away, feeding a leaderboard of
