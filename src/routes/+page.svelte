@@ -28,9 +28,14 @@
 	);
 	// Not `slice(1)`: the lead is no longer necessarily the first post, so it has to be
 	// removed by identity or it both duplicates itself and swallows the newest post.
-	const listed = $derived(
-		activeTag ? posts.filter((p) => p.tags.includes(activeTag!)) : posts.filter((p) => p !== lead)
-	);
+	// The other hero posts lost the lead slot only to a newer one, so they head the list
+	// (still newest-first among themselves) rather than sinking into the archive. A
+	// filtered view stays purely chronological, like it drops the lead.
+	const listed = $derived.by(() => {
+		if (activeTag) return posts.filter((p) => p.tags.includes(activeTag!));
+		const rest = posts.filter((p) => p !== lead);
+		return [...rest.filter((p) => p.hero), ...rest.filter((p) => !p.hero)];
+	});
 
 	function toggleTag(tag: string) {
 		activeTag = activeTag === tag ? null : tag;
