@@ -1,8 +1,8 @@
 ---
-title: 'Ranking Everything'
+title: 'Ranking-Everything'
 date: '2026-11-03'
 summary: >-
-  A tinder-like app for literally everything. Will be used to conduct A/B tests, analyse user behaviour and find opinion clustors. Does your opinion on Minecraft correlate with if you like Pineapple on pizza?
+  A tinder-like app for judging literally everything. Will be used to conduct A/B tests, analyse user behaviour and find opinion clustors. Does your opinion on the Rosetta Stone correlate with if you like Pineapple on pizza?
 tags: ['experiment', 'sidequest']
 link: https://rankingeverything.oechsner.dev
 running: true
