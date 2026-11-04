@@ -8,10 +8,10 @@ link: https://rankingeverything.oechsner.dev
 running: true
 linkLabel: Try the experiment
 hero: false
-cover: /img/ranking/cover.svg
+cover: /img/ranking-everything/cover.svg
 coverAlt: >-
-  A stack of cards with the top one stamped "cool" and swiped away, feeding a leaderboard of
-  five ranked items
+  The Ranking Everything logo and title beside a tilted grid of photos to rate: a tardigrade,
+  lava lamps, a capybara, a cartoon platypus, an axolotl and a tuk-tuk
 ai: true
 ---
 
