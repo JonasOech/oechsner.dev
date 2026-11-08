@@ -4,9 +4,7 @@ date: '2026-11-03'
 summary: >-
   A tinder-like app for judging literally everything. Will be used to conduct A/B tests, analyse user behaviour and find opinion clustors. Does your opinion on the Rosetta Stone correlate with if you like Pineapple on pizza?
 tags: ['experiment', 'sidequest']
-link: https://rankingeverything.oechsner.dev
 running: true
-linkLabel: Try the experiment
 hero: true
 cover: /img/ranking-everything/cover.svg
 coverAlt: >-
@@ -15,7 +13,14 @@ coverAlt: >-
 ai: true
 ---
 
-Ranking Everything is live and still running. Swipe through items, then check the rankings to
+<script>
+	import ClusterScatter3D from '$lib/components/ClusterScatter3D.svelte';
+	import clusters from '$lib/data/ranking-everything-clusters.tsv?raw';
+</script>
+
+[Ranking Everything](https://rankingeverything.oechsner.dev) is live and still running. Swipe through items, then check the rankings to
 see what came out coolest, least cool and most controversial, and how your own picks compare.
 
-How did you get here? 🫢
+## Opinion clusters
+
+<ClusterScatter3D tsv={clusters} title="Opinion clusters" />
