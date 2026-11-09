@@ -19,6 +19,11 @@
 	// Fullscreen also zooms and pans. Zoom spreads the points apart instead of magnifying
 	// them, so a tight cluster separates while dots, lines and labels keep their size. In the
 	// page the plot stays fixed: a wheel over it scrolls the article, as a reader expects.
+	//
+	// Discrete changes — a dimension switched, Home, a zoom button or key, an arrow-key step —
+	// morph from the old layout to the new one, once, then stop (DESIGN.md §7). Drags, the
+	// wheel and pinches stay direct: easing a gesture only makes it feel late. Under reduced
+	// motion everything snaps.
 	import Icon from '$lib/components/Icon.svelte';
 
 	let { csv, title = 'Clusters in three dimensions' }: { csv: string; title?: string } = $props();
@@ -38,6 +43,8 @@
 	const CAMERA = 5; // camera distance in box units: enough depth cue, little distortion
 	const HOME = { yaw: -0.65, pitch: 0.38 };
 	const ZOOM_MAX = 12;
+	const MORPH = 620; // --dur-slow, for a change of view
+	const STEP = 260; // --dur-base, for a zoom or an arrow-key step
 
 	function parse(text: string) {
 		const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
@@ -309,13 +316,99 @@
 			? 1
 			: 0.5 + (0.5 * (z - depth.min)) / (depth.max - depth.min);
 
+	// — The morph. Everything the svg draws is gathered into one flat layout, and what is on
+	//   screen is the target layout, or, during a morph, a blend of the layout on screen when
+	//   it began and the target. The target may keep moving meanwhile (a drag mid-morph); the
+	//   blend just follows it. Every layout has the same points, edges and axes, so blending is
+	//   index by index. —
+	type Layout = {
+		vh: number;
+		pts: Record<number, { x: number; y: number; r: number; o: number }>;
+		edges: { x1: number; y1: number; x2: number; y2: number }[];
+		origin: { x: number; y: number };
+		ends: { x: number; y: number; a: number }[]; // a: label opacity, 0 when collapsed
+	};
+
+	let target: Layout = $derived({
+		vh,
+		pts: Object.fromEntries(
+			drawn.map((d) => [d.i, { x: d.s.x, y: d.s.y, r: R * d.s.k, o: fade(d.s.z) }])
+		),
+		edges: box.edges.map((e) => ({ x1: e.a.x, y1: e.a.y, x2: e.b.x, y2: e.b.y })),
+		origin: { x: box.origin.x, y: box.origin.y },
+		ends: box.ends.map((e) => ({ x: e.x, y: e.y, a: e.seen ? 1 : 0 }))
+	});
+
+	let morph = $state<{ from: Layout; start: number; dur: number } | null>(null);
+	let progress = $state(1);
+	let rafId = 0;
+
+	// --ease-inout, cubic-bezier(0.65, 0, 0.35, 1), as the cubic it closely follows.
+	const ease = (t: number) => (t < 0.5 ? 4 * t ** 3 : 1 - (-2 * t + 2) ** 3 / 2);
+	const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+	function blend(a: Layout, b: Layout, t: number): Layout {
+		const pts: Layout['pts'] = {};
+		for (const i in b.pts) {
+			const p = a.pts[i] ?? b.pts[i];
+			const q = b.pts[i];
+			pts[i] = {
+				x: lerp(p.x, q.x, t),
+				y: lerp(p.y, q.y, t),
+				r: lerp(p.r, q.r, t),
+				o: lerp(p.o, q.o, t)
+			};
+		}
+		return {
+			vh: lerp(a.vh, b.vh, t),
+			pts,
+			edges: b.edges.map((e, n) => ({
+				x1: lerp(a.edges[n].x1, e.x1, t),
+				y1: lerp(a.edges[n].y1, e.y1, t),
+				x2: lerp(a.edges[n].x2, e.x2, t),
+				y2: lerp(a.edges[n].y2, e.y2, t)
+			})),
+			origin: { x: lerp(a.origin.x, b.origin.x, t), y: lerp(a.origin.y, b.origin.y, t) },
+			ends: b.ends.map((e, n) => ({
+				x: lerp(a.ends[n].x, e.x, t),
+				y: lerp(a.ends[n].y, e.y, t),
+				a: lerp(a.ends[n].a, e.a, t)
+			}))
+		};
+	}
+
+	let shown = $derived(morph ? blend(morph.from, target, ease(progress)) : target);
+
+	// Runs `change` and morphs to what it produces. Starting from what is on screen, not
+	// from the last target, is what lets a morph that interrupts another one stay smooth.
+	function animate(change: () => void, dur = MORPH) {
+		const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const from = shown;
+		change();
+		if (reduce) return;
+		morph = { from, start: performance.now(), dur };
+		progress = 0;
+		if (!rafId) rafId = requestAnimationFrame(tick);
+	}
+
+	function tick(now: number) {
+		rafId = 0;
+		if (!morph) return;
+		progress = Math.min(1, (now - morph.start) / morph.dur);
+		if (progress < 1) rafId = requestAnimationFrame(tick);
+		else morph = null;
+	}
+
+	$effect(() => () => cancelAnimationFrame(rafId));
+
 	let active = $derived(pinned ?? hovered);
-	// A point zoomed or panned out of view has no tooltip: it would point at nothing.
-	let activePoint = $derived(
-		drawn.find(
-			(d) => d.i === active && d.s.x >= 0 && d.s.x <= W && d.s.y >= 0 && d.s.y <= vh
-		) ?? null
-	);
+	// Where the active point is on screen right now, morph included. A point zoomed or panned
+	// out of view has no tooltip: it would point at nothing.
+	let activeAt = $derived.by(() => {
+		const at = active === null ? undefined : shown.pts[active];
+		return at && at.x >= 0 && at.x <= W && at.y >= 0 && at.y <= shown.vh ? at : null;
+	});
+	let activePoint = $derived(activeAt ? (points.find((p) => p.i === active) ?? null) : null);
 
 	// The tooltip goes beside its point, right if it fits and left if not. A phone-width plot
 	// can have room on neither side, and then it goes above the point, or below. Either way
@@ -323,9 +416,9 @@
 	let tipW = $state(0);
 	let tipH = $state(0);
 	let tip = $derived.by(() => {
-		if (!activePoint) return { left: 0, top: 0 };
-		const x = (activePoint.s.x / W) * plotW;
-		const y = (activePoint.s.y / vh) * plotH;
+		if (!activeAt) return { left: 0, top: 0 };
+		const x = (activeAt.x / W) * plotW;
+		const y = (activeAt.y / shown.vh) * plotH;
 		const clamp = (v: number, max: number) => Math.max(0, Math.min(v, max));
 		const beside =
 			x + GAP + tipW <= plotW ? x + GAP : x - GAP - tipW >= 0 ? x - GAP - tipW : null;
@@ -338,8 +431,10 @@
 
 	function toggle(k: number) {
 		if (on[k] && line !== null) return; // keep at least one
-		on[k] = !on[k];
-		resetZoom(); // a new view lays every point out afresh
+		animate(() => {
+			on[k] = !on[k];
+			resetZoom(); // a new view lays every point out afresh
+		});
 	}
 
 	// — Pointers. One pointer dragging rotates the 3D view. In fullscreen it pans a flat
@@ -442,22 +537,24 @@
 		if (e.key in moves && panKeys) {
 			e.preventDefault();
 			const [dx, dy] = moves[e.key];
-			panBy((-dx / step) * 40, (-dy / step) * 40);
+			animate(() => panBy((-dx / step) * 40, (-dy / step) * 40), STEP);
 		} else if (e.key in moves && is3d) {
 			e.preventDefault();
-			rotate(...moves[e.key]);
+			animate(() => rotate(...moves[e.key]), STEP);
 		} else if (full && (e.key === '+' || e.key === '=')) {
-			zoomAt(1.25);
+			animate(() => zoomAt(1.25), STEP);
 		} else if (full && e.key === '-') {
-			zoomAt(0.8);
+			animate(() => zoomAt(0.8), STEP);
 		} else if (full && e.key === '0') {
-			resetZoom();
+			animate(resetZoom, STEP);
 		} else if (e.key === 'Home') {
 			e.preventDefault();
-			on = [true, true, true];
-			yaw = HOME.yaw;
-			pitch = HOME.pitch;
-			resetZoom();
+			animate(() => {
+				on = [true, true, true];
+				yaw = HOME.yaw;
+				pitch = HOME.pitch;
+				resetZoom();
+			});
 		} else if (e.key === 'Escape') {
 			pinned = null;
 		}
@@ -511,14 +608,14 @@
 	</div>
 
 	<div class="stage" bind:clientWidth={stageW} bind:clientHeight={stageH}>
-		<div class="plot" style:--ratio={W / vh} bind:clientWidth={plotW} bind:clientHeight={plotH}>
+		<div class="plot" style:--ratio={W / shown.vh} bind:clientWidth={plotW} bind:clientHeight={plotH}>
 			<!-- A custom control: it takes the arrow keys and drags, which no interactive ARIA role
 			     describes. `application` hands the keys through to it. -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 			<svg
 				bind:this={svg}
 				class:flat={!is3d}
-				viewBox="0 0 {W} {vh}"
+				viewBox="0 0 {W} {shown.vh}"
 				role="application"
 				aria-roledescription="scatter plot"
 				aria-label={line !== null
@@ -536,29 +633,32 @@
 				onkeydown={key}
 			>
 				<g class="box">
-					{#each box.edges as e, n (n)}
-						<line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y} />
+					{#each shown.edges as e, n (n)}
+						<line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} />
 					{/each}
 				</g>
 				<g class="axes">
-					{#each box.ends as end, k (k)}
-						{#if end.seen}
-							<line x1={box.origin.x} y1={box.origin.y} x2={end.x} y2={end.y} />
-							<text x={end.x} y={end.y}>{axes[k]}</text>
+					{#each shown.ends as end, k (k)}
+						{#if end.a > 0.01}
+							<g style:opacity={end.a}>
+								<line x1={shown.origin.x} y1={shown.origin.y} x2={end.x} y2={end.y} />
+								<text x={end.x} y={end.y}>{axes[k]}</text>
+							</g>
 						{/if}
 					{/each}
 				</g>
 
 				{#each drawn as d (d.i)}
+					{@const at = shown.pts[d.i]}
 					<circle
 						class="pt"
 						class:active={d.i === active}
 						data-point={d.i}
-						cx={d.s.x}
-						cy={d.s.y}
-						r={R * d.s.k}
+						cx={at.x}
+						cy={at.y}
+						r={at.r}
 						style:fill={colourOf(d.cluster)}
-						style:opacity={fade(d.s.z)}
+						style:opacity={at.o}
 					/>
 				{/each}
 			</svg>
@@ -569,20 +669,20 @@
 						type="button"
 						aria-label="Zoom out"
 						disabled={zoom <= 1}
-						onclick={() => zoomAt(1 / 1.5)}><Icon name="minus" /></button
+						onclick={() => animate(() => zoomAt(1 / 1.5), STEP)}><Icon name="minus" /></button
 					>
 					<button
 						type="button"
 						class="level"
 						title="Reset zoom"
 						aria-label="Zoom {Math.round(zoom * 100)} percent, reset"
-						onclick={resetZoom}>{Math.round(zoom * 100)}%</button
+						onclick={() => animate(resetZoom, STEP)}>{Math.round(zoom * 100)}%</button
 					>
 					<button
 						type="button"
 						aria-label="Zoom in"
 						disabled={zoom >= ZOOM_MAX}
-						onclick={() => zoomAt(1.5)}><Icon name="plus" /></button
+						onclick={() => animate(() => zoomAt(1.5), STEP)}><Icon name="plus" /></button
 					>
 				</div>
 			{/if}
