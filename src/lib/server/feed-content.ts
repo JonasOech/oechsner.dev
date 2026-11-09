@@ -97,6 +97,13 @@ function styleFor(el: Element, parent: Parent): string | undefined {
 			return hasClass(parent as Element, 'references')
 				? 'padding-left: 1.5em; text-indent: -1.5em'
 				: undefined;
+		// A Stats row, as a plain list: each label with its number under it.
+		case 'dt':
+			return hasClass(parent as Element, 'stat') ? `font-size: 0.85em; color: ${MUTED}` : undefined;
+		case 'dd':
+			return hasClass(parent as Element, 'stat')
+				? 'margin: 0 0 0.75em; font-size: 1.4em; font-weight: 700'
+				: undefined;
 		case 'div':
 			return hasClass(el, 'note')
 				? `padding: 0.25em 1.25em; border: 1px solid ${RULE}; border-left: 3px solid ${COOL}; border-radius: 8px; font-size: 0.95em`

@@ -359,6 +359,16 @@ so markup in the HTML would flash on every load for everyone who already answere
 .rail__body  { max-width: var(--measure); }
 ```
 
+### Stats row (`Stats.svelte`)
+
+A dashboard-style row of headline figures for posts, normally five. **Not cards**: no fills,
+no radius, no shadow, and **no vertical rules** — columns are separated by whitespace alone,
+with a `--line` hairline above and below the row and nothing between rows when it wraps. The first
+figure sits flush with the text column's left edge. The number is DM Sans 700 at `--t-h2` size in `--text` with
+`tabular-nums`; the description sits under it at `0.8125rem` in `--text-secondary` (it can run
+to a short phrase, so it is not set in the uppercase label style). Five abreast from `--bp-md`
+up, three over two below it.
+
 ### Timeline entry (experience / education / projects)
 
 ```css

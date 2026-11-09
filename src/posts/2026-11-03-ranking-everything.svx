@@ -17,6 +17,15 @@ ai: true
 	import ClusterScatter3D from '$lib/components/ClusterScatter3D.svelte';
 	import clusters from '$lib/data/ranking-everything-clusters.csv?raw';
 	import DataFrame from '$lib/components/DataFrame.svelte';
+	import Stats from '$lib/components/Stats.svelte';
+
+	const stats = [
+		{ value: 33, label: 'users' },
+		{ value: 3220, label: 'upvotes' },
+		{ value: 1572, label: 'downvotes' },
+		{ value: '3wks', label: 'project time' },
+		{ value: 2, label: 'opinion clusters' }
+	];
 
   // Settings for the table in what went wrong
 	const votesTable = {
@@ -25,6 +34,8 @@ ai: true
 		highlight: [['florbish', 'ratio']]
 	};
 </script>
+
+<Stats items={stats} />
 
 [Ranking Everything](https://rankingeverything.oechsner.dev) is live and still running. Swipe through items, then check the rankings to
 see what came out coolest, least cool and most controversial, and how your own picks compare.
@@ -44,5 +55,5 @@ see what came out coolest, least cool and most controversial, and how your own p
 <DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
 
 ## Special Thanks
-- Anja, Max, Pawlo for helping with getting the link out there.
+- Anja, Max, Pawlo and Paul for helping with getting the link out there.
 - The Uni Würzburg Student Union for letting me market on their discord server.
