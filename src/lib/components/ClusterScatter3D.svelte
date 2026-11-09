@@ -21,9 +21,11 @@
 	// page the plot stays fixed: a wheel over it scrolls the article, as a reader expects.
 	//
 	// Discrete changes — a dimension switched, Home, a zoom button or key, an arrow-key step —
-	// morph from the old layout to the new one, once, then stop (DESIGN.md §7). Drags, the
-	// wheel and pinches stay direct: easing a gesture only makes it feel late. Under reduced
-	// motion everything snaps.
+	// animate once, then stop (DESIGN.md §7). Switching a dimension off in 3D first turns the
+	// box until it is seen from the side the flat view shows, then flattens it; switching it
+	// back on unflattens, then turns back to where the reader was. Drags, the wheel and pinches
+	// stay direct: easing a gesture only makes it feel late. Under reduced motion everything
+	// snaps.
 	import Icon from '$lib/components/Icon.svelte';
 
 	let { csv, title = 'Clusters in three dimensions' }: { csv: string; title?: string } = $props();
@@ -44,6 +46,8 @@
 	const HOME = { yaw: -0.65, pitch: 0.38 };
 	const ZOOM_MAX = 12;
 	const MORPH = 620; // --dur-slow, for a change of view
+	const TURN = 620; // --dur-slow, turning the box to face a flat view, or back
+	const FLATTEN = 420; // dropping perspective once the box faces the right way
 	const STEP = 260; // --dur-base, for a zoom or an arrow-key step
 
 	function parse(text: string) {
@@ -82,7 +86,10 @@
 
 	let yaw = $state(HOME.yaw);
 	let pitch = $state(HOME.pitch);
+	let roll = $state(0); // only off zero while facing, or turning to face, the dim2 × dim3 view
 	let on = $state([true, true, true]);
+	// The dimensions the buttons show while a turn plays out before `on` itself changes.
+	let pendingOn = $state<boolean[] | null>(null);
 	let hovered = $state<number | null>(null);
 	let pinned = $state<number | null>(null);
 
@@ -159,20 +166,32 @@
 	);
 
 	// Data axis 0 → screen right, axis 1 → screen up, axis 2 → towards the viewer. Yaw turns
-	// about the vertical, pitch tilts about the horizontal. Returns box units, y up.
-	function rotate3([x, y, z]: number[], yaw: number, pitch: number) {
+	// about the vertical, pitch tilts about the horizontal, roll turns the picture in its own
+	// plane. Returns box units, y up.
+	function rotate3([x, y, z]: number[], yaw: number, pitch: number, roll = 0) {
 		const x1 = x * Math.cos(yaw) + z * Math.sin(yaw);
 		const z1 = -x * Math.sin(yaw) + z * Math.cos(yaw);
 		const y2 = y * Math.cos(pitch) - z1 * Math.sin(pitch);
 		const z2 = y * Math.sin(pitch) + z1 * Math.cos(pitch);
 		const k = CAMERA / (CAMERA - z2);
-		return { x: x1 * k, y: y2 * k, z: z2, k };
+		const xr = x1 * Math.cos(roll) - y2 * Math.sin(roll);
+		const yr = x1 * Math.sin(roll) + y2 * Math.cos(roll);
+		return { x: xr * k, y: yr * k, z: z2, k };
+	}
+
+	// The angles at which the 3D box shows exactly what a flat view shows: looking straight
+	// down the dropped axis, with the flat view's across-axis pointing right and its up-axis
+	// up. dim2 × dim3 needs the roll: yaw and pitch alone would show it as dim3 × dim2.
+	function facing([a, b]: [number, number]) {
+		if (a === 0 && b === 1) return { yaw: 0, pitch: 0, roll: 0 };
+		if (a === 0 && b === 2) return { yaw: 0, pitch: -Math.PI / 2, roll: 0 };
+		return { yaw: -Math.PI / 2, pitch: 0, roll: -Math.PI / 2 };
 	}
 
 	// Flat views and the strip are orthographic, so distances in them read true.
 	function place(v: number[]) {
 		if (line !== null) return { x: v[line], y: 0, z: 0, k: 1 };
-		return flat ? { x: v[flat[0]], y: v[flat[1]], z: 0, k: 1 } : rotate3(v, yaw, pitch);
+		return flat ? { x: v[flat[0]], y: v[flat[1]], z: 0, k: 1 } : rotate3(v, yaw, pitch, roll);
 	}
 
 	// The box corners and the axis-label anchors past them, in box units.
@@ -253,6 +272,7 @@
 		if (!full) return;
 		const wheel = (e: WheelEvent) => {
 			e.preventDefault();
+			if (turn) return;
 			const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
 			const p = toView(e.clientX, e.clientY);
 			zoomAt(Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.002)), p.x, p.y);
@@ -339,7 +359,9 @@
 		ends: box.ends.map((e) => ({ x: e.x, y: e.y, a: e.seen ? 1 : 0 }))
 	});
 
-	let morph = $state<{ from: Layout; start: number; dur: number } | null>(null);
+	let morph = $state<{ from: Layout; start: number; dur: number; then?: () => void } | null>(
+		null
+	);
 	let progress = $state(1);
 	let rafId = 0;
 
@@ -381,22 +403,141 @@
 
 	// Runs `change` and morphs to what it produces. Starting from what is on screen, not
 	// from the last target, is what lets a morph that interrupts another one stay smooth.
-	function animate(change: () => void, dur = MORPH) {
-		const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	function animate(change: () => void, dur = MORPH, then?: () => void) {
 		const from = shown;
 		change();
-		if (reduce) return;
-		morph = { from, start: performance.now(), dur };
+		if (reduced()) return then?.();
+		morph = { from, start: performance.now(), dur, then };
 		progress = 0;
+		if (!rafId) rafId = requestAnimationFrame(tick);
+	}
+
+	// — The turn. Blending positions between two angles would squash the box rather than
+	//   turn it, so a turn tweens the angles themselves (and zoom and pan with them) and lets
+	//   the layout follow. Yaw takes the short way round, whatever the reader has dragged it
+	//   to. While a turn runs, drags, the wheel and pinches wait. —
+	type Pose = { yaw: number; pitch: number; roll: number; zoom: number; panX: number; panY: number };
+	let turn = $state<{
+		from: Pose;
+		to: Pose;
+		start: number;
+		dur: number;
+		then?: () => void;
+	} | null>(null);
+
+	const pose = (): Pose => ({ yaw, pitch, roll, zoom, panX, panY });
+
+	function setPose(p: Pose) {
+		({ yaw, pitch, roll, zoom, panX, panY } = p);
+	}
+
+	function turnTo(to: Partial<Pose>, dur: number, then?: () => void) {
+		const from = pose();
+		const end = { ...from, ...to };
+		end.yaw = from.yaw + Math.atan2(Math.sin(end.yaw - from.yaw), Math.cos(end.yaw - from.yaw));
+		if (reduced()) {
+			setPose(end);
+			return then?.();
+		}
+		turn = { from, to: end, start: performance.now(), dur, then };
 		if (!rafId) rafId = requestAnimationFrame(tick);
 	}
 
 	function tick(now: number) {
 		rafId = 0;
-		if (!morph) return;
-		progress = Math.min(1, (now - morph.start) / morph.dur);
-		if (progress < 1) rafId = requestAnimationFrame(tick);
-		else morph = null;
+		if (turn) {
+			const t = Math.min(1, (now - turn.start) / turn.dur);
+			const e = ease(t);
+			const { from: a, to: b } = turn;
+			setPose({
+				yaw: lerp(a.yaw, b.yaw, e),
+				pitch: lerp(a.pitch, b.pitch, e),
+				roll: lerp(a.roll, b.roll, e),
+				zoom: a.zoom * (b.zoom / a.zoom) ** e, // even steps in scale, not in percent
+				panX: lerp(a.panX, b.panX, e),
+				panY: lerp(a.panY, b.panY, e)
+			});
+			if (t >= 1) {
+				const then = turn.then;
+				turn = null;
+				then?.();
+			}
+		}
+		if (morph) {
+			progress = Math.min(1, (now - morph.start) / morph.dur);
+			if (progress >= 1) {
+				const then = morph.then;
+				morph = null;
+				then?.();
+			}
+		}
+		if ((turn || morph) && !rafId) rafId = requestAnimationFrame(tick);
+	}
+
+	// Where to turn back to after a flat view: the angle the reader left 3D at. It survives
+	// a trip through other flat views and the strip, and is spent on the way back.
+	let restore: { yaw: number; pitch: number } | null = null;
+
+	// What the buttons show: where the view is going, not where it still is mid-turn.
+	let buttons = $derived(pendingOn ?? on);
+	// A multi-step change is playing out; keys that would steer the view wait for it.
+	let sequence = $derived(pendingOn !== null || !!turn?.then || !!morph?.then);
+
+	// Moves the view to the dimensions in `want`, animating the way there.
+	function go(want: boolean[], home = false) {
+		// A sequence already under way stops where it is, and this one starts from there.
+		turn = null;
+		if (morph) morph.then = undefined;
+		pendingOn = null;
+		const from = on.filter(Boolean).length;
+		const to = want.filter(Boolean).length;
+		const zoomHome = { zoom: 1, panX: 0, panY: 0 };
+
+		if (from === 3 && to === 3) {
+			// Still in 3D: Home, or a dimension switched back on before its turn had finished.
+			// Either way, just turn.
+			const back = home ? HOME : restore;
+			restore = null;
+			if (back) turnTo({ ...back, roll: 0, ...zoomHome }, TURN);
+		} else if (from === 3) {
+			// Into a flat view: face it, then flatten.
+			restore ??= { yaw, pitch };
+			const kept = [0, 1, 2].filter((k) => want[k]) as [number, number];
+			pendingOn = want;
+			turnTo({ ...facing(kept), ...zoomHome }, TURN, () =>
+				animate(() => {
+					on = want;
+					pendingOn = null;
+				}, FLATTEN)
+			);
+		} else if (to === 3 && flat) {
+			// Back to 3D from a flat view: unflatten while facing it, then turn back.
+			const back = home ? HOME : (restore ?? HOME);
+			restore = null;
+			const f = facing(flat);
+			animate(
+				() => {
+					on = want;
+					({ yaw, pitch, roll } = f);
+					resetZoom();
+				},
+				FLATTEN,
+				() => turnTo({ ...back, roll: 0 }, TURN)
+			);
+		} else {
+			// Between a flat view and the strip, or Home from the strip: one morph.
+			if (to === 3) {
+				restore = null;
+				({ yaw, pitch } = HOME);
+				roll = 0;
+			}
+			animate(() => {
+				on = want;
+				resetZoom();
+			});
+		}
 	}
 
 	$effect(() => () => cancelAnimationFrame(rafId));
@@ -429,12 +570,11 @@
 
 	const fmt = (n: number) => n.toFixed(3).replace('-', '−');
 
+	// The view resets its zoom on every switch: a new view lays every point out afresh.
 	function toggle(k: number) {
-		if (on[k] && line !== null) return; // keep at least one
-		animate(() => {
-			on[k] = !on[k];
-			resetZoom(); // a new view lays every point out afresh
-		});
+		const now = pendingOn ?? on;
+		if (now[k] && now.filter(Boolean).length === 1) return; // keep at least one
+		go(now.map((v, j) => (j === k ? !v : v)));
 	}
 
 	// — Pointers. One pointer dragging rotates the 3D view. In fullscreen it pans a flat
@@ -476,6 +616,7 @@
 	function move(e: PointerEvent) {
 		if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
 		if (pinch && pointers.size >= 2) {
+			if (turn) return;
 			const now = pinchState();
 			const at = toView(now.x, now.y);
 			panBy((now.x - pinch.x) * at.k, (now.y - pinch.y) * at.k);
@@ -484,6 +625,7 @@
 			return;
 		}
 		if (!drag?.moved) hovered = pointAt(e);
+		if (turn) return;
 		if (!drag || (!is3d && !drag.pan)) return;
 		const dx = e.clientX - drag.x;
 		const dy = e.clientY - drag.y;
@@ -519,6 +661,13 @@
 		drag = null;
 	}
 
+	// A zoom button or key: by `factor` about the centre, or back to 100% for 0. A turn sets
+	// zoom itself on every frame, so a step waits until it is over.
+	function zoomStep(factor: number) {
+		if (turn) return;
+		animate(() => (factor ? zoomAt(factor) : resetZoom()), STEP);
+	}
+
 	function rotate(dYaw: number, dPitch: number) {
 		yaw += dYaw;
 		pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch + dPitch));
@@ -537,24 +686,29 @@
 		if (e.key in moves && panKeys) {
 			e.preventDefault();
 			const [dx, dy] = moves[e.key];
-			animate(() => panBy((-dx / step) * 40, (-dy / step) * 40), STEP);
+			if (!turn) animate(() => panBy((-dx / step) * 40, (-dy / step) * 40), STEP);
 		} else if (e.key in moves && is3d) {
 			e.preventDefault();
-			animate(() => rotate(...moves[e.key]), STEP);
+			if (!sequence) {
+				// From where the last step was heading, so quick presses add up.
+				const to = turn?.to ?? pose();
+				turnTo(
+					{
+						yaw: to.yaw + moves[e.key][0],
+						pitch: Math.max(-Math.PI / 2, Math.min(Math.PI / 2, to.pitch + moves[e.key][1]))
+					},
+					STEP
+				);
+			}
 		} else if (full && (e.key === '+' || e.key === '=')) {
-			animate(() => zoomAt(1.25), STEP);
+			zoomStep(1.25);
 		} else if (full && e.key === '-') {
-			animate(() => zoomAt(0.8), STEP);
+			zoomStep(0.8);
 		} else if (full && e.key === '0') {
-			animate(resetZoom, STEP);
+			zoomStep(0);
 		} else if (e.key === 'Home') {
 			e.preventDefault();
-			animate(() => {
-				on = [true, true, true];
-				yaw = HOME.yaw;
-				pitch = HOME.pitch;
-				resetZoom();
-			});
+			go([true, true, true], true);
 		} else if (e.key === 'Escape') {
 			pinned = null;
 		}
@@ -586,10 +740,12 @@
 			<div class="seg" role="group" aria-label="Dimensions shown">
 				{#each axes as a, k (k)}
 					<button
-						class:on={on[k]}
-						aria-pressed={on[k]}
-						aria-disabled={on[k] && line !== null}
-						title={on[k] && line !== null ? 'At least one dimension stays on' : undefined}
+						class:on={buttons[k]}
+						aria-pressed={buttons[k]}
+						aria-disabled={buttons[k] && buttons.filter(Boolean).length === 1}
+						title={buttons[k] && buttons.filter(Boolean).length === 1
+							? 'At least one dimension stays on'
+							: undefined}
 						onclick={() => toggle(k)}>{a}</button
 					>
 				{/each}
@@ -669,20 +825,20 @@
 						type="button"
 						aria-label="Zoom out"
 						disabled={zoom <= 1}
-						onclick={() => animate(() => zoomAt(1 / 1.5), STEP)}><Icon name="minus" /></button
+						onclick={() => zoomStep(1 / 1.5)}><Icon name="minus" /></button
 					>
 					<button
 						type="button"
 						class="level"
 						title="Reset zoom"
 						aria-label="Zoom {Math.round(zoom * 100)} percent, reset"
-						onclick={() => animate(resetZoom, STEP)}>{Math.round(zoom * 100)}%</button
+						onclick={() => zoomStep(0)}>{Math.round(zoom * 100)}%</button
 					>
 					<button
 						type="button"
 						aria-label="Zoom in"
 						disabled={zoom >= ZOOM_MAX}
-						onclick={() => animate(() => zoomAt(1.5), STEP)}><Icon name="plus" /></button
+						onclick={() => zoomStep(1.5)}><Icon name="plus" /></button
 					>
 				</div>
 			{/if}
