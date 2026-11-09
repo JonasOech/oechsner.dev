@@ -35,6 +35,12 @@
 </figure>
 
 <style>
+	/* `.prose figure { margin: 0 }` would otherwise leave the row flush against the
+	   heading above it. Same breathing room as LatexBlock and `.widget`. */
+	.stats {
+		margin-block: var(--s-6);
+	}
+
 	/* Only horizontal rules, above and below the whole row. Columns, and rows when it
 	   wraps, are separated by space alone. Flex rather than grid so a short last row
 	   sits centred instead of hugging the left. */

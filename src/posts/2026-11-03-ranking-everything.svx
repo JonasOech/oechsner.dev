@@ -14,10 +14,10 @@ ai: true
 ---
 
 <script>
-	import ClusterScatter3D from '$lib/components/ClusterScatter3D.svelte';
+	import ClusterScatter3D from '$lib/components/ranking/ClusterScatter3D.svelte';
 	import clusters from '$lib/data/ranking-everything-clusters.csv?raw';
-	import DataFrame from '$lib/components/DataFrame.svelte';
-	import Stats from '$lib/components/Stats.svelte';
+	import DataFrame from '$lib/components/ranking/DataFrame.svelte';
+	import Stats from '$lib/components/ranking/Stats.svelte';
 
 	const stats = [
 		{ value: 33, label: 'users' },
