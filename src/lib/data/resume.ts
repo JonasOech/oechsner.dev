@@ -6,6 +6,7 @@
  * decoupled so the web copy can breathe a little more than a one-page CV allows.
  */
 
+
 export type Entry = {
 	title: string;
 	org?: string;
