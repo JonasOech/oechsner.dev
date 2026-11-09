@@ -15,6 +15,10 @@
 	// The fullscreen button uses the Fullscreen API where the browser has it. Where it does
 	// not (iPhone Safari only allows it for video) the figure is pinned over the whole window
 	// instead, the same way LatexBlock maximises a formula.
+	//
+	// Fullscreen also zooms and pans. Zoom spreads the points apart instead of magnifying
+	// them, so a tight cluster separates while dots, lines and labels keep their size. In the
+	// page the plot stays fixed: a wheel over it scrolls the article, as a reader expects.
 	import Icon from '$lib/components/Icon.svelte';
 
 	let { csv, title = 'Clusters in three dimensions' }: { csv: string; title?: string } = $props();
@@ -33,6 +37,7 @@
 	const MARGIN = 26; // room for the axis labels past the box
 	const CAMERA = 5; // camera distance in box units: enough depth cue, little distortion
 	const HOME = { yaw: -0.65, pitch: 0.38 };
+	const ZOOM_MAX = 12;
 
 	function parse(text: string) {
 		const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
@@ -77,6 +82,13 @@
 	let figure: HTMLElement;
 	let full = $state(false);
 	let native = $state(false); // true while `full` is the Fullscreen API, not the overlay
+	let svg: SVGSVGElement;
+
+	// Zoom and pan, in fullscreen only. A screen position is (p − centre) · zoom + centre + pan,
+	// in viewBox units, and pan is clamped so the plot's own frame always covers the view.
+	let zoom = $state(1);
+	let panX = $state(0);
+	let panY = $state(0);
 
 	// Measured in the browser: the stage sets the fullscreen shape, the plot places the tooltip.
 	let stageW = $state(0);
@@ -88,6 +100,7 @@
 		if (full) {
 			if (document.fullscreenElement) await document.exitFullscreen();
 			full = native = false;
+			resetZoom();
 			return;
 		}
 		if (document.fullscreenEnabled && figure.requestFullscreen) {
@@ -185,8 +198,61 @@
 
 	function project(v: number[]) {
 		const r = place(v);
-		return { x: W / 2 + r.x * scale, y: vh / 2 - r.y * scale, z: r.z, k: r.k };
+		return {
+			x: W / 2 + r.x * scale * zoom + panX,
+			y: vh / 2 - r.y * scale * zoom + panY,
+			z: r.z,
+			k: r.k
+		};
 	}
+
+	function clampPan() {
+		const mx = ((zoom - 1) * W) / 2;
+		const my = ((zoom - 1) * vh) / 2;
+		panX = Math.max(-mx, Math.min(mx, panX));
+		panY = Math.max(-my, Math.min(my, panY));
+	}
+
+	// Zooms by `factor` about (fx, fy) in viewBox units: whatever is under that spot stays there.
+	function zoomAt(factor: number, fx = W / 2, fy = vh / 2) {
+		const next = Math.max(1, Math.min(ZOOM_MAX, zoom * factor));
+		const f = next / zoom;
+		panX = fx - W / 2 - (fx - W / 2 - panX) * f;
+		panY = fy - vh / 2 - (fy - vh / 2 - panY) * f;
+		zoom = next;
+		clampPan();
+	}
+
+	function panBy(dx: number, dy: number) {
+		panX += dx;
+		panY += dy;
+		clampPan();
+	}
+
+	function resetZoom() {
+		zoom = 1;
+		panX = panY = 0;
+	}
+
+	// Client pixels to viewBox units.
+	function toView(cx: number, cy: number) {
+		const r = svg.getBoundingClientRect();
+		return { x: ((cx - r.left) / r.width) * W, y: ((cy - r.top) / r.height) * vh, k: W / r.width };
+	}
+
+	// Wheel and trackpad pinch (which arrives as a wheel with ctrlKey). Attached by hand
+	// because it must be able to preventDefault, and only while fullscreen.
+	$effect(() => {
+		if (!full) return;
+		const wheel = (e: WheelEvent) => {
+			e.preventDefault();
+			const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+			const p = toView(e.clientX, e.clientY);
+			zoomAt(Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.002)), p.x, p.y);
+		};
+		svg.addEventListener('wheel', wheel, { passive: false });
+		return () => svg.removeEventListener('wheel', wheel);
+	});
 
 	let box = $derived.by(() => {
 		const h = halves;
@@ -244,7 +310,12 @@
 			: 0.5 + (0.5 * (z - depth.min)) / (depth.max - depth.min);
 
 	let active = $derived(pinned ?? hovered);
-	let activePoint = $derived(drawn.find((d) => d.i === active) ?? null);
+	// A point zoomed or panned out of view has no tooltip: it would point at nothing.
+	let activePoint = $derived(
+		drawn.find(
+			(d) => d.i === active && d.s.x >= 0 && d.s.x <= W && d.s.y >= 0 && d.s.y <= vh
+		) ?? null
+	);
 
 	// The tooltip goes beside its point, right if it fits and left if not. A phone-width plot
 	// can have room on neither side, and then it goes above the point, or below. Either way
@@ -268,42 +339,88 @@
 	function toggle(k: number) {
 		if (on[k] && line !== null) return; // keep at least one
 		on[k] = !on[k];
+		resetZoom(); // a new view lays every point out afresh
 	}
 
-	// — Dragging, in 3D only. A press that barely moves is a click: it pins or clears the
-	//   readout. The pointer is only captured once it really drags, because capture retargets
-	//   `pointerup` to the svg and the click would no longer know which point it landed on. —
-	let drag: { x: number; y: number; moved: boolean } | null = null;
+	// — Pointers. One pointer dragging rotates the 3D view. In fullscreen it pans a flat
+	//   view or strip, and pans 3D too with shift held or the right button; two pointers
+	//   pinch-zoom and pan together. A press that barely moves is a click: it pins or clears
+	//   the readout. Hit-testing goes by position, because a captured pointer's events all
+	//   name the svg as their target. —
+	let drag: { x: number; y: number; moved: boolean; pan: boolean } | null = null;
+	const pointers = new Map<number, { x: number; y: number }>();
+	let pinch: { dist: number; x: number; y: number } | null = null;
+
+	function pinchState() {
+		const [a, b] = [...pointers.values()];
+		return { dist: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+	}
 
 	function down(e: PointerEvent) {
-		if (e.button !== 0) return;
-		drag = { x: e.clientX, y: e.clientY, moved: false };
+		if (e.button !== 0 && !(full && e.button === 2)) return;
+		try {
+			svg.setPointerCapture(e.pointerId);
+		} catch {
+			// Not an active pointer any more (released mid-dispatch): nothing to capture.
+		}
+		pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+		if (full && pointers.size === 2) {
+			pinch = pinchState();
+			drag = null;
+			return;
+		}
+		const pan = full && (!is3d || e.shiftKey || e.button === 2);
+		drag = { x: e.clientX, y: e.clientY, moved: false, pan };
 	}
 
 	function pointAt(e: PointerEvent) {
-		const hit = (e.target as Element).closest('[data-point]');
-		return hit ? Number(hit.getAttribute('data-point')) : null;
+		const hit = document.elementFromPoint(e.clientX, e.clientY)?.closest('[data-point]');
+		return hit && svg.contains(hit) ? Number(hit.getAttribute('data-point')) : null;
 	}
 
 	function move(e: PointerEvent) {
+		if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+		if (pinch && pointers.size >= 2) {
+			const now = pinchState();
+			const at = toView(now.x, now.y);
+			panBy((now.x - pinch.x) * at.k, (now.y - pinch.y) * at.k);
+			if (pinch.dist > 0) zoomAt(now.dist / pinch.dist, at.x, at.y);
+			pinch = now;
+			return;
+		}
 		if (!drag?.moved) hovered = pointAt(e);
-		if (!drag || !is3d) return;
+		if (!drag || (!is3d && !drag.pan)) return;
 		const dx = e.clientX - drag.x;
 		const dy = e.clientY - drag.y;
 		if (!drag.moved && Math.hypot(dx, dy) < 4) return;
-		if (!drag.moved) (e.currentTarget as Element).setPointerCapture(e.pointerId);
 		drag.moved = true;
-		rotate(dx * 0.01, dy * 0.01);
+		if (drag.pan) {
+			const k = toView(0, 0).k;
+			panBy(dx * k, dy * k);
+		} else rotate(dx * 0.01, dy * 0.01);
 		drag.x = e.clientX;
 		drag.y = e.clientY;
 	}
 
 	function up(e: PointerEvent) {
+		pointers.delete(e.pointerId);
+		if (pinch) {
+			// The finger left behind would otherwise start a drag of its own.
+			if (pointers.size < 2) pinch = null;
+			drag = null;
+			return;
+		}
 		if (!drag) return;
-		if (!drag.moved) {
+		if (!drag.moved && e.button === 0) {
 			const i = pointAt(e);
 			pinned = i === pinned ? null : i;
 		}
+		drag = null;
+	}
+
+	function cancel(e: PointerEvent) {
+		pointers.delete(e.pointerId);
+		pinch = null;
 		drag = null;
 	}
 
@@ -320,14 +437,27 @@
 			ArrowUp: [0, -step],
 			ArrowDown: [0, step]
 		};
-		if (e.key in moves && is3d) {
+		// In fullscreen the arrows pan a flat view, and shift turns them to panning in 3D.
+		const panKeys = full && (!is3d || e.shiftKey);
+		if (e.key in moves && panKeys) {
+			e.preventDefault();
+			const [dx, dy] = moves[e.key];
+			panBy((-dx / step) * 40, (-dy / step) * 40);
+		} else if (e.key in moves && is3d) {
 			e.preventDefault();
 			rotate(...moves[e.key]);
+		} else if (full && (e.key === '+' || e.key === '=')) {
+			zoomAt(1.25);
+		} else if (full && e.key === '-') {
+			zoomAt(0.8);
+		} else if (full && e.key === '0') {
+			resetZoom();
 		} else if (e.key === 'Home') {
 			e.preventDefault();
 			on = [true, true, true];
 			yaw = HOME.yaw;
 			pitch = HOME.pitch;
+			resetZoom();
 		} else if (e.key === 'Escape') {
 			pinned = null;
 		}
@@ -337,12 +467,18 @@
 <svelte:document
 	onfullscreenchange={() => {
 		// The browser's own Escape or exit control leaves fullscreen without the button.
-		if (native && !document.fullscreenElement) full = native = false;
+		if (native && !document.fullscreenElement) {
+			full = native = false;
+			resetZoom();
+		}
 	}}
 />
 <svelte:window
 	onkeydown={(e) => {
-		if (full && !native && e.key === 'Escape') full = false;
+		if (full && !native && e.key === 'Escape') {
+			full = false;
+			resetZoom();
+		}
 	}}
 />
 
@@ -380,6 +516,7 @@
 			     describes. `application` hands the keys through to it. -->
 			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 			<svg
+				bind:this={svg}
 				class:flat={!is3d}
 				viewBox="0 0 {W} {vh}"
 				role="application"
@@ -393,8 +530,9 @@
 				onpointerdown={down}
 				onpointermove={move}
 				onpointerup={up}
-				onpointercancel={() => (drag = null)}
+				onpointercancel={cancel}
 				onpointerleave={() => (hovered = null)}
+				oncontextmenu={(e) => full && e.preventDefault()}
 				onkeydown={key}
 			>
 				<g class="box">
@@ -425,6 +563,30 @@
 				{/each}
 			</svg>
 
+			{#if full}
+				<div class="zoom" role="group" aria-label="Zoom">
+					<button
+						type="button"
+						aria-label="Zoom out"
+						disabled={zoom <= 1}
+						onclick={() => zoomAt(1 / 1.5)}><Icon name="minus" /></button
+					>
+					<button
+						type="button"
+						class="level"
+						title="Reset zoom"
+						aria-label="Zoom {Math.round(zoom * 100)} percent, reset"
+						onclick={resetZoom}>{Math.round(zoom * 100)}%</button
+					>
+					<button
+						type="button"
+						aria-label="Zoom in"
+						disabled={zoom >= ZOOM_MAX}
+						onclick={() => zoomAt(1.5)}><Icon name="plus" /></button
+					>
+				</div>
+			{/if}
+
 			{#if activePoint}
 				<div
 					class="tip"
@@ -448,7 +610,8 @@
 	<figcaption>
 		Drag to rotate, or focus the plot and use the arrow keys. Switch a dimension off to see the
 		other two flat, without perspective, or two off to see the last one alone. Hover a point
-		for its values, click to pin them.
+		for its values, click to pin them. In fullscreen, scroll or pinch to zoom. Drag a flat view
+		to pan it; in 3D, pan with shift-drag or two fingers.
 	</figcaption>
 </figure>
 
@@ -570,6 +733,61 @@
 	svg.flat {
 		cursor: default;
 		touch-action: auto;
+	}
+	.max svg {
+		touch-action: none;
+	}
+	.max svg.flat {
+		cursor: grab;
+	}
+	.max svg.flat:active {
+		cursor: grabbing;
+	}
+
+	/* Over the plot's bottom-right corner, in fullscreen only. */
+	.zoom {
+		position: absolute;
+		right: var(--s-3);
+		bottom: var(--s-3);
+		display: inline-grid;
+		grid-auto-flow: column;
+		gap: 1px;
+		background: var(--line);
+		border: 1px solid var(--line);
+		border-radius: 7px;
+		overflow: hidden;
+	}
+	.zoom button {
+		display: grid;
+		place-items: center;
+		min-width: 2rem;
+		height: 2rem;
+		padding: 0 var(--s-2);
+		border: 0;
+		background: var(--surface-active);
+		color: var(--text-secondary);
+		font: inherit;
+		font-size: 0.75rem;
+		font-variant-numeric: tabular-nums;
+		cursor: pointer;
+	}
+	.zoom .level {
+		min-width: 3.5rem;
+	}
+	.zoom button:disabled {
+		color: var(--text-muted);
+		cursor: default;
+		opacity: 0.5;
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.zoom button:not(:disabled):hover {
+			background: var(--surface-hover);
+			color: var(--text);
+		}
+	}
+	.zoom button:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
 	}
 
 	.box line {

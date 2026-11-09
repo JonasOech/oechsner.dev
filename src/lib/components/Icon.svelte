@@ -17,7 +17,9 @@
 		| 'copy'
 		| 'check'
 		| 'maximize'
-		| 'minimize';
+		| 'minimize'
+		| 'plus'
+		| 'minus';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -44,7 +46,9 @@
 		// Two corners pushed apart, and the same two pulled back together — the maximise
 		// toggle on a formula plate.
 		maximize: 'M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7',
-		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7'
+		minimize: 'M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7',
+		plus: 'M5 12h14M12 5v14',
+		minus: 'M5 12h14'
 	};
 </script>
 
