@@ -16,6 +16,14 @@ ai: true
 <script>
 	import ClusterScatter3D from '$lib/components/ClusterScatter3D.svelte';
 	import clusters from '$lib/data/ranking-everything-clusters.csv?raw';
+	import DataFrame from '$lib/components/DataFrame.svelte';
+
+  // Settings for the table in what went wrong
+	const votesTable = {
+		labels: { up: 'Up', down: 'Down', n: 'Votes', ratio: 'Up ratio', vranish: 'Vranish', florbish: 'Florbish', Sum: 'All items' },
+		format: { ratio: 'percent' },
+		highlight: [['florbish', 'ratio']]
+	};
 </script>
 
 [Ranking Everything](https://rankingeverything.oechsner.dev) is live and still running. Swipe through items, then check the rankings to
@@ -24,3 +32,13 @@ see what came out coolest, least cool and most controversial, and how your own p
 ## Opinion clusters
 
 <ClusterScatter3D csv={clusters} title="Opinion clusters" />
+
+
+## What went wrong
+<figure>
+	<img src="/img/ranking-everything/florbish.png" 
+  alt="The Image I used for Florbish. It's white bacteria on a black backgound, viewed through a microscope" />
+	<figcaption>THe image I used for Florbish. Bacteria seems to have a negative effect on the votes, people seem to assume it's harmful.</figcaption>
+</figure>
+
+<DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
