@@ -9,7 +9,13 @@
 	// `cluster` column — or the fourth one — picks the colour.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
-	// a flat, orthographic scatter. At least two stay on: one alone is not a scatter plot.
+	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
+	// At least one stays on.
+	//
+	// The fullscreen button uses the Fullscreen API where the browser has it. Where it does
+	// not (iPhone Safari only allows it for video) the figure is pinned over the whole window
+	// instead, the same way LatexBlock maximises a formula.
+	import Icon from '$lib/components/Icon.svelte';
 
 	let { csv, title = 'Clusters in three dimensions' }: { csv: string; title?: string } = $props();
 
@@ -20,7 +26,10 @@
 	const PALETTE = ['var(--series-cool)', 'var(--accent)', 'var(--text-secondary)'];
 
 	const W = 600;
-	const H = 440;
+	const H = 440; // in the page; fullscreen takes the shape of the screen instead
+	const H_STRIP = 200;
+	const R = 6.5; // point radius at the middle of the depth range
+	const GAP = 12; // px between a point and its tooltip
 	const MARGIN = 26; // room for the axis labels past the box
 	const CAMERA = 5; // camera distance in box units: enough depth cue, little distortion
 	const HOME = { yaw: -0.65, pitch: 0.38 };
@@ -65,11 +74,69 @@
 	let hovered = $state<number | null>(null);
 	let pinned = $state<number | null>(null);
 
-	// The two dimensions a flat view shows, lower index across, or null in 3D.
-	let flat = $derived.by(() => {
-		const kept = [0, 1, 2].filter((k) => on[k]);
-		return kept.length === 2 ? (kept as [number, number]) : null;
+	let figure: HTMLElement;
+	let full = $state(false);
+	let native = $state(false); // true while `full` is the Fullscreen API, not the overlay
+
+	// Measured in the browser: the stage sets the fullscreen shape, the plot places the tooltip.
+	let stageW = $state(0);
+	let stageH = $state(0);
+	let plotW = $state(0);
+	let plotH = $state(0);
+
+	async function toggleFull() {
+		if (full) {
+			if (document.fullscreenElement) await document.exitFullscreen();
+			full = native = false;
+			return;
+		}
+		if (document.fullscreenEnabled && figure.requestFullscreen) {
+			try {
+				await figure.requestFullscreen();
+				full = native = true;
+				return;
+			} catch {
+				// Refused (an iframe without permission, say): fall through to the overlay.
+			}
+		}
+		full = true;
+	}
+
+	$effect(() => {
+		if (!full || native) return;
+
+		// The overlay has to clear the sticky header, but `.container` is its own stacking
+		// context below it, so the column is lifted while the overlay is up (as in LatexBlock),
+		// and the page behind it stops scrolling.
+		const stack = figure.closest<HTMLElement>('.container');
+		const stackZ = stack?.style.zIndex ?? '';
+		if (stack) stack.style.zIndex = '300';
+		const bodyOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+
+		return () => {
+			if (stack) stack.style.zIndex = stackZ;
+			document.body.style.overflow = bodyOverflow;
+		};
 	});
+
+	let kept = $derived([0, 1, 2].filter((k) => on[k]));
+	let is3d = $derived(kept.length === 3);
+	// The two dimensions a flat view shows, lower index across, or null.
+	let flat = $derived(kept.length === 2 ? (kept as [number, number]) : null);
+	// The one dimension a strip shows, or null.
+	let line = $derived(kept.length === 1 ? kept[0] : null);
+
+	// The viewBox height. Fullscreen matches the stage's shape, so a phone held upright gets a
+	// tall plot rather than a landscape strip with empty space above and below it. In the page,
+	// a 1D strip needs little height, so it gets a short plot.
+	let vh = $derived(
+		full && stageW > 0 && stageH > 0
+			? Math.min(Math.max((W * stageH) / stageW, 300), 1100)
+			: line !== null
+				? H_STRIP
+				: H
+	);
 
 	// Data axis 0 → screen right, axis 1 → screen up, axis 2 → towards the viewer. Yaw turns
 	// about the vertical, pitch tilts about the horizontal. Returns box units, y up.
@@ -82,8 +149,9 @@
 		return { x: x1 * k, y: y2 * k, z: z2, k };
 	}
 
-	// Flat views are orthographic, so distances in them read true.
+	// Flat views and the strip are orthographic, so distances in them read true.
 	function place(v: number[]) {
+		if (line !== null) return { x: v[line], y: 0, z: 0, k: 1 };
 		return flat ? { x: v[flat[0]], y: v[flat[1]], z: 0, k: 1 } : rotate3(v, yaw, pitch);
 	}
 
@@ -95,10 +163,11 @@
 		return out.map((p) => p.map((n, k) => n * halves[k]));
 	});
 
+	// A strip has no height to fit, and x / 0 = Infinity drops out of the min on its own.
 	const fit = (rs: { x: number; y: number }[]) =>
 		Math.min(
 			(W / 2 - MARGIN) / Math.max(...rs.map((r) => Math.abs(r.x))),
-			(H / 2 - MARGIN) / Math.max(...rs.map((r) => Math.abs(r.y)))
+			(vh / 2 - MARGIN) / Math.max(...rs.map((r) => Math.abs(r.y)))
 		);
 
 	// The 3D scale is the tightest one that keeps every anchor in frame at every angle a drag
@@ -112,11 +181,11 @@
 					rs.push(rotate3(p, (a / 48) * 2 * Math.PI, ((b - 12) / 24) * Math.PI));
 		return fit(rs);
 	});
-	let scale = $derived(flat ? fit(anchors.map(place)) : scale3d);
+	let scale = $derived(is3d ? scale3d : fit(anchors.map(place)));
 
 	function project(v: number[]) {
 		const r = place(v);
-		return { x: W / 2 + r.x * scale, y: H / 2 - r.y * scale, z: r.z, k: r.k };
+		return { x: W / 2 + r.x * scale, y: vh / 2 - r.y * scale, z: r.z, k: r.k };
 	}
 
 	let box = $derived.by(() => {
@@ -140,8 +209,29 @@
 	});
 
 	let drawn = $derived(
-		points.map((p) => ({ ...p, s: project(norm(p.v)) })).sort((a, b) => a.s.z - b.s.z)
+		swarm(points.map((p) => ({ ...p, s: project(norm(p.v)) }))).sort((a, b) => a.s.z - b.s.z)
 	);
+
+	// On a strip, points with nearly the same value would sit exactly on top of each other.
+	// Each one, left to right, takes the row nearest the axis (0, +1, −1, +2, …) where it
+	// overlaps nothing already placed. The rows carry no value: only x is data.
+	function swarm<T extends { s: { x: number; y: number } }>(list: T[]): T[] {
+		if (line === null) return list;
+		const step = 2 * R + 1;
+		const placed: { x: number; y: number }[] = [];
+		return [...list]
+			.sort((a, b) => a.s.x - b.s.x)
+			.map((d) => {
+				for (let n = 0; ; n++) {
+					const row = n % 2 ? (n + 1) / 2 : -n / 2;
+					const y = d.s.y - row * step;
+					if (placed.every((q) => Math.hypot(q.x - d.s.x, q.y - y) >= step)) {
+						placed.push({ x: d.s.x, y });
+						return { ...d, s: { ...d.s, y } };
+					}
+				}
+			});
+	}
 
 	let depth = $derived.by(() => {
 		const zs = drawn.map((d) => d.s.z);
@@ -149,17 +239,34 @@
 	});
 	// Depth fade only in 3D: in a flat view it would encode the dimension the view drops.
 	const fade = (z: number) =>
-		flat || depth.max - depth.min < 1e-9
+		!is3d || depth.max - depth.min < 1e-9
 			? 1
 			: 0.5 + (0.5 * (z - depth.min)) / (depth.max - depth.min);
 
 	let active = $derived(pinned ?? hovered);
 	let activePoint = $derived(drawn.find((d) => d.i === active) ?? null);
 
+	// The tooltip goes beside its point, right if it fits and left if not. A phone-width plot
+	// can have room on neither side, and then it goes above the point, or below. Either way
+	// it is kept inside the plot.
+	let tipW = $state(0);
+	let tipH = $state(0);
+	let tip = $derived.by(() => {
+		if (!activePoint) return { left: 0, top: 0 };
+		const x = (activePoint.s.x / W) * plotW;
+		const y = (activePoint.s.y / vh) * plotH;
+		const clamp = (v: number, max: number) => Math.max(0, Math.min(v, max));
+		const beside =
+			x + GAP + tipW <= plotW ? x + GAP : x - GAP - tipW >= 0 ? x - GAP - tipW : null;
+		if (beside !== null) return { left: beside, top: clamp(y - tipH / 2, plotH - tipH) };
+		const top = y - GAP - tipH >= 0 ? y - GAP - tipH : y + GAP;
+		return { left: clamp(x - tipW / 2, plotW - tipW), top: clamp(top, plotH - tipH) };
+	});
+
 	const fmt = (n: number) => n.toFixed(3).replace('-', '−');
 
 	function toggle(k: number) {
-		if (on[k] && flat) return; // keep at least two
+		if (on[k] && line !== null) return; // keep at least one
 		on[k] = !on[k];
 	}
 
@@ -180,7 +287,7 @@
 
 	function move(e: PointerEvent) {
 		if (!drag?.moved) hovered = pointAt(e);
-		if (!drag || flat) return;
+		if (!drag || !is3d) return;
 		const dx = e.clientX - drag.x;
 		const dy = e.clientY - drag.y;
 		if (!drag.moved && Math.hypot(dx, dy) < 4) return;
@@ -213,7 +320,7 @@
 			ArrowUp: [0, -step],
 			ArrowDown: [0, step]
 		};
-		if (e.key in moves && !flat) {
+		if (e.key in moves && is3d) {
 			e.preventDefault();
 			rotate(...moves[e.key]);
 		} else if (e.key === 'Home') {
@@ -227,91 +334,121 @@
 	}
 </script>
 
-<figure class="widget scatter3d">
+<svelte:document
+	onfullscreenchange={() => {
+		// The browser's own Escape or exit control leaves fullscreen without the button.
+		if (native && !document.fullscreenElement) full = native = false;
+	}}
+/>
+<svelte:window
+	onkeydown={(e) => {
+		if (full && !native && e.key === 'Escape') full = false;
+	}}
+/>
+
+<figure class="widget scatter3d" class:max={full} bind:this={figure}>
 	<div class="head">
 		<h4>{title}</h4>
-		<div class="seg" role="group" aria-label="Dimensions shown">
-			{#each axes as a, k (k)}
-				<button
-					class:on={on[k]}
-					aria-pressed={on[k]}
-					aria-disabled={on[k] && !!flat}
-					title={on[k] && flat ? 'At least two dimensions stay on' : undefined}
-					onclick={() => toggle(k)}>{a}</button
-				>
-			{/each}
+		<div class="tools">
+			<div class="seg" role="group" aria-label="Dimensions shown">
+				{#each axes as a, k (k)}
+					<button
+						class:on={on[k]}
+						aria-pressed={on[k]}
+						aria-disabled={on[k] && line !== null}
+						title={on[k] && line !== null ? 'At least one dimension stays on' : undefined}
+						onclick={() => toggle(k)}>{a}</button
+					>
+				{/each}
+			</div>
+			<button
+				class="full"
+				type="button"
+				title={full ? 'Exit fullscreen' : 'Fullscreen'}
+				aria-label={full ? 'Exit fullscreen' : 'Show the plot fullscreen'}
+				aria-pressed={full}
+				onclick={toggleFull}
+			>
+				<Icon name={full ? 'minimize' : 'maximize'} />
+			</button>
 		</div>
 	</div>
 
-	<div class="stage">
-		<!-- A custom control: it takes the arrow keys and drags, which no interactive ARIA role
-		     describes. `application` hands the keys through to it. -->
-		<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
-		<svg
-			class:flat
-			viewBox="0 0 {W} {H}"
-			role="application"
-			aria-roledescription="scatter plot"
-			aria-label={flat
-				? `Scatter plot of ${points.length} points, ${axes[flat[0]]} across and ${axes[flat[1]]} up.`
-				: `3D scatter plot of ${points.length} points. Drag or use the arrow keys to rotate; Home resets the view.`}
-			tabindex="0"
-			onpointerdown={down}
-			onpointermove={move}
-			onpointerup={up}
-			onpointercancel={() => (drag = null)}
-			onpointerleave={() => (hovered = null)}
-			onkeydown={key}
-		>
-			<g class="box">
-				{#each box.edges as e, n (n)}
-					<line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y} />
-				{/each}
-			</g>
-			<g class="axes">
-				{#each box.ends as end, k (k)}
-					{#if end.seen}
-						<line x1={box.origin.x} y1={box.origin.y} x2={end.x} y2={end.y} />
-						<text x={end.x} y={end.y}>{axes[k]}</text>
-					{/if}
-				{/each}
-			</g>
-
-			{#each drawn as d (d.i)}
-				<circle
-					class="pt"
-					class:active={d.i === active}
-					data-point={d.i}
-					cx={d.s.x}
-					cy={d.s.y}
-					r={6.5 * d.s.k}
-					style:fill={colourOf(d.cluster)}
-					style:opacity={fade(d.s.z)}
-				/>
-			{/each}
-		</svg>
-
-		{#if activePoint}
-			<div
-				class="tip"
-				class:flip={activePoint.s.x > W * 0.62}
-				style:left="{(activePoint.s.x / W) * 100}%"
-				style:top="{(activePoint.s.y / H) * 100}%"
+	<div class="stage" bind:clientWidth={stageW} bind:clientHeight={stageH}>
+		<div class="plot" style:--ratio={W / vh} bind:clientWidth={plotW} bind:clientHeight={plotH}>
+			<!-- A custom control: it takes the arrow keys and drags, which no interactive ARIA role
+			     describes. `application` hands the keys through to it. -->
+			<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+			<svg
+				class:flat={!is3d}
+				viewBox="0 0 {W} {vh}"
+				role="application"
+				aria-roledescription="scatter plot"
+				aria-label={line !== null
+					? `Strip plot of ${points.length} points along ${axes[line]}.`
+					: flat
+						? `Scatter plot of ${points.length} points, ${axes[flat[0]]} across and ${axes[flat[1]]} up.`
+						: `3D scatter plot of ${points.length} points. Drag or use the arrow keys to rotate; Home resets the view.`}
+				tabindex="0"
+				onpointerdown={down}
+				onpointermove={move}
+				onpointerup={up}
+				onpointercancel={() => (drag = null)}
+				onpointerleave={() => (hovered = null)}
+				onkeydown={key}
 			>
-				<strong>Point {activePoint.i + 1}</strong>
-				<span class="tip-cluster"
-					><i style:background={colourOf(activePoint.cluster)}></i>cluster {activePoint.cluster}</span
-				>
-				{#each axes as a, k (a)}
-					<span class="row"><span>{a}</span><span class="num">{fmt(activePoint.v[k])}</span></span>
+				<g class="box">
+					{#each box.edges as e, n (n)}
+						<line x1={e.a.x} y1={e.a.y} x2={e.b.x} y2={e.b.y} />
+					{/each}
+				</g>
+				<g class="axes">
+					{#each box.ends as end, k (k)}
+						{#if end.seen}
+							<line x1={box.origin.x} y1={box.origin.y} x2={end.x} y2={end.y} />
+							<text x={end.x} y={end.y}>{axes[k]}</text>
+						{/if}
+					{/each}
+				</g>
+
+				{#each drawn as d (d.i)}
+					<circle
+						class="pt"
+						class:active={d.i === active}
+						data-point={d.i}
+						cx={d.s.x}
+						cy={d.s.y}
+						r={R * d.s.k}
+						style:fill={colourOf(d.cluster)}
+						style:opacity={fade(d.s.z)}
+					/>
 				{/each}
-			</div>
-		{/if}
+			</svg>
+
+			{#if activePoint}
+				<div
+					class="tip"
+					style:left="{tip.left}px"
+					style:top="{tip.top}px"
+					bind:offsetWidth={tipW}
+					bind:offsetHeight={tipH}
+				>
+					<strong>Point {activePoint.i + 1}</strong>
+					<span class="tip-cluster"
+						><i style:background={colourOf(activePoint.cluster)}></i>cluster {activePoint.cluster}</span
+					>
+					{#each axes as a, k (a)}
+						<span class="row"><span>{a}</span><span class="num">{fmt(activePoint.v[k])}</span></span>
+					{/each}
+				</div>
+			{/if}
+		</div>
 	</div>
 
 	<figcaption>
 		Drag to rotate, or focus the plot and use the arrow keys. Switch a dimension off to see the
-		other two flat, without perspective. Hover a point for its values, click to pin them.
+		other two flat, without perspective, or two off to see the last one alone. Hover a point
+		for its values, click to pin them.
 	</figcaption>
 </figure>
 
@@ -351,14 +488,70 @@
 	.seg button[aria-disabled='true'] {
 		cursor: not-allowed;
 	}
+	.tools {
+		display: flex;
+		gap: var(--s-2);
+		align-items: stretch;
+	}
+	.full {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		padding: 0;
+		border: 1px solid var(--line);
+		border-radius: 7px;
+		background: var(--surface-active);
+		color: var(--text-muted);
+		cursor: pointer;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.full:hover {
+			background: var(--surface-hover);
+			border-color: var(--line-strong);
+			color: var(--text);
+		}
+	}
 	.seg button:focus-visible,
+	.full:focus-visible,
 	svg:focus-visible {
 		outline: none;
 		box-shadow: var(--focus-ring);
 	}
 
-	.stage {
+	.plot {
 		position: relative;
+	}
+
+	/* — Fullscreen, or the overlay standing in for it. The stage takes whatever height the
+	     header and caption leave, and the plot is the largest box of the svg's own aspect
+	     that fits in it, so the tooltip's percentages still land on the points. — */
+	.scatter3d.max {
+		position: fixed;
+		inset: 0;
+		z-index: 200;
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		margin: 0;
+		box-sizing: border-box;
+		border: 0;
+		border-radius: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.max .stage {
+		flex: 1;
+		min-height: 0;
+		container-type: size;
+		display: grid;
+		place-items: center;
+	}
+	.max .plot {
+		width: min(100cqw, calc(100cqh * var(--ratio)));
 	}
 	svg {
 		display: block;
@@ -408,7 +601,6 @@
 
 	.tip {
 		position: absolute;
-		transform: translate(14px, -50%);
 		display: grid;
 		gap: 0.15rem;
 		min-width: 9.5rem;
@@ -420,9 +612,6 @@
 		line-height: 1.4;
 		color: var(--text-secondary);
 		pointer-events: none;
-	}
-	.tip.flip {
-		transform: translate(calc(-100% - 14px), -50%);
 	}
 	.tip strong {
 		color: var(--text);
