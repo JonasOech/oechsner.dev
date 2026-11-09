@@ -44,5 +44,5 @@ see what came out coolest, least cool and most controversial, and how your own p
 <DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
 
 ## Special Thanks
-Anja, Max, Pawlo for helping with getting the link out there
-The Uni Würzburg Student Union for letting me market on their discord server
+- Anja, Max, Pawlo for helping with getting the link out there.
+- The Uni Würzburg Student Union for letting me market on their discord server.
