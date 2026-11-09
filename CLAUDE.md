@@ -11,7 +11,7 @@ Both are current — read the relevant one instead of re-deriving it from the CS
 
 ```sh
 npm run dev      # vite dev server
-npm run check    # wrangler types --check + svelte-check — this is what CI runs
+npm run check    # wrangler types --check + svelte-check
 npm run build    # wrangler types --check + vite build
 npm run preview  # serves the real Pages output through wrangler
 npm run og       # rasterise static/img/<post>/cover.svg → cover.png (needs playwright)
@@ -19,10 +19,10 @@ npm run cv       # resume.tex → static/resume-en.pdf (needs local pdflatex)
 npm run gen      # regenerate worker-configuration.d.ts from wrangler.jsonc
 ```
 
-`npm run check` must pass before anything is considered done. It is the whole CI job
-(plus `npm run build`), and it fails if the committed `worker-configuration.d.ts` has
-drifted from `wrangler.jsonc` — run `npm run gen` and commit the result when you touch
-Wrangler config.
+`npm run check` (plus `npm run build`) must pass before anything is considered done.
+There is no CI — run them yourself. `check` fails if the committed
+`worker-configuration.d.ts` has drifted from `wrangler.jsonc` — run `npm run gen` and
+commit the result when you touch Wrangler config.
 
 ## Styling: read DESIGN.md first
 

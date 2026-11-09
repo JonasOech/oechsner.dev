@@ -93,7 +93,7 @@ npm install
 npm run dev       # Vite dev server
 npm run build     # type-checks Worker bindings, then builds
 npm run preview   # serves the real Pages output via `wrangler pages dev`
-npm run check     # svelte-check — what CI runs
+npm run check     # wrangler types --check + svelte-check
 npm run cv        # recompiles static/resume-en.pdf from resume.tex
 npm run og        # rasterises each static/img/<postname>/cover.svg to .png for link previews
 ```
