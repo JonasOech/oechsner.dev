@@ -8,7 +8,7 @@ tags: ['hackathon', 'project report']
 cover: /img/hic/cover.svg
 nerdyness: 1
 draft: false
-hero: false
+hero: true
 ai: true
 ---
 

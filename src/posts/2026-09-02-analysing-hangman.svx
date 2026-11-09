@@ -6,7 +6,7 @@ summary: >-
   I'll talk about game rules, high level implementation of a winning strategy and letter frequencies. 
 tags: ['statistics', 'sidequest']
 nerdyness: 2
-hero: true
+hero: false
 cover: /img/hangman/cover.svg
 coverAlt: >-
   A hangman gallows beside a six-letter word with two letters still blank, above
