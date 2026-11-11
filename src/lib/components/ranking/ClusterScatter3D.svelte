@@ -28,7 +28,11 @@
 	// snaps.
 	import Icon from '$lib/components/Icon.svelte';
 
-	let { csv, title = 'Clusters in three dimensions' }: { csv: string; title?: string } = $props();
+	let {
+		csv,
+		title = 'Clusters in three dimensions',
+		caption
+	}: { csv: string; title?: string; caption?: string } = $props();
 
 	type Point = { i: number; v: [number, number, number]; cluster: string };
 
@@ -863,12 +867,9 @@
 		</div>
 	</div>
 
-	<figcaption>
-		Drag to rotate, or focus the plot and use the arrow keys. Switch a dimension off to see the
-		other two flat, without perspective, or two off to see the last one alone. Hover a point
-		for its values, click to pin them. In fullscreen, scroll or pinch to zoom. Drag a flat view
-		to pan it; in 3D, pan with shift-drag or two fingers.
-	</figcaption>
+	{#if caption}
+		<figcaption>{caption}</figcaption>
+	{/if}
 </figure>
 
 <style>

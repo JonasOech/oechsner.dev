@@ -33,16 +33,37 @@ ai: true
 		format: { ratio: 'percent' },
 		highlight: [['florbish', 'ratio']]
 	};
+	const baseline = {
+		labels: { up: 'Up', down: 'Down', n: 'Votes', ratio: 'Up ratio', vranistan: 'Vranistan', florbish: 'Florbish', Sum: 'All items' },
+		format: { ratio: 'percent' }
+	};
 </script>
 
+## Introduction
 <Stats items={stats} />
 
-[Ranking Everything](https://rankingeverything.oechsner.dev) is live and still running. Swipe through items, then check the rankings to
-see what came out coolest, least cool and most controversial, and how your own picks compare.
+In this article, I will analyse the data gathered from [Ranking Everything](https://rankingeverything.oechsner.dev), a website I built as a side project. If you haven't already, go play it! Of course, you won't be part of the analysed data then, I cut the data intake on [<b style='color:RED;'> TODO INSERT DATE </b>]. 
 
-## Opinion clusters
+Since this Post will probably be read by multiple different audiences, I will try my best to *gradually increase complexity* during this article. I hope that I can highlight the cool sides of Data Science to non-technical audiences this way, without overwhelming with technicalities. 
 
-<ClusterScatter3D csv={clusters} title="Opinion clusters" />
+Let's cut the talk and analyse some data!
+
+## What is 'cool'?
+Let's first define what I mean with *cool* in the following. For that we need to establish a baseline. Of course, I didn't select the cards *fully randomly*. I hid specific strategic items like *Vranistan*, an imaginary country noone *can* have an opinion about. We see that (like expected), it fully mirrors the natural bias people had.
+
+<DataFrame path="ranking-everything-baselines.csv" {...baseline} />
+
+Let's define *cool* items to be above this baseline of $\approx67\%$ and *(un)coolness* the probability that the items are above/below this baseline due to systematic opinion, not coincidence (see appendix [1](#baseline), [2](#t-test) ).
+## Taste Groups
+I took your votes and built the following 3d Visualisation from them ([How?](#mca)). 
+Note that these dimensions don't have anything to say per se. 
+But what you can read from it is that users with similar votes are near each other.
+
+<ClusterScatter3D
+	csv={clusters}
+	title="Taste Groups"
+	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
+/>
 
 
 ## What went wrong
@@ -53,6 +74,36 @@ see what came out coolest, least cool and most controversial, and how your own p
 </figure>
 
 <DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
+
+
+## Technical
+### <span id=mca class = 'def'> Multiple Correspondence Analysis </span>
+Formally spoken, my data is in the form of 
+
+$$R\in \{-1, +1, \emptyset\}^{U\times I}, \quad R_{ui} = \text{vote of device }u\text{ on item }i$$
+A sparse, partially observed $user \times item$ matrix with binary signed entries
+Or: A signed bipartite graph with users opposing items, edge weights $\pm 1$
+### <span id=baseline class = 'def'> Baseline </span>
+### <span id=t-test class = 'def'> Coolness </span>
+
+An item's like count follows a binomial distribution. 
+For each item, an exact binomial test checks whether its like rate differs from the baseline. Many items have only 15–20 votes, where normal approximations become unreliable. Testing about 270 items at once will increase false positives, since around $\lceil 271 \cdot 0.05\rceil \approx 14$ items would be significant by chance. The Benjamini–Hochberg (BH) procedure corrects for this by controlling the False Discovery Rate (FDR). It keeps the expected share of spurious findings among significant items at 5%.
+
+```python
+from scipy.stats import binomtest, false_discovery_control
+
+baseline = 0.77
+items = stats.drop(index="Sum")   # don't test the Sum row
+
+p = items.apply(
+    lambda r: binomtest(int(r.up), int(r.up + r.down), p=baseline).pvalue,
+    axis=1,
+)
+
+stats = stats.assign(
+    p_value=p,
+    p_adj=pd.Series(false_discovery_control(p), index=p.index),  # Benjamini–Hochberg
+```
 
 ## Special Thanks
 - Anja, Max, Pawlo and Paul for helping with getting the link out there.
