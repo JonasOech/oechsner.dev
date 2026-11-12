@@ -6,6 +6,7 @@ summary: >-
 tags: ['experiment', 'sidequest']
 running: true
 hero: true
+nerdyness: 2
 cover: /img/ranking-everything/cover.svg
 coverAlt: >-
   The Ranking Everything logo and title beside a tilted grid of photos to rate: a tardigrade,
@@ -58,15 +59,17 @@ Let's define *cool* items to be above this baseline of $\approx67\%$ and *(un)co
 ## Correlations
 > Correlation in the broadest sense is a **measure of an association between variables**. In correlated data, the change in the magnitude of 1 variable is associated with a change in the magnitude of another variable, either in the same (positive correlation) or in the opposite (negative correlation) direction. [@Schober2018]
 
-Of course, we want to find out 
+Of course, we want to find out which items belong together, and wich oppose each other. The first approach to that would be to create a **correlation Matrix**, where every item is both a row and a column. Correlating items get marked in yellow, items with inverse correlation in blue. The diagonal in the middle is where items meet themselves, trivially perfectly correlating.
+
 <figure>
 	<img src="/img/ranking-everything/correlationmatrix.svg" 
   alt="The Image I used for Florbish. It's white bacteria on a black backgound, viewed through a microscope" />
 	<figcaption>
-		Beautiful, but not useful: A correlation matrix between each item. I applied cluster-ordering to them so similar items form visible blocks and marked unanimous items with dark grey (the math doesn't work there since they provide no statistical information)
+		Beautiful, but not useful: A correlation matrix between each item. I applied cluster-ordering to them so similar items form visible blocks and marked unanimous items with dark grey (the math doesn't work there since they provide no statistical information).
 	</figcaption>
 </figure>
 
+Readability is an absolute nightmare though. Good luck trying to find out e.g. if 'gravity' correlates with 'seagulls'
 
 ## Taste Groups
 I took your votes and built the following 3d Visualisation from them ([How?](#mca)). 
