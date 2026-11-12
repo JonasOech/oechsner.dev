@@ -347,6 +347,64 @@ elevation step, because it floats over content rather than sitting in the flow. 
 after hydration has read the stored decision (`consent.ready`); every page here is prerendered,
 so markup in the HTML would flash on every load for everyone who already answered.
 
+### Media lightbox
+
+Every image and video in a post body, and the post's cover, can be maximised. Nothing is
+written in the post for it: `src/lib/actions/zoomable.ts` adds the way in after hydration and
+`src/lib/components/Lightbox.svelte` is the view. Any format an `<img>` or `<video>` can show
+is covered — PNG, JPEG, WebP, AVIF, animated GIF, SVG files — because neither file looks past
+the element.
+
+**The way in is meant to go unnoticed until it is wanted.** A 2rem button sits in the image's
+top-right corner at `opacity: 0` and fades in over `--dur-base` when the image is hovered
+(`hover: hover` and `pointer: fine` only) or the button takes keyboard focus. It is a tint, not
+a surface — `rgba(var(--bg-deep-rgb), 0.55)` with a `rgba(var(--text-rgb), 0.16)` hairline and
+a `--text` glyph — because it has to read on both grounds a post image comes in: a near-black
+screenshot and a light `--plate`. Thumbnails under about 128 × 96 get a 1.5rem version, so the
+button does not cover the drawing it belongs to.
+
+Where there is no hover there is no button to fade in, so **a tap on the image opens it**. A
+mouse click on the image deliberately does not: a mouse has the button, and an image that
+swallows clicks gets in the way of selecting around it.
+
+**The view** is a modal `<dialog>` filling the viewport — not the Fullscreen API, which iPhone
+Safari has long kept for video. That puts it in the top layer, above the sticky header with no
+z-index, and makes the page behind inert.
+
+- Scrim: `rgba(var(--bg-deep-rgb), 0.97)`, painted on the dialog itself rather than
+  `::backdrop` (older Safari does not pass custom properties to a backdrop). No blur: the
+  image is dragged across it.
+- The image: fitted to the screen, on `--shadow-4` — the lightbox step §6 reserves — with the
+  hairline every post image wears. A `figure.plain` diagram keeps its `--plate` ground;
+  anything else sits on `--bg`, so a transparent SVG is on the colour it was drawn for.
+- The description: the figure's `<figcaption>`, in its own row under the image on `--bg-deep`,
+  `0.8125rem` in `--text-secondary` — it is the thing being read here, not meta text. A figure
+  with no caption shows the image's alt text instead. It is a row, not an overlay, so the image
+  is fitted above it and a zoomed image never covers it.
+- Controls, top right: zoom out, zoom in, close — `rgba(var(--surface-rgb), 0.82)`, the
+  scrolled header's translucency without its blur. Close wears the `minimize` glyph, the same
+  pair of icons the formula plate toggles between.
+
+**Zoom** answers to whatever the reader brings: wheel, trackpad pinch, two-finger pinch,
+double-tap, a mouse click on the image, the buttons, and `+` / `−` / `0`; a drag or the arrow
+keys pan. Zooming sets the image's real width and height and only *moves* it with a transform —
+a scaled layer goes soft in Safari exactly when the reader is looking for detail. A bitmap is
+not enlarged past 2× to fill the screen; an SVG has no such limit.
+
+**Video.** One without `controls` — the muted loop that stands in for a GIF — is an image in
+every respect above. One *with* `controls` is a player: it is maximised with its caption, but
+every gesture on it stays the player's, so it does not zoom, and on a touch screen it gets no
+button either — a tap there means play, every corner of a phone's inline player is already a
+control, and the player has a full-screen button of its own. The view plays a copy and hands
+the position back on close, so only one of the two is ever running.
+
+**Motion**: the view fades in over `--dur-base`, and discrete zoom steps glide over
+`--dur-fast`. Nothing loops, nothing is blurred in motion, and the global reduced-motion rule
+(§7) covers both.
+
+Opt-outs: `data-no-zoom` on an `<img>` or `<video>`, and anything inside a link or a `.widget`
+is left alone — it already means something else when pressed.
+
 ### Rail section (the template's signature construct)
 
 ```css
@@ -481,6 +539,7 @@ exist only where an element genuinely floats.
 | Article row on hover | `1` | tint only, no shadow |
 | Sticky header (scrolled) | `50` | `--shadow-3` + 12px backdrop blur |
 | Consent banner | `90` | `--shadow-4` + 12px backdrop blur |
+| Media lightbox | top layer (modal `<dialog>`) | scrim + `--shadow-4` on the image |
 | Skip link on focus | `100` | `--shadow-2` |
 
 **Rule**: no element gains more than one elevation step on hover, and cards never gain a shadow

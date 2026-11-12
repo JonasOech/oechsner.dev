@@ -64,6 +64,12 @@ the file `.svx`, and keep the body valid plain Markdown so it still renders in O
   `src/posts/references.bib`, which also lives in the vault. An unknown key fails the build.
 - Display math becomes a `<LatexBlock>` figure automatically, in both the `$$…$$` one-line
   and fenced forms, with the following line as an optional note.
+- Every `<img>` and `<video>` in a post body, and the post's cover, gets a maximise button
+  and a zoomable lightbox automatically (`src/lib/actions/zoomable.ts` →
+  `src/lib/components/Lightbox.svelte`; DESIGN.md §4, "Media lightbox"). Nothing is written in
+  the post for it. The figure's `<figcaption>` becomes the description shown there, the alt
+  text if there is none. `data-no-zoom` on the element opts it out; images inside a link or a
+  `.widget` are skipped. It is added after hydration, so feeds and no-JS readers are untouched.
 - New cover image: add `static/img/<post>/cover.svg`, run `npm run og`, commit both files.
   Social platforms reject SVG for `og:image`, so the PNG is not optional.
 

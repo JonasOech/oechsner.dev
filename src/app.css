@@ -1150,6 +1150,105 @@ a {
 	padding: var(--s-4);
 }
 
+/* — The way into the lightbox. `$lib/actions/zoomable.ts` wraps each post image in
+     `.zoomable` and adds the button after hydration, so these rules style markup no
+     post contains. They are not scoped to `.prose`, because the post's cover — which
+     sits above the prose — wears the same button.
+
+     The wrapper shrinks to the image, because that is the box the button is pinned
+     to: an image narrower than the column would otherwise leave its button out in
+     the margin. A plate is the exception — it is `width: 100%` of whatever holds it,
+     which a shrink-wrapped box cannot answer. — */
+
+.zoomable {
+	position: relative;
+	display: block;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.prose figure.plain .zoomable {
+	width: auto;
+}
+
+/* A tap on the image is the way in where there is no hover; the lightbox opening is
+   the feedback, so Safari's grey flash over the picture is not needed as well. */
+.zoomable img {
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* Invisible until asked for. The fill is a tint rather than a surface because it
+   has to read on both grounds a post image comes in: a near-black screenshot,
+   where the light glyph carries it, and a light plate, where the dark chip does. */
+.zoomable__btn {
+	position: absolute;
+	top: var(--s-2);
+	right: var(--s-2);
+	display: grid;
+	place-items: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 1px solid rgba(var(--text-rgb), 0.16);
+	border-radius: 6px;
+	background: rgba(var(--bg-deep-rgb), 0.55);
+	color: var(--text);
+	cursor: pointer;
+	opacity: 0;
+	transition:
+		opacity var(--dur-base) var(--ease-out),
+		background-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+	.zoomable:hover .zoomable__btn {
+		opacity: 1;
+	}
+
+	.zoomable__btn:hover {
+		background: rgba(var(--bg-deep-rgb), 0.8);
+	}
+}
+
+.zoomable__btn:active {
+	background: rgba(var(--bg-deep-rgb), 0.9);
+	color: var(--text-pressed);
+}
+
+/* Keyboard focus shows it as well — a control that only a mouse can reveal is not
+   one a keyboard can use. */
+.zoomable__btn:focus-visible {
+	opacity: 1;
+	outline: none;
+	box-shadow: var(--focus-ring);
+}
+
+/* A thumbnail — the action marks anything under about 128 × 96 — gets a button that
+   does not cover most of the drawing the reader is pointing at. */
+.zoomable--compact .zoomable__btn {
+	top: var(--s-1);
+	right: var(--s-1);
+	width: 1.5rem;
+	height: 1.5rem;
+	border-radius: 4px;
+}
+
+.zoomable--compact .zoomable__btn svg {
+	width: 12px;
+	height: 12px;
+}
+
+/* A video with its own controls keeps its taps — one means play — so on a touch
+   screen there is no free gesture to open it with, and no free corner for a button:
+   a phone's inline player has a control in each. It has its own full-screen button
+   there, and that is the way in. Removed rather than left invisible, so a tap aimed
+   at the player's mute button cannot land on it. */
+@media (hover: none) {
+	.zoomable--player .zoomable__btn {
+		display: none;
+	}
+}
+
 /* — A pair of figures that only mean something read together. `auto-fit` is what
      keeps them in one row: inside a 68ch measure two flex items with a basis wide
      enough to be legible add up to more than the column and wrap to a stack

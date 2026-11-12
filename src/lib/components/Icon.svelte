@@ -44,7 +44,7 @@
 		copy: 'M10 8h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-9a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2zM16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3',
 		check: 'M20 6 9 17l-5-5',
 		// Four corner brackets facing out, and the same four turned inward — the maximise
-		// toggle on a formula plate.
+		// toggle on a formula plate and on a post image.
 		maximize: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
 		minimize: 'M4 9h5V4M15 4v5h5M20 15h-5v5M9 20v-5H4',
 		plus: 'M5 12h14M12 5v14',
