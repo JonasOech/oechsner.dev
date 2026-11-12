@@ -54,6 +54,20 @@ Let's first define what I mean with *cool* in the following. For that we need to
 <DataFrame path="ranking-everything-baselines.csv" {...baseline} />
 
 Let's define *cool* items to be above this baseline of $\approx67\%$ and *(un)coolness* the probability that the items are above/below this baseline due to systematic opinion, not coincidence (see appendix [1](#baseline), [2](#t-test) ).
+
+## Correlations
+> Correlation in the broadest sense is a **measure of an association between variables**. In correlated data, the change in the magnitude of 1 variable is associated with a change in the magnitude of another variable, either in the same (positive correlation) or in the opposite (negative correlation) direction. [@Schober2018]
+
+Of course, we want to find out 
+<figure>
+	<img src="/img/ranking-everything/correlationmatrix.png" 
+  alt="The Image I used for Florbish. It's white bacteria on a black backgound, viewed through a microscope" />
+	<figcaption>
+		Beautiful, but not useful: A correlation matrix between each item. I applied cluster-ordering to them so similar items form visible blocks and marked unanimous items with dark grey (the math doesn't work there since they provide no statistical information)
+	</figcaption>
+</figure>
+
+
 ## Taste Groups
 I took your votes and built the following 3d Visualisation from them ([How?](#mca)). 
 Note that these dimensions don't have anything to say per se. 
@@ -65,12 +79,11 @@ But what you can read from it is that users with similar votes are near each oth
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
 
-
 ## What went wrong
 <figure>
 	<img src="/img/ranking-everything/florbish.png" 
   alt="The Image I used for Florbish. It's white bacteria on a black backgound, viewed through a microscope" />
-	<figcaption>THe image I used for Florbish. Bacteria seems to have a negative effect on the votes, people seem to assume it's harmful.</figcaption>
+	<figcaption>The image I used for Florbish. Bacteria seems to have a negative effect on the votes, people seem to assume it's harmful.</figcaption>
 </figure>
 
 <DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
