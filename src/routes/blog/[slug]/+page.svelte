@@ -6,6 +6,8 @@
 	import PostOutline from '$lib/components/PostOutline.svelte';
 	import Subscribe from '$lib/components/Subscribe.svelte';
 	import Running from '$lib/components/Running.svelte';
+	import Lightbox from '$lib/components/Lightbox.svelte';
+	import { zoomable, type ZoomableMedia } from '$lib/actions/zoomable';
 	import { formatDate, getPostComponent, getNeighbours, linkHost } from '$lib/posts';
 	import { site } from '$lib/data/site';
 	import type { PageProps } from './$types';
@@ -21,6 +23,9 @@
 
 	// A single heading is not an outline, it is a label — nothing to navigate between.
 	const outline = $derived(post.headings.length > 1 ? post.headings : []);
+
+	let lightbox: Lightbox;
+	const maximise = (media: ZoomableMedia, opener: HTMLElement) => lightbox.open(media, opener);
 
 	/** The heading the reader is under, so the outline says where they are, not just where they can go. */
 	let activeId = $state('');
@@ -148,21 +153,32 @@
 		</header>
 
 		{#if post.cover}
-			<img
-				class="post__cover enter"
-				style="--i: 1"
-				src={post.cover}
-				alt={post.coverAlt ?? ''}
-				width="1200"
-				height="675"
-				decoding="async"
-			/>
+			<!-- The wrapper is written out here rather than left to the action: the image
+			     is the whole of this `if` block, and a node Svelte removes the block by
+			     must not be moved from under it. -->
+			<span class="zoomable post__cover-frame enter" style="--i: 1" use:zoomable={{ open: maximise }}>
+				<img
+					class="post__cover"
+					src={post.cover}
+					alt={post.coverAlt ?? ''}
+					width="1200"
+					height="675"
+					decoding="async"
+				/>
+			</span>
 		{/if}
 
-		<div class="prose post__body">
+		<!-- Keyed on the slug: this element outlives a move to the next post, and the
+		     action has to be told that the images inside it are new ones. -->
+		<div
+			class="prose post__body"
+			use:zoomable={{ key: post.slug, open: maximise }}
+		>
 			<Content />
 		</div>
 	</article>
+
+	<Lightbox bind:this={lightbox} />
 
 	<div class="post__subscribe">
 		<Subscribe />
@@ -308,13 +324,19 @@
 		margin-top: var(--s-1);
 	}
 
+	/* The frame takes over what the image used to do for the layout — fill the measure,
+	   hold the gap beneath — and `.zoomable` (app.css) pins the maximise button to it. */
+	.post__cover-frame {
+		width: auto;
+		margin-bottom: var(--s-8);
+	}
+
 	.post__cover {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		object-fit: cover;
 		border-radius: 6px;
 		border: 1px solid var(--line);
-		margin-bottom: var(--s-8);
 	}
 
 	.post__subscribe {
