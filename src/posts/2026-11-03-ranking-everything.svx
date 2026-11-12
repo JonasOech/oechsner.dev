@@ -60,7 +60,7 @@ Let's define *cool* items to be above this baseline of $\approx67\%$ and *(un)co
 
 Of course, we want to find out 
 <figure>
-	<img src="/img/ranking-everything/correlationmatrix.png" 
+	<img src="/img/ranking-everything/correlationmatrix.svg" 
   alt="The Image I used for Florbish. It's white bacteria on a black backgound, viewed through a microscope" />
 	<figcaption>
 		Beautiful, but not useful: A correlation matrix between each item. I applied cluster-ordering to them so similar items form visible blocks and marked unanimous items with dark grey (the math doesn't work there since they provide no statistical information)
