@@ -39,9 +39,9 @@ ai: true
 		format: { ratio: 'percent' }
 	};
 </script>
-
 ## Introduction
 <Stats items={stats} />
+[<b style='color:RED;'> TODO change stats </b>]
 
 In this article, I will analyse the data gathered from [Ranking Everything](https://rankingeverything.oechsner.dev), a website I built as a side project. If you haven't already, go play it! Of course, you won't be part of the analysed data then, I cut the data intake on [<b style='color:RED;'> TODO INSERT DATE </b>]. 
 
