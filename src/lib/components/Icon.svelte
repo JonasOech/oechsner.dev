@@ -19,7 +19,8 @@
 		| 'maximize'
 		| 'minimize'
 		| 'plus'
-		| 'minus';
+		| 'minus'
+		| 'swap';
 
 	let { name, size = 15 }: { name: IconName; size?: number } = $props();
 
@@ -48,7 +49,10 @@
 		maximize: 'M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5',
 		minimize: 'M4 9h5V4M15 4v5h5M20 15h-5v5M9 20v-5H4',
 		plus: 'M5 12h14M12 5v14',
-		minus: 'M5 12h14'
+		minus: 'M5 12h14',
+		// A chart's two axes with an arrow carried round from one to the other: swaps the axes
+		// of a flat scatter view. The four paths of src/lib/assets/chart-swap-axes.svg, joined.
+		swap: 'M3 3v16a2 2 0 0 0 2 2h16M8 7h4a6 6 0 0 1 6 6v4M11 4l-3 3 3 3M15 14l3 3 3-3'
 	};
 </script>
 

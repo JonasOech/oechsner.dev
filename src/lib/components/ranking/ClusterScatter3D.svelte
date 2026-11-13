@@ -23,7 +23,9 @@
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
-	// At least one stays on.
+	// At least one stays on. In a flat view a button in the plot's top-right corner swaps
+	// which dimension runs across and which up; any change of dimensions puts them back in
+	// column order.
 	//
 	// The fullscreen button uses the Fullscreen API where the browser has it. Where it does
 	// not (iPhone Safari only allows it for video) the figure is pinned over the whole window
@@ -195,8 +197,9 @@
 
 	let yaw = $state(HOME.yaw);
 	let pitch = $state(HOME.pitch);
-	let roll = $state(0); // only off zero while facing, or turning to face, the dim2 × dim3 view
+	let roll = $state(0); // only off zero while facing, or turning to face, a flat view that needs it
 	let on = $state([true, true, true]);
+	let swapped = $state(false); // a flat view shows its higher dimension across
 	// The dimensions the buttons show while a turn plays out before `on` itself changes.
 	let pendingOn = $state<boolean[] | null>(null);
 	let hovered = $state<number | null>(null);
@@ -258,8 +261,11 @@
 
 	let kept = $derived([0, 1, 2].filter((k) => on[k]));
 	let is3d = $derived(kept.length === 3);
-	// The two dimensions a flat view shows, lower index across, or null.
-	let flat = $derived(kept.length === 2 ? (kept as [number, number]) : null);
+	// The two dimensions a flat view shows, across first, or null. Lower index across unless
+	// the reader has swapped them.
+	let flat = $derived(
+		kept.length === 2 ? ((swapped ? [kept[1], kept[0]] : kept) as [number, number]) : null
+	);
 	// The one dimension a strip shows, or null.
 	let line = $derived(kept.length === 1 ? kept[0] : null);
 
@@ -290,12 +296,18 @@
 
 	// The angles at which the 3D box shows exactly what a flat view shows: looking straight
 	// down the dropped axis, with the flat view's across-axis pointing right and its up-axis
-	// up. dim2 × dim3 needs the roll: yaw and pitch alone would show it as dim3 × dim2.
-	function facing([a, b]: [number, number]) {
-		if (a === 0 && b === 1) return { yaw: 0, pitch: 0, roll: 0 };
-		if (a === 0 && b === 2) return { yaw: 0, pitch: -Math.PI / 2, roll: 0 };
-		return { yaw: -Math.PI / 2, pitch: 0, roll: -Math.PI / 2 };
-	}
+	// up. Keyed by across-axis then up-axis. Some need the roll: yaw and pitch alone would show
+	// them the other way round. A swapped pair looks at the box from behind, since swapping
+	// two axes mirrors the picture and no turn from the front can do that.
+	const FACING: Record<string, { yaw: number; pitch: number; roll: number }> = {
+		'01': { yaw: 0, pitch: 0, roll: 0 },
+		'10': { yaw: Math.PI, pitch: 0, roll: -Math.PI / 2 },
+		'02': { yaw: 0, pitch: -Math.PI / 2, roll: 0 },
+		'20': { yaw: Math.PI / 2, pitch: Math.PI / 2, roll: 0 },
+		'12': { yaw: -Math.PI / 2, pitch: 0, roll: -Math.PI / 2 },
+		'21': { yaw: Math.PI / 2, pitch: 0, roll: 0 }
+	};
+	const facing = ([a, b]: [number, number]) => FACING[`${a}${b}`];
 
 	// Flat views and the strip are orthographic, so distances in them read true.
 	function place(v: number[]) {
@@ -688,6 +700,7 @@
 			turnTo({ ...facing(kept), ...zoomHome }, TURN, () =>
 				animate(() => {
 					on = want;
+					swapped = false;
 					pendingOn = null;
 				}, FLATTEN)
 			);
@@ -699,6 +712,7 @@
 			animate(
 				() => {
 					on = want;
+					swapped = false;
 					({ yaw, pitch, roll } = f);
 					resetZoom();
 				},
@@ -714,9 +728,21 @@
 			}
 			animate(() => {
 				on = want;
+				swapped = false;
 				resetZoom();
 			});
 		}
+	}
+
+	// Swaps the axes of a flat view, in one morph. Hidden while a change of dimensions is
+	// still playing out, when the box may still be turning to face the unswapped view.
+	let canSwap = $derived(flat !== null && !sequence);
+	function swap() {
+		if (!canSwap) return;
+		animate(() => {
+			swapped = !swapped;
+			resetZoom();
+		});
 	}
 
 	$effect(() => () => cancelAnimationFrame(rafId));
@@ -1011,6 +1037,18 @@
 				{/each}
 			</svg>
 
+			{#if canSwap && flat}
+				<button
+					class="swap"
+					type="button"
+					title="Swap axes"
+					aria-label="Swap axes: {axes[flat[1]]} across, {axes[flat[0]]} up"
+					onclick={swap}
+				>
+					<Icon name="swap" />
+				</button>
+			{/if}
+
 			{#if full}
 				<div class="zoom" role="group" aria-label="Zoom">
 					<button
@@ -1191,6 +1229,47 @@
 	}
 	.max svg.flat:active {
 		cursor: grabbing;
+	}
+
+	/* Over the plot's top-right corner, in a flat view only: the corner a flat view leaves
+	   emptiest, with the axis names at top-left and bottom-right. Dressed like the zoom
+	   buttons. On a coarse pointer the hit area grows to 44px around the same glyph. */
+	.swap {
+		position: absolute;
+		top: var(--s-3);
+		right: var(--s-3);
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		border: 1px solid var(--line);
+		border-radius: 7px;
+		background: var(--surface-active);
+		color: var(--text-secondary);
+		cursor: pointer;
+		transition:
+			color var(--dur-fast) var(--ease-out),
+			background-color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+	@media (pointer: coarse) {
+		.swap::after {
+			content: '';
+			position: absolute;
+			inset: -7px;
+		}
+	}
+	@media (hover: hover) and (pointer: fine) {
+		.swap:hover {
+			background: var(--surface-hover);
+			border-color: var(--line-strong);
+			color: var(--text);
+		}
+	}
+	.swap:focus-visible {
+		outline: none;
+		box-shadow: var(--focus-ring);
 	}
 
 	/* Over the plot's bottom-right corner, in fullscreen only. */
