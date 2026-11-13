@@ -4,9 +4,12 @@
 	// few dozen nodes, it prerenders to real markup, and the feed rewriter can stub it like any
 	// other widget.
 	//
-	// Input is CSV with a header row (tab- or semicolon-separated also works). The first three
-	// columns are the coordinates, and their header names label the axes and the toggles. A
-	// `cluster` column — or the fourth one — picks the colour.
+	// Input is a CSV in src/lib/data, named by `path` the same way DataFrame's is:
+	// `<ClusterScatter3D path="my-points.csv" />`. It is read at build time (an eager glob), so
+	// the plot prerenders with its points and an unknown path fails the build. The file has a
+	// header row (tab- or semicolon-separated also works). The first three columns are the
+	// coordinates, and their header names label the axes and the toggles. A `cluster` column —
+	// or the fourth one — picks the colour.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
@@ -28,11 +31,22 @@
 	// snaps.
 	import Icon from '$lib/components/Icon.svelte';
 
+	const files = import.meta.glob<string>('/src/lib/data/*.csv', {
+		query: '?raw',
+		import: 'default',
+		eager: true
+	});
+
 	let {
-		csv,
+		path,
 		title = 'Clusters in three dimensions',
 		caption
-	}: { csv: string; title?: string; caption?: string } = $props();
+	}: {
+		/** A CSV in src/lib/data. */
+		path: string;
+		title?: string;
+		caption?: string;
+	} = $props();
 
 	type Point = { i: number; v: [number, number, number]; cluster: string };
 
@@ -74,7 +88,13 @@
 		return { axes: header.slice(0, 3), points };
 	}
 
-	let data = $derived(parse(csv));
+	let data = $derived.by(() => {
+		// Accepts `points.csv`, `src/lib/data/points.csv`, `/src/lib/data/points.csv` or `$lib/data/points.csv`.
+		const name = path.split('/').pop() ?? path;
+		const csv = files[`/src/lib/data/${name}`];
+		if (csv === undefined) throw new Error(`ClusterScatter3D: no CSV at src/lib/data/${name}`);
+		return parse(csv);
+	});
 	let axes = $derived(data.axes);
 	let points = $derived(data.points);
 	let clusters = $derived([...new Set(points.map((p) => p.cluster))].sort());

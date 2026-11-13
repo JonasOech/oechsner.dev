@@ -16,8 +16,6 @@ ai: true
 
 <script>
 	import ClusterScatter3D from '$lib/components/ranking/ClusterScatter3D.svelte';
-	import clusters from '$lib/data/ranking-everything-clusters.csv?raw';
-	import userstats from '$lib/data/ranking-everything-userstats.csv?raw';
 	import DataFrame from '$lib/components/ranking/DataFrame.svelte';
 	import Stats from '$lib/components/ranking/Stats.svelte';
 
@@ -78,7 +76,7 @@ Note that these dimensions don't have anything to say per se.
 But what you can read from it is that users with similar votes are near each other.
 
 <ClusterScatter3D
-	csv={clusters}
+	path="ranking-everything-clusters.csv"
 	title="Taste Groups"
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
@@ -86,7 +84,7 @@ But what you can read from it is that users with similar votes are near each oth
 ## User Stats
 
 <ClusterScatter3D
-	csv={userstats}
+	path="ranking-everything-userstats.csv"
 	title="Userstats"
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
