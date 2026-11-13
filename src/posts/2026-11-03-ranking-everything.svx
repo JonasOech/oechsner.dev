@@ -20,11 +20,12 @@ ai: true
 	import Stats from '$lib/components/ranking/Stats.svelte';
 
 	const stats = [
-		{ value: 33, label: 'users' },
-		{ value: 3220, label: 'upvotes' },
-		{ value: 1572, label: 'downvotes' },
+		{ value: 50, label: 'users' },
+		{ value: 10770, label: 'upvotes' },
+		{ value: 5540, label: 'downvotes' },
 		{ value: '3wks', label: 'project time' },
-		{ value: 2, label: 'opinion clusters' }
+		{ value: 2, label: 'opinion clusters' },
+		{ value: '>50', label: 'commits' }
 	];
 
   // Settings for the table in what went wrong
