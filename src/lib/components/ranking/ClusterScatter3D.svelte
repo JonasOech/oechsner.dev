@@ -10,12 +10,16 @@
 	// header row (tab- or semicolon-separated also works). The first three columns are the
 	// coordinates, and their header names label the axes and the toggles. A column named
 	// `cluster` picks the colour; without one, or with a single cluster, every point takes the
-	// first hue and the tooltip leaves the cluster out.
+	// first hue and the tooltip leaves the cluster out. Any other column is ignored. An empty
+	// or non-numeric coordinate fails the build, naming the row.
 	//
-	// Every other column is what the tooltip shows, under its header and exactly as written.
-	// That lets the analysis scale the coordinates however it likes and still show readers
-	// the real values (ranking-everything-userstats.csv does this). With no such columns the
-	// tooltip shows the three coordinates.
+	// The tooltip shows the three values exactly as the CSV writes them, except that a
+	// negative number gets a real minus sign.
+	//
+	// By default the coordinates are drawn as they are, on one scale shared by all three axes,
+	// which is what a projection like an MCA needs. `normalise` first puts each column through
+	// `normaliseValue` below, so columns in different units (seconds, a ratio, a position)
+	// get comparable spreads.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
@@ -35,6 +39,9 @@
 	// back on unflattens, then turns back to where the reader was. Drags, the wheel and pinches
 	// stay direct: easing a gesture only makes it feel late. Under reduced motion everything
 	// snaps.
+	//
+	// Each axis is numbered at round values of its CSV column, placed through the same
+	// normalisation as the points. `ticks={false}` leaves the numbers off.
 	import Icon from '$lib/components/Icon.svelte';
 
 	const files = import.meta.glob<string>('/src/lib/data/*.csv', {
@@ -46,16 +53,38 @@
 	let {
 		path,
 		title = 'Clusters in three dimensions',
-		caption
+		caption,
+		ticks = true,
+		normalise = false
 	}: {
 		/** A CSV in src/lib/data. */
 		path: string;
 		title?: string;
 		caption?: string;
+		/** Number the axes. */
+		ticks?: boolean;
+		/** Put each column through `normaliseValue` before drawing it. */
+		normalise?: boolean;
 	} = $props();
 
-	// `info`: the cells of the tooltip columns, in their order.
-	type Point = { i: number; v: [number, number, number]; cluster: string; info: string[] };
+	// — Normalisation. With `normalise` on, every value of a column goes through this before
+	//   it is drawn, and so does every tick value on that column's axis. `col` describes the
+	//   whole column. Edit the body to scale the axes differently; it must keep larger values
+	//   larger, or the ticks come out in the wrong order. —
+	type Column = { min: number; max: number; mean: number; sd: number };
+
+	function normaliseValue(v: number, col: Column) {
+		return (v - col.mean) / (col.sd || 1); // z-score: mean 0, one standard deviation = 1
+	}
+
+	function describe(values: number[]): Column {
+		const mean = values.reduce((s, v) => s + v, 0) / values.length;
+		const sd = Math.sqrt(values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length);
+		return { min: Math.min(...values), max: Math.max(...values), mean, sd };
+	}
+
+	// `raw`: the coordinates as numbers, `cells`: as the CSV writes them.
+	type Point = { i: number; raw: number[]; cells: string[]; cluster: string };
 
 	// Cluster hues, in order of the sorted cluster labels. A fifth cluster would come round to
 	// the first hue again; add a series token in app.css before that happens.
@@ -79,20 +108,27 @@
 	const TURN = 620; // --dur-slow, turning the box to face a flat view, or back
 	const FLATTEN = 420; // dropping perspective once the box faces the right way
 	const STEP = 260; // --dur-base, for a zoom or an arrow-key step
+	const TICK = 4; // length of a tick mark, px
+	const TICK_FONT = 11; // the font-size of `.ticks text`, which the label offsets are sized by
 
 	function parse(text: string) {
 		const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
 		const sep = lines[0].includes('\t') ? '\t' : lines[0].includes(';') ? ';' : ',';
 		const header = lines[0].split(sep).map((h) => h.trim());
 		const c = header.indexOf('cluster');
-		const extra = header.flatMap((_, k) => (k > 2 && k !== c ? [k] : []));
 		const points: Point[] = lines.slice(1).map((line, i) => {
-			const cells = line.split(sep).map((s) => s.trim());
-			const v = [0, 1, 2].map((k) => Number(cells[k])) as [number, number, number];
-			if (v.some((n) => !Number.isFinite(n))) throw new Error(`Bad row ${i + 2}: ${line}`);
-			return { i, v, cluster: cells[c] ?? '', info: extra.map((k) => cells[k] ?? '') };
+			const row = line.split(sep).map((s) => s.trim());
+			const cells = [0, 1, 2].map((k) => row[k] ?? '');
+			// Number('') is 0, so an empty cell has to be caught before it is converted.
+			const bad = cells.findIndex((cell) => cell === '' || !Number.isFinite(Number(cell)));
+			if (bad >= 0)
+				throw new Error(
+					`ClusterScatter3D: ${path}, row ${i + 2}: ${header[bad]} is ` +
+						`${cells[bad] === '' ? 'empty' : `"${cells[bad]}"`}: ${line}`
+				);
+			return { i, raw: cells.map(Number), cells, cluster: c < 0 ? '' : (row[c] ?? '') };
 		});
-		return { axes: header.slice(0, 3), info: extra.map((k) => header[k]), points };
+		return { axes: header.slice(0, 3), points };
 	}
 
 	let data = $derived.by(() => {
@@ -103,8 +139,13 @@
 		return parse(csv);
 	});
 	let axes = $derived(data.axes);
-	let info = $derived(data.info);
-	let points = $derived(data.points);
+	let columns = $derived([0, 1, 2].map((k) => describe(data.points.map((p) => p.raw[k]))));
+	// A column value as it is drawn: normalised or not.
+	const toCoord = (x: number, k: number) => (normalise ? normaliseValue(x, columns[k]) : x);
+	// `v`: where the point is drawn.
+	let points = $derived(
+		data.points.map((p) => ({ ...p, v: p.raw.map((x, k) => toCoord(x, k)) }))
+	);
 	let clusters = $derived([...new Set(points.map((p) => p.cluster))].sort());
 	const colourOf = (cluster: string) =>
 		PALETTE[Math.max(clusters.indexOf(cluster), 0) % PALETTE.length];
@@ -120,6 +161,37 @@
 	});
 	const norm = (v: number[]) => v.map((n, k) => (n - frame.mid[k]) / frame.half);
 	let halves = $derived([0, 1, 2].map((k) => (frame.hi[k] - frame.lo[k]) / 2 / frame.half));
+
+	// Round values (1, 2 or 5 × a power of ten apart) inside [lo, hi], about `count` of them.
+	function niceTicks(lo: number, hi: number, count: number) {
+		const span = hi - lo;
+		if (!(span > 0)) return [];
+		const raw = span / count;
+		const power = Math.floor(Math.log10(raw));
+		const error = raw / 10 ** power;
+		const step = (error >= 7.07 ? 10 : error >= 3.16 ? 5 : error >= 1.41 ? 2 : 1) * 10 ** power;
+		const decimals = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+		const out: { v: number; label: string }[] = [];
+		// Integer multiples, so the values do not pick up float error by adding steps up.
+		for (let i = Math.ceil(lo / step - 1e-9); i <= Math.floor(hi / step + 1e-9); i++) {
+			const v = i * step;
+			out.push({ v, label: v.toFixed(decimals).replace('-', '−') });
+		}
+		return out;
+	}
+
+	// The numbers on all three axes, in one list: each one's label, a round value of the CSV
+	// column, and the coordinate it is drawn at. The count follows each axis's length in the
+	// box, so the ticks come out about as dense on all three.
+	let tickList = $derived(
+		ticks
+			? [0, 1, 2].flatMap((k) =>
+					niceTicks(columns[k].min, columns[k].max, Math.max(2, 4 * halves[k])).map(
+						({ v, label }) => ({ k, c: toCoord(v, k), label })
+					)
+				)
+			: []
+	);
 
 	let yaw = $state(HOME.yaw);
 	let pitch = $state(HOME.pitch);
@@ -342,6 +414,61 @@
 		swarm(points.map((p) => ({ ...p, s: project(norm(p.v)) }))).sort((a, b) => a.s.z - b.s.z)
 	);
 
+	// Each tick stands off its axis on the side away from the box's centre, square to the
+	// axis as drawn, so the numbers stay outside the box however it is turned. A label's
+	// distance grows with how much of its width or height faces the axis. A strip has no
+	// inside: its numbers go below the swarm, but never out of the plot. A collapsed axis
+	// hides its ticks with its label, and a tick whose number would run into an axis name or
+	// an earlier number is left out, so a turn can drop one and bring it back.
+	let tickAt = $derived.by(() => {
+		if (!tickList.length) return [];
+		const { origin, ends } = box;
+		// Label extents, estimated from the character count: the plot prerenders, so nothing
+		// can be measured. Names are 13px bold with tracking, numbers 11px tabular figures.
+		type Rect = { x: number; y: number; w: number; h: number }; // centre and half-sizes
+		const taken: Rect[] = ends.flatMap((e, k) =>
+			e.seen ? [{ x: e.x, y: e.y, w: 0.33 * 13 * axes[k].length, h: 0.5 * 13 }] : []
+		);
+		const free = (r: Rect) =>
+			taken.every(
+				(q) => Math.abs(q.x - r.x) > q.w + r.w + 2 || Math.abs(q.y - r.y) > q.h + r.h + 2
+			);
+		const centre = project([0, 0, 0]);
+		const out = ends.map((end) => {
+			if (line !== null) return { x: 0, y: 1 };
+			const dx = end.x - origin.x;
+			const dy = end.y - origin.y;
+			const len = Math.hypot(dx, dy) || 1;
+			const n = { x: -dy / len, y: dx / len };
+			const mx = (origin.x + end.x) / 2 - centre.x;
+			const my = (origin.y + end.y) / 2 - centre.y;
+			return n.x * mx + n.y * my < 0 ? { x: -n.x, y: -n.y } : n;
+		});
+		const below = line === null ? -Infinity : Math.max(...drawn.map((d) => d.s.y)) + R;
+		return tickList.map(({ k, c, label }) => {
+			const p = halves.map((h) => -h);
+			p[k] = (c - frame.mid[k]) / frame.half;
+			const s = project(p);
+			const n = out[k];
+			const w = 0.3 * TICK_FONT * label.length;
+			const h = 0.4 * TICK_FONT;
+			const d = TICK + 3 + Math.abs(n.x) * w + Math.abs(n.y) * h;
+			const at = { x: s.x + n.x * d, y: s.y + n.y * d, w, h };
+			if (line !== null) at.y = Math.min(Math.max(at.y, below + 3 + h), vh - h - 4);
+			const keep = ends[k].seen && free(at);
+			if (keep) taken.push(at);
+			return {
+				x1: s.x,
+				y1: s.y,
+				x2: s.x + n.x * TICK,
+				y2: s.y + n.y * TICK,
+				lx: at.x,
+				ly: at.y,
+				a: keep ? 1 : 0
+			};
+		});
+	});
+
 	// On a strip, points with nearly the same value would sit exactly on top of each other.
 	// Each one, left to right, takes the row nearest the axis (0, +1, −1, +2, …) where it
 	// overlaps nothing already placed. The rows carry no value: only x is data.
@@ -384,6 +511,8 @@
 		edges: { x1: number; y1: number; x2: number; y2: number }[];
 		origin: { x: number; y: number };
 		ends: { x: number; y: number; a: number }[]; // a: label opacity, 0 when collapsed
+		// A mark from (x1, y1) to (x2, y2), its number centred on (lx, ly).
+		ticks: { x1: number; y1: number; x2: number; y2: number; lx: number; ly: number; a: number }[];
 	};
 
 	let target: Layout = $derived({
@@ -393,7 +522,8 @@
 		),
 		edges: box.edges.map((e) => ({ x1: e.a.x, y1: e.a.y, x2: e.b.x, y2: e.b.y })),
 		origin: { x: box.origin.x, y: box.origin.y },
-		ends: box.ends.map((e) => ({ x: e.x, y: e.y, a: e.seen ? 1 : 0 }))
+		ends: box.ends.map((e) => ({ x: e.x, y: e.y, a: e.seen ? 1 : 0 })),
+		ticks: tickAt
 	});
 
 	let morph = $state<{ from: Layout; start: number; dur: number; then?: () => void } | null>(
@@ -432,7 +562,19 @@
 				x: lerp(a.ends[n].x, e.x, t),
 				y: lerp(a.ends[n].y, e.y, t),
 				a: lerp(a.ends[n].a, e.a, t)
-			}))
+			})),
+			ticks: b.ticks.map((q, n) => {
+				const p = a.ticks[n] ?? q;
+				return {
+					x1: lerp(p.x1, q.x1, t),
+					y1: lerp(p.y1, q.y1, t),
+					x2: lerp(p.x2, q.x2, t),
+					y2: lerp(p.y2, q.y2, t),
+					lx: lerp(p.lx, q.lx, t),
+					ly: lerp(p.ly, q.ly, t),
+					a: lerp(p.a, q.a, t)
+				};
+			})
 		};
 	}
 
@@ -605,7 +747,6 @@
 		return { left: clamp(x - tipW / 2, plotW - tipW), top: clamp(top, plotH - tipH) };
 	});
 
-	const fmt = (n: number) => n.toFixed(3).replace('-', '−');
 	// A tooltip cell is shown as written, except that a negative number gets a real minus sign.
 	const asWritten = (cell: string) => cell.replace(/^-(?=[\d.])/, '−');
 
@@ -842,6 +983,18 @@
 						{/if}
 					{/each}
 				</g>
+				{#if tickList.length}
+					<g class="ticks" aria-hidden="true">
+						{#each shown.ticks as t, n (n)}
+							{#if t.a > 0.01}
+								<g style:opacity={t.a}>
+									<line x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />
+									<text x={t.lx} y={t.ly}>{tickList[n].label}</text>
+								</g>
+							{/if}
+						{/each}
+					</g>
+				{/if}
 
 				{#each drawn as d (d.i)}
 					{@const at = shown.pts[d.i]}
@@ -896,17 +1049,11 @@
 							><i style:background={colourOf(activePoint.cluster)}></i>{activePoint.cluster}</span
 						>
 					{/if}
-					{#if info.length}
-						{#each info as a, k (k)}
-							<span class="row"
-								><span>{a}</span><span class="num">{asWritten(activePoint.info[k])}</span></span
-							>
-						{/each}
-					{:else}
-						{#each axes as a, k (a)}
-							<span class="row"><span>{a}</span><span class="num">{fmt(activePoint.v[k])}</span></span>
-						{/each}
-					{/if}
+					{#each axes as a, k (k)}
+						<span class="row"
+							><span>{a}</span><span class="num">{asWritten(activePoint.cells[k])}</span></span
+						>
+					{/each}
 				</div>
 			{/if}
 		</div>
@@ -1106,6 +1253,22 @@
 		font-size: 13px;
 		font-weight: 700;
 		letter-spacing: 0.04em;
+		text-anchor: middle;
+		dominant-baseline: central;
+	}
+	.ticks {
+		pointer-events: none;
+	}
+	.ticks line {
+		stroke: var(--line-strong);
+		stroke-width: 1.25;
+	}
+	/* 11px is TICK_FONT in the script. */
+	.ticks text {
+		fill: var(--text-muted);
+		font-family: var(--font-sans);
+		font-size: 11px;
+		font-variant-numeric: tabular-nums;
 		text-anchor: middle;
 		dominant-baseline: central;
 	}

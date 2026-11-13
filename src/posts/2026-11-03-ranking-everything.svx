@@ -85,6 +85,7 @@ But what you can read from it is that users with similar votes are near each oth
 
 <ClusterScatter3D
 	path="ranking-everything-userstats.csv"
+	normalise
 	title="Userstats"
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
