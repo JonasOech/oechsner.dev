@@ -893,7 +893,7 @@
 					<strong>Point {activePoint.i + 1}</strong>
 					{#if clusters.length > 1}
 						<span class="tip-cluster"
-							><i style:background={colourOf(activePoint.cluster)}></i>cluster {activePoint.cluster}</span
+							><i style:background={colourOf(activePoint.cluster)}></i>{activePoint.cluster}</span
 						>
 					{/if}
 					{#if info.length}
