@@ -57,6 +57,15 @@
 	   supply; this is the cool counterpart to --accent. — */
 	--series-cool: #7aa7d9;
 	--series-cool-rgb: 122, 167, 217;
+	/* Third and fourth hues for figures with more than two groups (the 3D cluster scatter).
+	   Stepped to L 0.60, a notch darker than the first two, because that is where the
+	   blue / amber / mauve / clay set clears the all-pairs floors on --bg-deep: worst pair
+	   18.8 normal vision, 11.4 under protan/deutan simulation (OKLab x100, floors 15 and 8),
+	   and 4.6:1 and 4.7:1 contrast. Kept clear of --danger, --success and --live. — */
+	--series-mauve: #a75cbd;
+	--series-mauve-rgb: 167, 92, 189;
+	--series-clay: #cb591d;
+	--series-clay-rgb: 203, 89, 29;
 
 	/* — Feedback — */
 	--danger: #e5484d;

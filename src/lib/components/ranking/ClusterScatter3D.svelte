@@ -36,9 +36,14 @@
 
 	type Point = { i: number; v: [number, number, number]; cluster: string };
 
-	// Cluster hues, in order of the sorted cluster labels. Only two series tokens exist; a
-	// third cluster falls back to the secondary ink rather than inventing a colour.
-	const PALETTE = ['var(--series-cool)', 'var(--accent)', 'var(--text-secondary)'];
+	// Cluster hues, in order of the sorted cluster labels. A fifth cluster would come round to
+	// the first hue again; add a series token in app.css before that happens.
+	const PALETTE = [
+		'var(--series-cool)',
+		'var(--accent)',
+		'var(--series-mauve)',
+		'var(--series-clay)'
+	];
 
 	const W = 600;
 	const H = 440; // in the page; fullscreen takes the shape of the screen instead
@@ -74,7 +79,7 @@
 	let points = $derived(data.points);
 	let clusters = $derived([...new Set(points.map((p) => p.cluster))].sort());
 	const colourOf = (cluster: string) =>
-		PALETTE[Math.min(clusters.indexOf(cluster), PALETTE.length - 1)];
+		PALETTE[Math.max(clusters.indexOf(cluster), 0) % PALETTE.length];
 
 	// One scale for all three axes, so the spread along each dimension stays comparable; the
 	// box is the data's bounding box, centred on its midpoint.

@@ -112,3 +112,4 @@ Two traps worth knowing up front:
 - `.claude/worktrees/` is gitignored; committing one breaks the Cloudflare build with
   "No url found for submodule path".
 - Tabs for indentation, single quotes, no semicolon-free style — match the file you're in.
+- Before EVERY implementation request, get yourself deeply familiar with DESIGN.md
