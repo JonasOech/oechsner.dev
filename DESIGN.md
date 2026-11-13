@@ -61,6 +61,11 @@ second hex. **Dark is the only theme** — this design commits to it (see §8, D
   --glow-warm:       rgba(176, 108, 46, 0.16);
   --glow-cool:       rgba(86, 108, 148, 0.13);
 
+  /* — Chart series: figure marks only, never text; --accent is series 2 —— */
+  --series-cool:     #7aa7d9;   --series-cool-rgb:     122, 167, 217;
+  --series-mauve:    #a75cbd;   --series-mauve-rgb:    167, 92, 189;
+  --series-clay:     #cb591d;   --series-clay-rgb:     203, 89, 29;
+
   /* — Feedback ——————————————————————————————— */
   --danger:          #e5484d;   --danger-rgb:          229, 72, 77;
   --success:         #46a758;   --success-rgb:         70, 167, 88;
@@ -81,6 +86,7 @@ second hex. **Dark is the only theme** — this design commits to it (see §8, D
 | Rail labels, meta, dates | `--text-muted` | `ABOUT`, `ARTICLES`, "8 min read" |
 | Hairlines | `--line` | dividers, secondary button border |
 | Link hover, focus, tags | `--accent` | interactive affordance only |
+| Data groups in a figure | `--series-cool`, `--accent`, `--series-mauve`, `--series-clay` | points, bars, lines — in that order |
 
 **Contrast** — measured, not estimated. Against `--bg`: `--text` 16.6:1, `--text-secondary`
 7.7:1, `--text-muted` 4.95:1, `--accent` 9.1:1. `--text-muted` must also clear AA against
@@ -93,6 +99,27 @@ body prose, for hierarchy reasons rather than contrast ones.
 > `--text-muted` was originally `#6d6e77`, which measures **3.79:1** on `--bg` and fails AA.
 > If you darken it again for atmosphere, re-measure against **both** `--bg` and `--surface` —
 > this is the one token in the palette with no headroom, and `--surface` is the tighter test.
+
+**Chart series** — when a figure has to tell groups apart by colour, they take the four series
+hues in a fixed order: `--series-cool`, `--accent`, `--series-mauve`, `--series-clay`. A
+two-group figure uses only the first two. Mauve and clay sit a step darker (OKLCH L 0.60, against
+0.72 and 0.77 for the first pair), because that is where all four stay apart. Measured as
+OKLab distance ×100:
+
+- Normal vision: worst pair 18.8 (`--accent` / clay).
+- Simulated colour blindness (Machado 2009, full severity): deutan 11.4 (cool / mauve), protan
+  17.6, tritan 12.8.
+
+These are **mark colours, never text colours**. Mauve and clay reach 4.60:1 and 4.67:1 on
+`--bg-deep`, the ground the figures draw on, but mauve is 4.48:1 on `--bg` and both drop near 4.2:1 on `--surface`, below AA
+for text. As marks they only need 3:1, which all four clear on every ground down to
+`--surface-active` (mauve 3.71:1, the lowest).
+
+Clay is the closest to a feedback colour: 7.7 from `--danger`. Don't show the two in one figure.
+
+A fifth group gets a new token here. Re-measure every pair against the floors these four were
+chosen to: 15 for normal vision, 8 under simulation. Don't fall back to a grey: the 3D cluster
+scatter once did, and two clusters became one colour.
 
 ---
 

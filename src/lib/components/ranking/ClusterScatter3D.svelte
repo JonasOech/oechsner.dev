@@ -6,8 +6,7 @@
 	//
 	// Input is CSV with a header row (tab- or semicolon-separated also works). The first three
 	// columns are the coordinates, and their header names label the axes and the toggles. A
-	// `cluster` column — or the fourth one — picks each point's colour and shape, and a legend
-	// above the plot lists the clusters.
+	// `cluster` column — or the fourth one — picks the colour.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
@@ -37,18 +36,14 @@
 
 	type Point = { i: number; v: [number, number, number]; cluster: string };
 
-	// A cluster is told apart by colour and by shape, so the figure never leans on hue alone.
-	// Clusters take the hues below in the order of their sorted labels; the first four pair
-	// one hue with one shape. Past four, the hues come round again with the next shape along,
-	// which gives sixteen distinct marks before anything repeats, and never a grey.
-	const COLOURS = [
+	// Cluster hues, in order of the sorted cluster labels. A fifth cluster would come round to
+	// the first hue again; add a series token in app.css before that happens.
+	const PALETTE = [
 		'var(--series-cool)',
 		'var(--accent)',
 		'var(--series-mauve)',
 		'var(--series-clay)'
 	];
-	const SHAPES = ['circle', 'diamond', 'square', 'triangle'] as const;
-	type Shape = (typeof SHAPES)[number];
 
 	const W = 600;
 	const H = 440; // in the page; fullscreen takes the shape of the screen instead
@@ -84,7 +79,7 @@
 	let points = $derived(data.points);
 	let clusters = $derived([...new Set(points.map((p) => p.cluster))].sort());
 	const colourOf = (cluster: string) =>
-		PALETTE[Math.min(clusters.indexOf(cluster), PALETTE.length - 1)];
+		PALETTE[Math.max(clusters.indexOf(cluster), 0) % PALETTE.length];
 
 	// One scale for all three axes, so the spread along each dimension stays comparable; the
 	// box is the data's bounding box, centred on its midpoint.
