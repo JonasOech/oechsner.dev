@@ -8,8 +8,14 @@
 	// `<ClusterScatter3D path="my-points.csv" />`. It is read at build time (an eager glob), so
 	// the plot prerenders with its points and an unknown path fails the build. The file has a
 	// header row (tab- or semicolon-separated also works). The first three columns are the
-	// coordinates, and their header names label the axes and the toggles. A `cluster` column —
-	// or the fourth one — picks the colour.
+	// coordinates, and their header names label the axes and the toggles. A column named
+	// `cluster` picks the colour; without one, or with a single cluster, every point takes the
+	// first hue and the tooltip leaves the cluster out.
+	//
+	// Every other column is what the tooltip shows, under its header and exactly as written.
+	// That lets the analysis scale the coordinates however it likes and still show readers
+	// the real values (ranking-everything-userstats.csv does this). With no such columns the
+	// tooltip shows the three coordinates.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
@@ -48,7 +54,8 @@
 		caption?: string;
 	} = $props();
 
-	type Point = { i: number; v: [number, number, number]; cluster: string };
+	// `info`: the cells of the tooltip columns, in their order.
+	type Point = { i: number; v: [number, number, number]; cluster: string; info: string[] };
 
 	// Cluster hues, in order of the sorted cluster labels. A fifth cluster would come round to
 	// the first hue again; add a series token in app.css before that happens.
@@ -77,15 +84,15 @@
 		const lines = text.trim().split(/\r?\n/).filter((l) => l.trim());
 		const sep = lines[0].includes('\t') ? '\t' : lines[0].includes(';') ? ';' : ',';
 		const header = lines[0].split(sep).map((h) => h.trim());
-		const at = header.indexOf('cluster');
-		const c = at === -1 ? 3 : at;
+		const c = header.indexOf('cluster');
+		const extra = header.flatMap((_, k) => (k > 2 && k !== c ? [k] : []));
 		const points: Point[] = lines.slice(1).map((line, i) => {
-			const cells = line.split(sep);
+			const cells = line.split(sep).map((s) => s.trim());
 			const v = [0, 1, 2].map((k) => Number(cells[k])) as [number, number, number];
 			if (v.some((n) => !Number.isFinite(n))) throw new Error(`Bad row ${i + 2}: ${line}`);
-			return { i, v, cluster: (cells[c] ?? '').trim() };
+			return { i, v, cluster: cells[c] ?? '', info: extra.map((k) => cells[k] ?? '') };
 		});
-		return { axes: header.slice(0, 3), points };
+		return { axes: header.slice(0, 3), info: extra.map((k) => header[k]), points };
 	}
 
 	let data = $derived.by(() => {
@@ -96,6 +103,7 @@
 		return parse(csv);
 	});
 	let axes = $derived(data.axes);
+	let info = $derived(data.info);
 	let points = $derived(data.points);
 	let clusters = $derived([...new Set(points.map((p) => p.cluster))].sort());
 	const colourOf = (cluster: string) =>
@@ -598,6 +606,8 @@
 	});
 
 	const fmt = (n: number) => n.toFixed(3).replace('-', '−');
+	// A tooltip cell is shown as written, except that a negative number gets a real minus sign.
+	const asWritten = (cell: string) => cell.replace(/^-(?=[\d.])/, '−');
 
 	// The view resets its zoom on every switch: a new view lays every point out afresh.
 	function toggle(k: number) {
@@ -881,12 +891,22 @@
 					bind:offsetHeight={tipH}
 				>
 					<strong>Point {activePoint.i + 1}</strong>
-					<span class="tip-cluster"
-						><i style:background={colourOf(activePoint.cluster)}></i>cluster {activePoint.cluster}</span
-					>
-					{#each axes as a, k (a)}
-						<span class="row"><span>{a}</span><span class="num">{fmt(activePoint.v[k])}</span></span>
-					{/each}
+					{#if clusters.length > 1}
+						<span class="tip-cluster"
+							><i style:background={colourOf(activePoint.cluster)}></i>cluster {activePoint.cluster}</span
+						>
+					{/if}
+					{#if info.length}
+						{#each info as a, k (k)}
+							<span class="row"
+								><span>{a}</span><span class="num">{asWritten(activePoint.info[k])}</span></span
+							>
+						{/each}
+					{:else}
+						{#each axes as a, k (a)}
+							<span class="row"><span>{a}</span><span class="num">{fmt(activePoint.v[k])}</span></span>
+						{/each}
+					{/if}
 				</div>
 			{/if}
 		</div>
