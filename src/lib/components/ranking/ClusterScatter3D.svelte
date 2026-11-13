@@ -6,7 +6,8 @@
 	//
 	// Input is CSV with a header row (tab- or semicolon-separated also works). The first three
 	// columns are the coordinates, and their header names label the axes and the toggles. A
-	// `cluster` column — or the fourth one — picks the colour.
+	// `cluster` column — or the fourth one — picks each point's colour and shape, and a legend
+	// above the plot lists the clusters.
 	//
 	// With all three dimensions on, the plot rotates. Switching one off shows the other two as
 	// a flat, orthographic scatter, and switching two off lays the last one out as a strip.
@@ -36,9 +37,18 @@
 
 	type Point = { i: number; v: [number, number, number]; cluster: string };
 
-	// Cluster hues, in order of the sorted cluster labels. Only two series tokens exist; a
-	// third cluster falls back to the secondary ink rather than inventing a colour.
-	const PALETTE = ['var(--series-cool)', 'var(--accent)', 'var(--text-secondary)'];
+	// A cluster is told apart by colour and by shape, so the figure never leans on hue alone.
+	// Clusters take the hues below in the order of their sorted labels; the first four pair
+	// one hue with one shape. Past four, the hues come round again with the next shape along,
+	// which gives sixteen distinct marks before anything repeats, and never a grey.
+	const COLOURS = [
+		'var(--series-cool)',
+		'var(--accent)',
+		'var(--series-mauve)',
+		'var(--series-clay)'
+	];
+	const SHAPES = ['circle', 'diamond', 'square', 'triangle'] as const;
+	type Shape = (typeof SHAPES)[number];
 
 	const W = 600;
 	const H = 440; // in the page; fullscreen takes the shape of the screen instead
