@@ -414,10 +414,14 @@ The entry for the section being read is lit — `--accent-wash` behind it, a 2px
 bar at its left edge.
 
 **The highlight follows the reading line**, `scroll-padding-top` + 8px: a heading becomes
-current as it crosses that line, in either direction. A clicked entry lights at once and
-holds while the page glides there, so the highlight does not flick through every section on
-the way; tracking takes over again once the page has rested for 150ms. "Back to top" clears
-it the same way.
+current as it crosses that line, in either direction, and the page coming to rest re-checks,
+for a jump that carries a heading past the line without it ever being seen to cross. A
+clicked entry lights at once and holds while the page glides there, so the highlight does
+not flick through every section on the way; tracking takes over again once the page has
+rested for 150ms. Where it rests at the very end of the page, the last sections can be too
+short for their headings to reach the line, so the clicked entry stays lit until the reader
+scrolls on. "Back to top" clears it the same way, and takes focus off itself as the native
+jump would.
 
 **The list follows the reader.** A long outline scrolls inside the panel, and the list keeps
 three entries visible above and below the current one — nvim's `scrolloff=3`, counted in
