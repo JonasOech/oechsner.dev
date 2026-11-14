@@ -133,3 +133,6 @@ stats = stats.assign(
 ## Special Thanks
 - Anja, Max, Pawlo and Paul for helping with getting the link out there.
 - The Uni Würzburg Student Union for letting me market on their discord server.
+
+## AI Notice 
+No AI was used during the writing of this text. However, AI assisted while building the webapp, helping with data analysation (Especially MCA) and consulting me on the mathematical research behind it.
