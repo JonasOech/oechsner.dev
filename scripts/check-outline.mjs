@@ -172,6 +172,20 @@ test('clicking the last entry ends with it active', async (page) => {
 	assert.equal((await state(page)).active, last);
 });
 
+// On a tall window the last sections are too short for their headings ever to reach the
+// reading line, so tracking alone would end on an earlier entry.
+test('clicking the last entry on a tall window ends with it active', { viewport: { width: 1920, height: 1200 } }, async (page) => {
+	await open(page);
+	const last = (await state(page)).n - 1;
+	await page.locator('.outline__link').nth(last).click();
+	await rest(page);
+	assert.equal((await state(page)).active, last);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await placeHeading(page, 5, 98);
+	await rest(page);
+	assert.equal((await state(page)).active, 5, 'tracking resumes once the reader scrolls on');
+});
+
 test('a clicked entry lights up at once, and nothing else does on the way', async (page) => {
 	await open(page);
 	await record(page);

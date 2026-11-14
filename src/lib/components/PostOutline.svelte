@@ -16,13 +16,29 @@
 	/** The entry the panel shows as lit. Everything below uses this, never `activeId`. */
 	const current = $derived(heldId ?? activeId);
 
+	/** The page came to rest at its very end with a hold in place; see `release`. */
+	let heldAtEnd = false;
+
+	function release() {
+		// At the very end of the page the last sections can be too short for their headings
+		// ever to reach the reading line, so tracking would hand the highlight back to an
+		// earlier entry. There the hold stays until the reader moves the page again.
+		const end = document.documentElement.scrollHeight - window.innerHeight;
+		if (window.scrollY >= end - 1) {
+			heldAtEnd = true;
+			return;
+		}
+		heldId = null;
+	}
+
 	function armRest() {
 		clearTimeout(restTimer);
-		restTimer = setTimeout(() => (heldId = null), REST_MS);
+		restTimer = setTimeout(release, REST_MS);
 	}
 
 	function hold(id: string) {
 		heldId = id;
+		heldAtEnd = false;
 		armRest();
 	}
 
@@ -97,6 +113,7 @@
 			placed = false;
 			lastManualScroll = -Infinity;
 			heldId = null;
+			heldAtEnd = false;
 			clearTimeout(restTimer);
 		});
 	});
@@ -160,8 +177,12 @@
 
 		function onScroll() {
 			// Every scroll event of a held glide pushes the release back, so the hold ends
-			// REST_MS after the page stops.
-			if (heldId !== null) armRest();
+			// REST_MS after the page stops — or, if it stopped at the very end, on the reader's
+			// next move.
+			if (heldAtEnd) {
+				heldAtEnd = false;
+				heldId = null;
+			} else if (heldId !== null) armRest();
 			if (ticking) return;
 			ticking = true;
 			requestAnimationFrame(measure);
