@@ -294,6 +294,67 @@ test('on a short window the active entry is never hidden', { viewport: { width: 
 	}
 });
 
+test('hovering the panel stops the list following', async (page) => {
+	await open(page);
+	await page.hover('.outline__head');
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	assert.equal((await state(page)).scrollTop, 0);
+});
+
+test('once the pointer leaves, the next section change is followed', async (page) => {
+	await open(page);
+	await page.hover('.outline__head');
+	await placeHeading(page, 13, 98);
+	await rest(page);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	assertScrolloff(await state(page));
+});
+
+test('a hand scroll of the list holds following off for 3 seconds', async (page) => {
+	await open(page);
+	await placeHeading(page, 1, 98);
+	await rest(page);
+	await page.hover('.outline__scroll');
+	await page.mouse.wheel(0, 150);
+	await page.waitForTimeout(400);
+	const handScrolled = (await state(page)).scrollTop;
+	assert.ok(handScrolled > 0, 'precondition: the wheel scrolled the list');
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await placeHeading(page, 0, 98); // entry 0 is now above the visible list
+	await rest(page);
+	assert.equal((await state(page)).scrollTop, handScrolled, 'held off');
+	await page.waitForTimeout(3200);
+	await placeHeading(page, 1, 98);
+	await rest(page);
+	assertScrolloff(await state(page));
+});
+
+test('keyboard focus in the panel stops the list following', async (page) => {
+	await open(page);
+	await page.locator('.outline__link').first().focus();
+	await page.keyboard.press('Tab');
+	assert.ok(
+		await page.evaluate(() => document.querySelector('.outline :focus-visible') !== null),
+		'precondition: a panel link has keyboard focus'
+	);
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	assert.equal((await state(page)).scrollTop, 0);
+});
+
+test('a mouse click on an entry does not pause following for the rest of the read', async (page) => {
+	await open(page);
+	await page.locator('.outline__link').nth(2).click();
+	await rest(page);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	assertScrolloff(await state(page));
+});
+
 // — Runner —
 
 const browser = await chromium.launch();

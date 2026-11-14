@@ -37,8 +37,44 @@
 	/** Whether the list has been placed since load or since the last change of post. */
 	let placed = false;
 
+	// The list backs off while the reader is using the panel, and does not catch up when the
+	// pause ends: it follows from the next section change.
+	const BACK_OFF_MS = 3000;
+	let lastManualScroll = -Infinity;
+
+	function pausedNow(): boolean {
+		return (
+			// Hover-capable devices only, so the sticky :hover a tap leaves on a touch screen
+			// does not pause following.
+			(matchMedia('(hover: hover)').matches && nav.matches(':hover')) ||
+			// Keyboard focus only: a mouse click focuses the link in Chrome, and :focus-within
+			// would pause following for the rest of the read.
+			nav.querySelector(':focus-visible') !== null ||
+			performance.now() - lastManualScroll < BACK_OFF_MS
+		);
+	}
+
+	$effect(() => {
+		const handScrolled = () => (lastManualScroll = performance.now());
+		// A press on the list itself, not on an entry, is a drag of its scrollbar; a press on
+		// an entry is a click.
+		const onPointerDown = (event: PointerEvent) => {
+			if (event.target === scroller) handScrolled();
+		};
+		scroller.addEventListener('wheel', handScrolled, { passive: true });
+		scroller.addEventListener('touchmove', handScrolled, { passive: true });
+		scroller.addEventListener('pointerdown', onPointerDown, { passive: true });
+		return () => {
+			scroller.removeEventListener('wheel', handScrolled);
+			scroller.removeEventListener('touchmove', handScrolled);
+			scroller.removeEventListener('pointerdown', onPointerDown);
+		};
+	});
+
 	function follow(id: string) {
 		if (!scroller || id === '') return;
+		// `placed` is left alone, so the first real placement still jumps.
+		if (pausedNow()) return;
 		const index = headings.findIndex((h) => h.id === id);
 		if (index === -1) return;
 		const items = scroller.querySelectorAll('.outline__list > li');
@@ -59,6 +95,7 @@
 		untrack(() => {
 			scroller?.scrollTo({ top: 0, behavior: 'instant' });
 			placed = false;
+			lastManualScroll = -Infinity;
 			heldId = null;
 			clearTimeout(restTimer);
 		});
