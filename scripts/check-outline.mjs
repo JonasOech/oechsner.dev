@@ -157,6 +157,23 @@ test('moving a heading back below the line hands the highlight back', async (pag
 	assert.equal((await state(page)).active, i - 1);
 });
 
+test('an instant jump into the middle of a section lights that section', async (page) => {
+	await open(page);
+	const i = await page.evaluate((h) => {
+		const tops = [...document.querySelectorAll('.outline__link')].map((a) =>
+			document.getElementById(decodeURIComponent(a.hash.slice(1))).getBoundingClientRect().top
+		);
+		// Nothing in view at the start, and a section long enough that with its heading 300px
+		// above the window the next one is still below it: no heading enters or leaves the view.
+		if (tops[0] <= h) return -1;
+		return tops.findIndex((t, i) => i < tops.length - 1 && tops[i + 1] - t > h + 300);
+	}, VIEWPORT.height);
+	assert.ok(i >= 0, 'precondition: the post has a section longer than the window');
+	await placeHeading(page, i, -300);
+	await rest(page);
+	assert.equal((await state(page)).active, i);
+});
+
 test('clicking an entry ends with that entry active', async (page) => {
 	await open(page);
 	await page.locator('.outline__link').nth(10).click();

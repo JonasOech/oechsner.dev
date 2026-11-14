@@ -48,18 +48,35 @@
 		// glide stops exactly on the line. With the viewport's own top edge (under the header)
 		// a heading that came to rest on the line had crossed nothing, and the one before it
 		// stayed lit.
-		const observer = new IntersectionObserver(
-			() => {
-				const passed = targets.filter((el) => el.getBoundingClientRect().top <= line);
-				// Above the first heading nothing is marked, rather than the outline claiming
-				// the reader is in a section they have not reached.
-				activeId = passed.at(-1)?.id ?? '';
-			},
-			{ rootMargin: `-${line}px 0px 0px 0px`, threshold: [0, 1] }
-		);
+		const update = () => {
+			const passed = targets.filter((el) => el.getBoundingClientRect().top <= line);
+			// Above the first heading nothing is marked, rather than the outline claiming
+			// the reader is in a section they have not reached.
+			activeId = passed.at(-1)?.id ?? '';
+		};
+
+		const observer = new IntersectionObserver(update, {
+			rootMargin: `-${line}px 0px 0px 0px`,
+			threshold: [0, 1]
+		});
+
+		// An instant jump that carries every heading it passes from below the view to above
+		// the line between two frames (find in page, a link under reduced motion) changes no
+		// intersection, so the observer stays quiet. The page coming to rest — 150ms without
+		// a scroll event, as the outline's click hold uses — re-checks.
+		let restTimer: ReturnType<typeof setTimeout> | undefined;
+		const onScroll = () => {
+			clearTimeout(restTimer);
+			restTimer = setTimeout(update, 150);
+		};
 
 		targets.forEach((el) => observer.observe(el));
-		return () => observer.disconnect();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('scroll', onScroll);
+			clearTimeout(restTimer);
+		};
 	});
 </script>
 
