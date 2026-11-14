@@ -11,7 +11,7 @@ cover: /img/ranking-everything/cover.svg
 coverAlt: >-
   The Ranking Everything logo and title beside a tilted grid of photos to rate: a tardigrade,
   lava lamps, a capybara, a cartoon platypus, a tuk-tuk and the International Space Station
-ai: true
+ai: false
 ---
 
 <script>

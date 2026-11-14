@@ -24,6 +24,9 @@
 	// A single heading is not an outline, it is a label — nothing to navigate between.
 	const outline = $derived(post.headings.length > 1 ? post.headings : []);
 
+	/** The section that says what "human-written" does not cover; the laurel links to it. */
+	const aiNotice = $derived(post.headings.find((h) => /^ai notice$/i.test(h.text)));
+
 	let lightbox: Lightbox;
 	const maximise = (media: ZoomableMedia, opener: HTMLElement) => lightbox.open(media, opener);
 
@@ -149,7 +152,7 @@
 
 				<!-- Strictly `=== false`: a post that never declared either way stays silent. -->
 				{#if post.ai === false}
-					<HumanWritten />
+					<HumanWritten href={aiNotice && `#${aiNotice.id}`} />
 				{/if}
 			</div>
 

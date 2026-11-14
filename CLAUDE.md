@@ -52,7 +52,8 @@ the file `.svx`, and keep the body valid plain Markdown so it still renders in O
   (`src/lib/posts.ts`). `draft: true` hides a post in production but shows it in dev.
   `hero: true` makes a post *eligible* for the home page lead slot (newest eligible wins);
   omitted means not eligible. `ai: false` is the only value that earns the human-written
-  laurel. `readingMinutes` and `headings` are injected at build time — never write them
+  laurel; a `## AI Notice` section in the body turns it into a link to that section.
+  `readingMinutes` and `headings` are injected at build time — never write them
   by hand.
 - `link: <url>` makes a link post (optional `linkLabel`): every listing and feed entry goes
   straight to the URL, and `/blog/<slug>` becomes a landing page with a button out. Always
