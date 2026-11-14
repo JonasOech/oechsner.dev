@@ -352,7 +352,19 @@ test('a mouse click on an entry does not pause following for the rest of the rea
 	await page.mouse.move(AWAY.x, AWAY.y);
 	await placeHeading(page, 14, 98);
 	await rest(page);
-	assertScrolloff(await state(page));
+	const s = await state(page);
+	assert.equal(s.active, 14, 'the highlight moved on from the clicked entry');
+	assertScrolloff(s);
+});
+
+test('after a click the highlight tracks the reading again', async (page) => {
+	await open(page);
+	await page.locator('.outline__link').nth(10).click();
+	await rest(page);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await placeHeading(page, 4, 98);
+	await rest(page);
+	assert.equal((await state(page)).active, 4);
 });
 
 test('at the top of the list only the bottom edge fades', async (page) => {

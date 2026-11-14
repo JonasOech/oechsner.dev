@@ -167,16 +167,21 @@
 			requestAnimationFrame(measure);
 		}
 
-		measure();
+		// Untracked: `measure` reads `progress` as well as writing it, and a tracked read would
+		// re-run this effect on every scroll frame — re-counting the words and, through the
+		// cleanup, cancelling a hold's release.
+		untrack(measure);
 		window.addEventListener('scroll', onScroll, { passive: true });
 		window.addEventListener('resize', onScroll, { passive: true });
 
 		return () => {
 			window.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
-			clearTimeout(restTimer);
 		};
 	});
+
+	// Teardown only: a pending release must not outlive the component.
+	$effect(() => () => clearTimeout(restTimer));
 
 	function backToTop(event: MouseEvent) {
 		event.preventDefault();
