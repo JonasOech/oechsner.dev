@@ -1,7 +1,151 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { Heading } from '$lib/posts';
+	import { entryBoxes, followTarget } from '$lib/outline-follow';
 
 	let { headings, activeId }: { headings: Heading[]; activeId: string } = $props();
+
+	// A clicked entry lights at once and stays lit while the page glides to it, instead of
+	// the highlight flicking through every section on the way. The hold ends once the page
+	// has rested for REST_MS — a timer rather than `scrollend`, which not every Safari has.
+	// `''` holds with nothing lit (Back to top).
+	const REST_MS = 150;
+	let heldId = $state<string | null>(null);
+	let restTimer: ReturnType<typeof setTimeout> | undefined;
+
+	/** The entry the panel shows as lit. Everything below uses this, never `activeId`. */
+	const current = $derived(heldId ?? activeId);
+
+	/** The page came to rest at its very end with a hold in place; see `release`. */
+	let heldAtEnd = false;
+
+	function release() {
+		// At the very end of the page the last sections can be too short for their headings
+		// ever to reach the reading line, so tracking would hand the highlight back to an
+		// earlier entry. There the hold stays until the reader moves the page again.
+		const end = document.documentElement.scrollHeight - window.innerHeight;
+		if (window.scrollY >= end - 1) {
+			heldAtEnd = true;
+			return;
+		}
+		heldId = null;
+	}
+
+	function armRest() {
+		clearTimeout(restTimer);
+		restTimer = setTimeout(release, REST_MS);
+	}
+
+	function hold(id: string) {
+		heldId = id;
+		heldAtEnd = false;
+		armRest();
+	}
+
+	// The list follows the reader: it keeps SCROLLOFF entries visible on each side of the lit
+	// one (nvim's `scrolloff`, see $lib/outline-follow), resting while there is room and
+	// moving just far enough when there is not. It moves with `scroller.scrollTo`, on the list
+	// alone — never `scrollIntoView`, which scrolls every scrollable ancestor, the page
+	// included, and would fight the reader's own scroll.
+	const SCROLLOFF = 3;
+	let nav: HTMLElement;
+	let scroller: HTMLElement;
+	/** Whether the list has been placed since load or since the last change of post. */
+	let placed = false;
+
+	// The list backs off while the reader is using the panel, and does not catch up when the
+	// pause ends: it follows from the next section change.
+	const BACK_OFF_MS = 3000;
+	let lastManualScroll = -Infinity;
+
+	function pausedNow(): boolean {
+		return (
+			// Hover-capable devices only, so the sticky :hover a tap leaves on a touch screen
+			// does not pause following.
+			(matchMedia('(hover: hover)').matches && nav.matches(':hover')) ||
+			// Keyboard focus only: a mouse click focuses the link in Chrome, and :focus-within
+			// would pause following for the rest of the read.
+			nav.querySelector(':focus-visible') !== null ||
+			performance.now() - lastManualScroll < BACK_OFF_MS
+		);
+	}
+
+	$effect(() => {
+		const handScrolled = () => (lastManualScroll = performance.now());
+		// A press on the list itself, not on an entry, is a drag of its scrollbar; a press on
+		// an entry is a click.
+		const onPointerDown = (event: PointerEvent) => {
+			if (event.target === scroller) handScrolled();
+		};
+		scroller.addEventListener('wheel', handScrolled, { passive: true });
+		scroller.addEventListener('touchmove', handScrolled, { passive: true });
+		scroller.addEventListener('pointerdown', onPointerDown, { passive: true });
+		return () => {
+			scroller.removeEventListener('wheel', handScrolled);
+			scroller.removeEventListener('touchmove', handScrolled);
+			scroller.removeEventListener('pointerdown', onPointerDown);
+		};
+	});
+
+	function follow(id: string) {
+		if (!scroller || id === '') return;
+		// `placed` is left alone, so the first real placement still jumps.
+		if (pausedNow()) return;
+		const index = headings.findIndex((h) => h.id === id);
+		if (index === -1) return;
+		const items = scroller.querySelectorAll('.outline__list > li');
+		const target = followTarget(entryBoxes(scroller, items), index, scroller, SCROLLOFF);
+		// The first placement (a reload part-way down, a deep link) jumps: there is nothing
+		// for the eye to follow yet. Reduced motion always jumps.
+		const behavior =
+			!placed || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+		placed = true;
+		if (target !== null) scroller.scrollTo({ top: target, behavior });
+	}
+
+	// The instance survives client-side navigation between posts, so a new outline starts
+	// from scratch: list at the top, nothing held, the next placement a jump. Declared before
+	// the follow effect so it runs first.
+	$effect(() => {
+		void headings;
+		untrack(() => {
+			scroller?.scrollTo({ top: 0, behavior: 'instant' });
+			placed = false;
+			lastManualScroll = -Infinity;
+			heldId = null;
+			heldAtEnd = false;
+			clearTimeout(restTimer);
+		});
+	});
+
+	// Edge fade: whichever end of the list has more entries beyond it fades into the panel.
+	// A sentinel at each end of the list, watched with the list as root, says when an end is
+	// out of view — no scroll listener. Both start false, so the prerendered HTML shows no fade.
+	let topEdge: HTMLElement;
+	let bottomEdge: HTMLElement;
+	let moreAbove = $state(false);
+	let moreBelow = $state(false);
+
+	$effect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.target === topEdge) moreAbove = !entry.isIntersecting;
+					else if (entry.target === bottomEdge) moreBelow = !entry.isIntersecting;
+				}
+			},
+			{ root: scroller }
+		);
+		observer.observe(topEdge);
+		observer.observe(bottomEdge);
+		return () => observer.disconnect();
+	});
+
+	// Re-runs only when the lit entry changes; a hold released onto the same id does not.
+	$effect(() => {
+		const id = current;
+		untrack(() => follow(id));
+	});
 
 	// Overall progress through the article body, 0–1. Driven by a passive, rAF-throttled
 	// scroll listener rather than the post page's IntersectionObserver — that one only knows
@@ -32,12 +176,22 @@
 		}
 
 		function onScroll() {
+			// Every scroll event of a held glide pushes the release back, so the hold ends
+			// REST_MS after the page stops — or, if it stopped at the very end, on the reader's
+			// next move.
+			if (heldAtEnd) {
+				heldAtEnd = false;
+				heldId = null;
+			} else if (heldId !== null) armRest();
 			if (ticking) return;
 			ticking = true;
 			requestAnimationFrame(measure);
 		}
 
-		measure();
+		// Untracked: `measure` reads `progress` as well as writing it, and a tracked read would
+		// re-run this effect on every scroll frame — re-counting the words and, through the
+		// cleanup, cancelling a hold's release.
+		untrack(measure);
 		window.addEventListener('scroll', onScroll, { passive: true });
 		window.addEventListener('resize', onScroll, { passive: true });
 
@@ -47,9 +201,17 @@
 		};
 	});
 
+	// Teardown only: a pending release must not outlive the component.
+	$effect(() => () => clearTimeout(restTimer));
+
 	function backToTop(event: MouseEvent) {
 		event.preventDefault();
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		hold('');
+		// The native jump to #top would take focus off the link; preventing it leaves focus
+		// there, and a mouse-focused link starts matching :focus-visible at the first key
+		// press — which would pause following for the rest of the read.
+		(event.currentTarget as HTMLElement).blur();
 		window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 	}
 
@@ -64,7 +226,7 @@
 	);
 </script>
 
-<nav class="outline" aria-label="On this page">
+<nav class="outline" aria-label="On this page" bind:this={nav}>
 	<div class="outline__head">
 		<p class="outline__label">On this page</p>
 		<div class="outline__progress">
@@ -75,22 +237,27 @@
 		</div>
 	</div>
 
-	<div class="outline__scroll">
-		<ol class="outline__list">
-			{#each headings as heading (heading.id)}
-				{@const active = activeId === heading.id}
-				<li class:outline__item--sub={heading.depth === 3}>
-					<a
-						class="outline__link"
-						class:is-active={active}
-						aria-current={active ? 'location' : undefined}
-						href="#{heading.id}"
-					>
-						<span class="outline__text">{heading.text}</span>
-					</a>
-				</li>
-			{/each}
-		</ol>
+	<div class="outline__viewport" data-more-above={moreAbove} data-more-below={moreBelow}>
+		<div class="outline__scroll" bind:this={scroller}>
+			<div class="outline__edge" aria-hidden="true" bind:this={topEdge}></div>
+			<ol class="outline__list">
+				{#each headings as heading (heading.id)}
+					{@const active = current === heading.id}
+					<li class:outline__item--sub={heading.depth === 3}>
+						<a
+							class="outline__link"
+							class:is-active={active}
+							aria-current={active ? 'location' : undefined}
+							href="#{heading.id}"
+							onclick={() => hold(heading.id)}
+						>
+							<span class="outline__text">{heading.text}</span>
+						</a>
+					</li>
+				{/each}
+			</ol>
+			<div class="outline__edge" aria-hidden="true" bind:this={bottomEdge}></div>
+		</div>
 	</div>
 
 	<div class="outline__foot">
@@ -179,6 +346,48 @@
 		font-variant-numeric: tabular-nums;
 		color: var(--text-muted);
 		white-space: nowrap;
+	}
+
+	/* Takes the list's flex role in the panel, so the fades can sit over the scrolling list
+	   without scrolling with it. */
+	.outline__viewport {
+		position: relative;
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.outline__viewport::before,
+	.outline__viewport::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: var(--s-5);
+		pointer-events: none;
+		z-index: 1;
+		opacity: 0;
+		transition: opacity var(--dur-fast) var(--ease-out);
+	}
+
+	.outline__viewport::before {
+		top: 0;
+		background: linear-gradient(to bottom, var(--surface), rgba(var(--surface-rgb), 0));
+	}
+
+	.outline__viewport::after {
+		bottom: 0;
+		background: linear-gradient(to top, var(--surface), rgba(var(--surface-rgb), 0));
+	}
+
+	.outline__viewport[data-more-above='true']::before,
+	.outline__viewport[data-more-below='true']::after {
+		opacity: 1;
+	}
+
+	.outline__edge {
+		height: 1px;
 	}
 
 	.outline__scroll {
@@ -307,7 +516,9 @@
 		.outline__fill,
 		.outline__link,
 		.outline__link::before,
-		.outline__top {
+		.outline__top,
+		.outline__viewport::before,
+		.outline__viewport::after {
 			transition: none;
 		}
 	}

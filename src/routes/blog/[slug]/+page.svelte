@@ -38,24 +38,45 @@
 			.map((h) => document.getElementById(h.id))
 			.filter((el): el is HTMLElement => el !== null);
 
-		// The band is the top of the reading area down to a third of the viewport. A heading
-		// inside it is the one being read; of several, the last, since that is the one the
-		// reader has most recently passed.
-		const observer = new IntersectionObserver(
-			() => {
-				const top = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-				const passed = targets.filter((el) => el.getBoundingClientRect().top <= top + 8);
-				// Above the first heading nothing is marked, rather than the outline claiming
-				// the reader is in a section they have not reached.
-				activeId = passed.at(-1)?.id ?? '';
-			},
-			// A threshold at every step keeps the callback firing through a long section,
-			// rather than only when a heading crosses the edge of the viewport.
-			{ rootMargin: '0px 0px -66% 0px', threshold: [0, 0.5, 1] }
-		);
+		// The reading line: just under the sticky header, where an anchor jump lands a heading.
+		// The heading at or above it is the one being read; of several, the last, since that is
+		// the one the reader has most recently passed.
+		const line = (parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0) + 8;
+
+		// The observer's top edge *is* the reading line, so a heading crossing it changes its
+		// intersection ratio in either direction and the callback runs — even when a smooth
+		// glide stops exactly on the line. With the viewport's own top edge (under the header)
+		// a heading that came to rest on the line had crossed nothing, and the one before it
+		// stayed lit.
+		const update = () => {
+			const passed = targets.filter((el) => el.getBoundingClientRect().top <= line);
+			// Above the first heading nothing is marked, rather than the outline claiming
+			// the reader is in a section they have not reached.
+			activeId = passed.at(-1)?.id ?? '';
+		};
+
+		const observer = new IntersectionObserver(update, {
+			rootMargin: `-${line}px 0px 0px 0px`,
+			threshold: [0, 1]
+		});
+
+		// An instant jump that carries every heading it passes from below the view to above
+		// the line between two frames (find in page, a link under reduced motion) changes no
+		// intersection, so the observer stays quiet. The page coming to rest — 150ms without
+		// a scroll event, as the outline's click hold uses — re-checks.
+		let restTimer: ReturnType<typeof setTimeout> | undefined;
+		const onScroll = () => {
+			clearTimeout(restTimer);
+			restTimer = setTimeout(update, 150);
+		};
 
 		targets.forEach((el) => observer.observe(el));
-		return () => observer.disconnect();
+		window.addEventListener('scroll', onScroll, { passive: true });
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('scroll', onScroll);
+			clearTimeout(restTimer);
+		};
 	});
 </script>
 
