@@ -3,6 +3,27 @@
 
 	let { headings, activeId }: { headings: Heading[]; activeId: string } = $props();
 
+	// A clicked entry lights at once and stays lit while the page glides to it, instead of
+	// the highlight flicking through every section on the way. The hold ends once the page
+	// has rested for REST_MS — a timer rather than `scrollend`, which not every Safari has.
+	// `''` holds with nothing lit (Back to top).
+	const REST_MS = 150;
+	let heldId = $state<string | null>(null);
+	let restTimer: ReturnType<typeof setTimeout> | undefined;
+
+	/** The entry the panel shows as lit. Everything below uses this, never `activeId`. */
+	const current = $derived(heldId ?? activeId);
+
+	function armRest() {
+		clearTimeout(restTimer);
+		restTimer = setTimeout(() => (heldId = null), REST_MS);
+	}
+
+	function hold(id: string) {
+		heldId = id;
+		armRest();
+	}
+
 	// Overall progress through the article body, 0–1. Driven by a passive, rAF-throttled
 	// scroll listener rather than the post page's IntersectionObserver — that one only knows
 	// which heading was last passed, not how far through the whole piece the reader is.
@@ -32,6 +53,9 @@
 		}
 
 		function onScroll() {
+			// Every scroll event of a held glide pushes the release back, so the hold ends
+			// REST_MS after the page stops.
+			if (heldId !== null) armRest();
 			if (ticking) return;
 			ticking = true;
 			requestAnimationFrame(measure);
@@ -44,12 +68,14 @@
 		return () => {
 			window.removeEventListener('scroll', onScroll);
 			window.removeEventListener('resize', onScroll);
+			clearTimeout(restTimer);
 		};
 	});
 
 	function backToTop(event: MouseEvent) {
 		event.preventDefault();
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		hold('');
 		window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 	}
 
@@ -78,13 +104,14 @@
 	<div class="outline__scroll">
 		<ol class="outline__list">
 			{#each headings as heading (heading.id)}
-				{@const active = activeId === heading.id}
+				{@const active = current === heading.id}
 				<li class:outline__item--sub={heading.depth === 3}>
 					<a
 						class="outline__link"
 						class:is-active={active}
 						aria-current={active ? 'location' : undefined}
 						href="#{heading.id}"
+						onclick={() => hold(heading.id)}
 					>
 						<span class="outline__text">{heading.text}</span>
 					</a>

@@ -172,6 +172,24 @@ test('clicking the last entry ends with it active', async (page) => {
 	assert.equal((await state(page)).active, last);
 });
 
+test('a clicked entry lights up at once, and nothing else does on the way', async (page) => {
+	await open(page);
+	await record(page);
+	await page.locator('.outline__link').nth(12).click();
+	assert.equal((await state(page)).active, 12, 'lit before the page has moved');
+	await rest(page);
+	assert.deepEqual(await recorded(page), [12]);
+});
+
+test('back to top clears the highlight at once, and nothing lights up on the way', async (page) => {
+	await open(page);
+	await placeHeading(page, 12, 98);
+	await record(page);
+	await page.locator('.outline__top').click();
+	await rest(page);
+	assert.deepEqual(await recorded(page), [-1]);
+});
+
 // — Runner —
 
 const browser = await chromium.launch();
