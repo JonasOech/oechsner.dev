@@ -101,6 +101,29 @@
 		});
 	});
 
+	// Edge fade: whichever end of the list has more entries beyond it fades into the panel.
+	// A sentinel at each end of the list, watched with the list as root, says when an end is
+	// out of view — no scroll listener. Both start false, so the prerendered HTML shows no fade.
+	let topEdge: HTMLElement;
+	let bottomEdge: HTMLElement;
+	let moreAbove = $state(false);
+	let moreBelow = $state(false);
+
+	$effect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (entry.target === topEdge) moreAbove = !entry.isIntersecting;
+					else if (entry.target === bottomEdge) moreBelow = !entry.isIntersecting;
+				}
+			},
+			{ root: scroller }
+		);
+		observer.observe(topEdge);
+		observer.observe(bottomEdge);
+		return () => observer.disconnect();
+	});
+
 	// Re-runs only when the lit entry changes; a hold released onto the same id does not.
 	$effect(() => {
 		const id = current;
@@ -184,23 +207,27 @@
 		</div>
 	</div>
 
-	<div class="outline__scroll" bind:this={scroller}>
-		<ol class="outline__list">
-			{#each headings as heading (heading.id)}
-				{@const active = current === heading.id}
-				<li class:outline__item--sub={heading.depth === 3}>
-					<a
-						class="outline__link"
-						class:is-active={active}
-						aria-current={active ? 'location' : undefined}
-						href="#{heading.id}"
-						onclick={() => hold(heading.id)}
-					>
-						<span class="outline__text">{heading.text}</span>
-					</a>
-				</li>
-			{/each}
-		</ol>
+	<div class="outline__viewport" data-more-above={moreAbove} data-more-below={moreBelow}>
+		<div class="outline__scroll" bind:this={scroller}>
+			<div class="outline__edge" aria-hidden="true" bind:this={topEdge}></div>
+			<ol class="outline__list">
+				{#each headings as heading (heading.id)}
+					{@const active = current === heading.id}
+					<li class:outline__item--sub={heading.depth === 3}>
+						<a
+							class="outline__link"
+							class:is-active={active}
+							aria-current={active ? 'location' : undefined}
+							href="#{heading.id}"
+							onclick={() => hold(heading.id)}
+						>
+							<span class="outline__text">{heading.text}</span>
+						</a>
+					</li>
+				{/each}
+			</ol>
+			<div class="outline__edge" aria-hidden="true" bind:this={bottomEdge}></div>
+		</div>
 	</div>
 
 	<div class="outline__foot">
@@ -289,6 +316,48 @@
 		font-variant-numeric: tabular-nums;
 		color: var(--text-muted);
 		white-space: nowrap;
+	}
+
+	/* Takes the list's flex role in the panel, so the fades can sit over the scrolling list
+	   without scrolling with it. */
+	.outline__viewport {
+		position: relative;
+		flex: 1 1 auto;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.outline__viewport::before,
+	.outline__viewport::after {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: var(--s-5);
+		pointer-events: none;
+		z-index: 1;
+		opacity: 0;
+		transition: opacity var(--dur-fast) var(--ease-out);
+	}
+
+	.outline__viewport::before {
+		top: 0;
+		background: linear-gradient(to bottom, var(--surface), rgba(var(--surface-rgb), 0));
+	}
+
+	.outline__viewport::after {
+		bottom: 0;
+		background: linear-gradient(to top, var(--surface), rgba(var(--surface-rgb), 0));
+	}
+
+	.outline__viewport[data-more-above='true']::before,
+	.outline__viewport[data-more-below='true']::after {
+		opacity: 1;
+	}
+
+	.outline__edge {
+		height: 1px;
 	}
 
 	.outline__scroll {
@@ -417,7 +486,9 @@
 		.outline__fill,
 		.outline__link,
 		.outline__link::before,
-		.outline__top {
+		.outline__top,
+		.outline__viewport::before,
+		.outline__viewport::after {
 			transition: none;
 		}
 	}

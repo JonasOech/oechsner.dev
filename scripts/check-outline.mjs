@@ -355,6 +355,44 @@ test('a mouse click on an entry does not pause following for the rest of the rea
 	assertScrolloff(await state(page));
 });
 
+test('at the top of the list only the bottom edge fades', async (page) => {
+	await open(page);
+	await page.waitForTimeout(400);
+	const s = await state(page);
+	assert.equal(s.fadeAbove, false);
+	assert.equal(s.fadeBelow, true);
+});
+
+test('mid-list both edges fade', async (page) => {
+	await open(page);
+	await page.evaluate(() => (document.querySelector('.outline__scroll').scrollTop = 80));
+	await page.waitForTimeout(400);
+	const s = await state(page);
+	assert.equal(s.fadeAbove, true);
+	assert.equal(s.fadeBelow, true);
+});
+
+test('at the end only the top edge fades', async (page) => {
+	await open(page);
+	await page.evaluate(() => {
+		const s = document.querySelector('.outline__scroll');
+		s.scrollTop = s.scrollHeight;
+	});
+	await page.waitForTimeout(400);
+	const s = await state(page);
+	assert.equal(s.fadeAbove, true);
+	assert.equal(s.fadeBelow, false);
+});
+
+test('a list that fits shows no fade', { viewport: { width: 1200, height: 1000 } }, async (page) => {
+	await open(page);
+	await page.waitForTimeout(400);
+	const s = await state(page);
+	assert.equal(s.maxScroll, 0, 'precondition: the whole list fits');
+	assert.equal(s.fadeAbove, false);
+	assert.equal(s.fadeBelow, false);
+});
+
 // — Runner —
 
 const browser = await chromium.launch();
