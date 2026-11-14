@@ -405,6 +405,43 @@ the position back on close, so only one of the two is ever running.
 Opt-outs: `data-no-zoom` on an `<img>` or `<video>`, and anything inside a link or a `.widget`
 is left alone — it already means something else when pressed.
 
+### Post outline
+
+Beside a post with more than one heading, from 1100px up, the left track holds an "On this
+page" panel (`src/lib/components/PostOutline.svelte`): a sticky `--surface` panel with a
+hairline, a reading-progress line, the post's `##` and `###` headings, and "Back to top".
+The entry for the section being read is lit — `--accent-wash` behind it, a 2px `--accent`
+bar at its left edge.
+
+**The highlight follows the reading line**, `scroll-padding-top` + 8px: a heading becomes
+current as it crosses that line, in either direction, and the page coming to rest re-checks,
+for a jump that carries a heading past the line without it ever being seen to cross. A
+clicked entry lights at once and holds while the page glides there, so the highlight does
+not flick through every section on the way; tracking takes over again once the page has
+rested for 150ms. Where it rests at the very end of the page, the last sections can be too
+short for their headings to reach the line, so the clicked entry stays lit until the reader
+scrolls on. "Back to top" clears it the same way, and takes focus off itself as the native
+jump would.
+
+**The list follows the reader.** A long outline scrolls inside the panel, and the list keeps
+three entries visible above and below the current one — nvim's `scrolloff=3`, counted in
+entries rather than pixels, because a wrapped heading is one step for the reader. It stays
+still while there is room and, when there is not, moves just far enough, with the browser's
+own smooth scroll — instant under reduced motion and for the first placement after load.
+Within three entries of either end it goes all the way; where seven entries do not fit, the
+current one is centred. It only ever scrolls the list. `scrollIntoView` would move the page
+as well, and is not used.
+
+**It backs off when the reader takes over**: no following while the pointer is over the
+panel (hover-capable devices only), while a control in it has keyboard focus
+(`:focus-visible` — a mouse click leaves focus on the link, and must not pause following for
+the rest of the read), or for 3s after the list is scrolled by hand. It picks up at the next
+section change rather than jumping back.
+
+**Edge fade**: a `--s-5` gradient from `--surface` at whichever edge has more entries beyond
+it, gone at the ends and when the whole list fits. It is driven by an `IntersectionObserver`
+on a sentinel at each end of the list, not by a scroll listener.
+
 ### Rail section (the template's signature construct)
 
 ```css
@@ -600,6 +637,9 @@ const io = new IntersectionObserver((entries) => {
 
 The header's scrolled state uses a second `IntersectionObserver` watching a 1px sentinel at the
 top of the document — **not** a `scroll` event listener.
+
+The post outline's list is the one element that scrolls itself, and only in answer to the
+reader's own scrolling — see *Post outline* in §4.
 
 ### Hover & focus states
 
