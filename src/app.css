@@ -1285,6 +1285,36 @@ a {
 	margin-top: var(--s-4);
 }
 
+/* — Scaffolding note: an unfinished post's reminders to its author of what goes where.
+     It is meta text, so it takes `--text-muted` at caption size, and a dashed hairline
+     instead of the callout's surface and accent edge, so it never reads as an aside meant
+     for the reader. Not for shipping: every one comes out before a post is published
+     (search the post for class="todo"). — */
+
+.prose .todo {
+	padding: var(--s-2) 0 var(--s-2) var(--s-4);
+	border-left: 1px dashed var(--line-strong);
+	font-size: 0.8125rem;
+	line-height: 1.65;
+	color: var(--text-muted);
+}
+
+.prose .todo > * + * {
+	margin-top: var(--s-2);
+}
+
+.prose .todo li + li {
+	margin-top: var(--s-1);
+}
+
+.prose .todo strong {
+	color: var(--text-secondary);
+}
+
+.prose .todo a {
+	color: inherit;
+}
+
 /* =============================================================================
    Responsive (DESIGN.md §9)
    ========================================================================== */

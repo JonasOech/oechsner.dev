@@ -38,9 +38,30 @@ ai: true
 		format: { ratio: 'percent' }
 	};
 </script>
+
+<div class="todo">
+
+**Scaffold.** Grey blocks are notes, not post text. Delete every one before publishing (search for `class="todo"`). Sections ramp up in complexity: everyone, then the curious, then the appendix.
+
+- **Done** · result exists in `analyse.ipynb`
+- **Planned** · heading or stub in `analyse.ipynb`, not run yet
+- **Suggested** · new, from reviewing post and notebook together
+- **Fix** · wrong in the post or the notebook right now
+- **Fix** · frontmatter `summary`: "clustors". It also promises "A/B tests" and "Rosetta Stone × pineapple pizza": both need an answer below (Hidden experiments, Correlations)
+
+</div>
+
 ## Introduction
 <Stats items={stats} />
 [<b style='color:RED;'> TODO change stats </b>]
+
+<div class="todo">
+
+- **Fix** · stale. Notebook now: 5,385 up · 2,770 down · 8,155 votes · 44 devices with a position (`userstats`) · 33 devices with ≥ 100 votes (the MCA input). "2 opinion clusters" vs k = 4 in `clusters.csv` (19 / 11 / 1 / 2): decide what counts as a cluster (→ Taste Groups)
+- **Fix** · notebook cell 4 prints 10,770 / 5,540: double, because the `Sum` row is already in `stats` when it sums
+
+</div>
+
 
 In this article, I will analyse the data gathered from [Ranking Everything](https://rankingeverything.oechsner.dev), a website I built as a side project. If you haven't already, go play it! Of course, you won't be part of the analysed data then, I cut the data intake on [<b style='color:RED;'> TODO INSERT DATE </b>]. 
 
@@ -48,12 +69,98 @@ Since this Post will probably be read by multiple different audiences, I will tr
 
 Let's cut the talk and analyse some data!
 
+<div class="todo">
+
+- **Goes here** · one screenshot or short loop of the swipe screen (`ranking-everything/docs/pr-screenshots/`)
+- **Suggested** · votes-per-day timeline from `ts`, marked with when the link went out (Discord, Instagram, friends). A cheap first figure every reader gets
+
+</div>
+
+
+
+## The data
+
+<div class="todo">
+
+Working title. **Goes here**, before any result:
+
+- What one vote is: item · random device id (a UUID in localStorage, not a person) · ±1 · timestamp · thinking time (ms, counted only while the swipe view is on screen) · position in that device's stack · browser · country. As a small table
+- The deck is shuffled per device (`shuffle()` in `public/app.js`), so an item's position is random. Say it once here: it is what makes the position effects in How people swipe causal, not just correlational
+- The research items hidden in the deck: Coriander, Coca-Cola (text only), Vranistan, Florbish, Pizza, Dogs, Tea, Winter, Mountain vacation. Added late (`LATE_ITEMS`), so ~30 votes each, and early players met them at the end of their stack
+- Privacy: no accounts, what is not stored, device ids never leave the notebook (your data-protection angle)
+- **Suggested** · the incentive design, needed later in Drop-off: rankings unlock at 100 judged items, skins at 10 / 25 / 50 / 100 / 150 / 200, the personal report at all 271
+- **Suggested** · who played: votes by `browser` (the Instagram in-app browser ≈ came via Instagram) and by `location`. Check group sizes first; don't show groups of one or two devices
+- **Fix** · item count: the app README says 257, `ids.json` has 271. The notebook's "257 items, ~33,000 pairs" is now 271 items, 36,585 pairs
+
+</div>
+
 ## What is 'cool'?
 Let's first define what I mean with *cool* in the following. For that we need to establish a baseline. Of course, I didn't select the cards *fully randomly*. I hid specific strategic items like *Vranistan*, an imaginary country noone *can* have an opinion about. We see that (like expected), it fully mirrors the natural bias people had.
 
 <DataFrame path="ranking-everything-baselines.csv" {...baseline} />
 
 Let's define *cool* items to be above this baseline of $\approx67\%$ and *(un)coolness* the probability that the items are above/below this baseline due to systematic opinion, not coincidence (see appendix [1](#baseline), [2](#t-test) ).
+
+<div class="todo">
+
+- **Fix** · three baselines in play: the prose says ≈ 67 %, the code tests against `baseline = 0.77`, the pooled ratio is 66.0 % (5,385 / 8,155), Vranistan alone is 53.6 % (15 / 28, 95 % Wilson interval 36–70 %). Pick one, justify it in Baseline below, rerun the tests
+- **Done** · exact binomial test per item + Benjamini–Hochberg (cell 3). **Goes here**: its result, which the post doesn't show yet: how many items are significantly cool / uncool after correction, and which
+- **Suggested** · forest plot (like ratio ± 95 % interval, sorted) for the 15 coolest and 15 least cool. Shows that ~30 votes per item means about ± 17 points, without a sentence about it
+- **Suggested** · rank by the Wilson lower bound like the app's leaderboard (`wilson()` in `public/app.js`), so post and app agree on "coolest"
+
+</div>
+
+
+
+## Popular disagreements
+
+<div class="todo">
+
+Working title. The fun section, for non-technical readers.
+
+- **Done** · `battles` dict, like ratio per item per group (cell 6). Not in the post yet
+- **Goes here** · the groups with a story: Pizza (with pineapple 28 % · without 91 %), OS (Linux 76 · Windows 52 · macOS 28), LLMs (Claude 61 · DeepSeek 45 · ChatGPT 42 · Gemini 32), Dark / light mode (93 · 52), Android / iPhone (57 · 48), Coffee / Tea (61 · 80), Summer / Winter (76 · 93), Cats / Dogs (74 · 80), Games (Minecraft 96 … Apex Legends 17), Brainrot (all three under 45)
+- **Suggested** · one dot plot per group with intervals, not bars. At ~30 votes a gap under ~20 points is noise: say which match-ups are real and which are ties (Android / iPhone, Cats / Dogs, Beach / Mountain look like ties)
+- **Suggested** · compare within people, not between counts: only devices that voted on both items (McNemar, next section)
+- **Suggested** · one line on who the crowd is (CS students, hence Linux 76 % and macOS 28 %), linking to Limitations
+
+</div>
+
+## Hidden experiments
+
+<div class="todo">
+
+Working title. Per experiment: hypothesis → 2×2 table of the devices that voted on both (DataFrame) → result.
+
+- **Planned** · McNemar's test on paired votes (notebook heading "McNemar's test"):
+  - Framing: Coriander 54 % vs Cilantro 39 %. Same photo, only the name differs
+  - Picture: Coca-Cola photo 58 % vs text-only card 48 %
+  - Specificity: Pizza 92 % vs pizza without pineapple 91 % vs with 28 %
+  - Nothing: Vranistan 54 % vs Florbish 26 %. Two made-up words, so the gap is the photos (→ What went wrong)
+- **Fix** · confound: the research items came late, so early players met them at the end of their stack while Cilantro sat anywhere. Compare the position distributions first; control for position, or restrict to devices that started after `LATE_ITEMS` shipped
+- **Suggested** · power: ~28 paired devices only detect large effects. Report the smallest effect the test could have seen rather than "no effect"
+- **Suggested** · Cats / Dogs, Coffee / Tea, Summer / Winter, Beach / Mountain are paired designs too: same test, one table
+- **Suggested** · the summary says "A/B tests", but everything so far is within-subject. A true A/B test (each device randomly gets either Coriander or Cilantro, never both) is a small change in `public/app.js` for round 2 (→ What's next)
+
+</div>
+
+## How people swipe
+
+<div class="todo">
+
+Working title. Behaviour instead of opinion.
+
+- **Done** · positivity per device (cell 11): mean vote +0.30, almost every device above 0, a handful below. First figure here; it is why a baseline is needed at all
+- **Fix** · that histogram draws both series (all devices, ≥ 50 votes) in blue: give the second its own colour and a legend entry, and restyle it in the site palette like `correlationmatrix.svg`
+- **Done** · thinking-time distribution (cell 14): log scale, median 1.89 s
+- **Done** · 15 slowest vs 15 fastest items (cell 13). Visible pattern: slow ones are text-heavy or unfamiliar (Oxford comma, Dewey Decimal, dial-up modem, Voynich manuscript, exactly Wednesday 15:21:23), fast ones are household names with an instant verdict (Minecraft, Einstein, Elon Musk)
+- **Planned** · thinking time vs controversy (notebook stub). Expect an inverted U: slowest near 50 / 50, fastest at the extremes
+- **Fix** · `Controversy_score = 1 / (abs(up - down) + 1)` mixes the split with the sample size, and the app ranks by `n ** (min / max)`. Use the distance of the ratio from 0.5, or binary entropy, on the x-axis instead
+- **Suggested** · two kinds of controversial: polarising (crowd split, each person fast: ChatGPT, Coriander, Tung Tung Tung Sahur, Instagram) vs ambivalent (crowd split, each person slow: Oxford comma, dial-up modem, Vranistan). Scatter of like ratio × median thinking time with labelled quadrants. Probably the post's best single figure
+- **Suggested** · normalise thinking time within each device (z-score or rank) before comparing items, or the slow readers decide the order
+- **Suggested** · position effects, which the shuffle makes causal: does the like rate drift over 271 cards (grumpier, kinder?), and does thinking time fall (fatigue, or learning the game)? Binned plot by position first, then a logistic regression with device and item effects
+
+</div>
 
 ## Correlations
 > Correlation in the broadest sense is a **measure of an association between variables**. In correlated data, the change in the magnitude of 1 variable is associated with a change in the magnitude of another variable, either in the same (positive correlation) or in the opposite (negative correlation) direction. [@Schober2018]
@@ -70,6 +177,19 @@ Of course, we want to find out which items belong together, and wich oppose each
 
 Readability is an absolute nightmare though. Good luck trying to find out e.g. if 'gravity' correlates with 'seagulls'
 
+<div class="todo">
+
+- **Fix** · the matrix's tick labels are wrong: cell 35 plots the reordered `Cors` but labels it with `C.columns` / `C.index`, which are in the original order. Use `Cors.columns` / `Cors.index` and re-export. Then the figure's `alt` (still "TODO none yet")
+- **Done** · pairwise Pearson on ±1 votes (that is the phi coefficient), at least 10 co-voters, average-linkage ordering (cell 34)
+- **Planned** · multiple comparisons over all pairs with Benjamini–Hochberg (notebook stub). **Goes here**: a table of the strongest pairs that survive, positive and negative. That table, not the matrix, is the readable result
+- **Suggested** · answer the summary literally: Rosetta Stone × pineapple pizza, with phi, co-voters and p
+- **Suggested** · scale for the text: at 30 co-voters |phi| has to pass ≈ 0.36 to be significant before correction, ≈ 0.44 at 20; corrected over 36,585 pairs, far more. Expect few survivors and say so
+- **Suggested** · centre each device's votes first (the commented-out step 2 in cell 34): raw correlations partly measure "lenient people like everything"
+- **Suggested** · under the static matrix: pick two items, get phi, n and the 2×2 table. Interactive, so it needs a fallback in `feed-content.ts`
+
+</div>
+
+
 ## Taste Groups
 I took your votes and built the following 3d Visualisation from them ([How?](#mca)). 
 Note that these dimensions don't have anything to say per se. 
@@ -81,6 +201,19 @@ But what you can read from it is that users with similar votes are near each oth
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
 
+<div class="todo">
+
+- **Done** · MCA on the 33 devices with ≥ 100 votes, 3 dimensions, k-means with k by silhouette → k = 4, sized 19 / 11 / 1 / 2 (cells 16–19)
+- **Fix** · two of the four clusters are one or two devices: outliers, not taste groups. Align the stats row, this text and the caption
+- **Fix** · missing votes: `mca.dummy` turns an unjudged item into all-zero indicator columns for that device, so "didn't get that far" quietly shapes the axes. Restrict to devices that played through, use missing-passive or subset MCA, or let the matrix factorisation in A model of taste handle the gaps
+- **Suggested** · give the axes a meaning: column coordinates (`m.fs_c`) and contributions say which items pull each dimension. The top 5 items at each end of dim 1 and dim 2 turn "these dimensions don't say anything" into "dim 1 is …"
+- **Suggested** · report explained inertia, Greenacre-adjusted (commented out in cell 17): how much of the data the 3D plot shows at all
+- **Suggested** · profile each group: the items it likes much more or less than everyone else. That is how groups get names
+- **Suggested** · stability: re-run k-means across seeds and bootstrap resamples, report the adjusted Rand index. With 33 points, check before claiming groups
+
+</div>
+
+
 ## User Stats
 
 <ClusterScatter3D
@@ -89,6 +222,48 @@ But what you can read from it is that users with similar votes are near each oth
 	title="Userstats"
 	caption="3D renderer of the taste groups. We see one primary group (blue) and multiple outliers wo probably joked around. Drag to rotate. Switch a dimension off to see the other two flat, without perspective, or two off to see the last one alone.  "
 />
+
+<div class="todo">
+
+- **Done** · per device: mean thinking time, positivity, furthest position; split into played through (271) vs stopped early → `userstats.csv`, 44 devices (cell 22)
+- **Fix** · the caption is copied from Taste Groups
+- **Fix** · a mean thinking time is dragged up by single long pauses (phone down, back later): use the median per device
+- **Suggested** · working title "Who finishes?": compare the two groups in numbers (Mann–Whitney U on thinking time and positivity) beside the 3D view
+- **Suggested** · could merge with Drop-off below
+
+</div>
+
+
+
+## Drop-off
+
+<div class="todo">
+
+Working title: "How engaging is the app?"
+
+- **Planned** · Kaplan–Meier curve of "still swiping at card k" (notebook section "Drop-off curve")
+- **Fix** · the notebook text under that heading is a pasted tutorial about tooth fillings; replace it before lifting anything from it
+- **Goes here** · time = furthest position, event = stopped, censored = played through, or still active at the cut-off. Median survival position as the headline number
+- **Suggested** · mark the incentive thresholds on the x-axis (skins at 10 / 25 / 50 / 100 / 150 / 200, rankings at 100). A drop right after a threshold means people swiped for the reward and left: a gamification result on its own
+- **Suggested** · one curve per traffic source (Instagram in-app browser vs the rest) with a log-rank test, if both groups are big enough
+- **Suggested** · `lifelines` (`KaplanMeierFitter`, `logrank_test`)
+
+</div>
+
+## A model of taste
+
+<div class="todo">
+
+Working title. The most technical main section, where the post's ramp ends.
+
+- **Planned** · logistic matrix factorisation (notebook stub, Johnson 2014). **Goes here**: P(cool) = σ(item coolness + device leniency + device taste · item taste), one line per term
+- **Fix** · the stub writes `θu^τ βi`; it means the dot product of the device's and the item's latent vectors
+- **Suggested** · start with no taste vectors at all: that is the Rasch model from psychometrics (item difficulty ↔ coolness, person ability ↔ leniency). It gives a leaderboard corrected for who happened to vote on what; show where it disagrees with the raw one
+- **Suggested** · choose the number of dimensions by held-out error: hide 10–20 % of votes, compare log-loss / AUC at 0, 1, 2, 3 dimensions. If 1–2 beat 0, taste dimensions exist; this curve is stronger evidence for "opinion clusters" than a silhouette score
+- **Suggested** · Johnson's LMF is built for implicit feedback (play counts); these are explicit ±1 votes with real gaps, so plain logistic MF with L2 (1-bit matrix completion) is the closer fit. Cite accordingly
+- **Suggested** · payoff for readers: "the model predicts your next swipe X % of the time", and an item's nearest neighbours in taste space
+
+</div>
 
 ## What went wrong
 <figure>
@@ -99,6 +274,45 @@ But what you can read from it is that users with similar votes are near each oth
 
 <DataFrame path="ranking-everything-baselines.csv" {...votesTable} />
 
+<div class="todo">
+
+- **Done** · Florbish's photo (bacteria under a microscope) → 26 % vs Vranistan's 54 %: the picture was judged, not the word
+- **Fix** · both tables in the post read `ranking-everything-baselines.csv`, which has no Florbish row any more (cell 27 drops it), so `highlight: [['florbish', 'ratio']]` points at nothing. Export a second CSV with Florbish for this table
+- **Goes here** · the rest of the list: early votes have no thinking time or position (the columns came later) · `location` backfilled as DE · late items met at the end of the stack · a device is not a person (cleared storage, second phone, shared phone) · your own test votes, if any
+- **Planned** · data quality: outliers in thinking time (notebook heading "Data Quality")
+- **Suggested** · flag devices with a median thinking time under ~0.5 s (mashing) or long one-sided runs, rerun the headline results without them, report whether anything changes
+
+</div>
+
+
+
+
+## Limitations
+
+<div class="todo">
+
+Working title. **Suggested** section: a short list here, so the rest of the post doesn't have to hedge.
+
+- The crowd: ~44 devices from friends, the Uni Würzburg Discord and Instagram, nearly all DE. "What this crowd thinks", not "what people think"
+- ~30 votes per item: wide intervals, most item-level results are descriptive
+- Votes are not independent (one device judges many items); the per-item binomial test assumes they are. The Rasch model in A model of taste is the fix
+- Forking paths: battles and pairs picked after seeing the data. Separate the ones fixed in advance (the research items) from the ones found later
+- A photo stands in for a concept (Florbish)
+
+</div>
+
+## What's next
+
+<div class="todo">
+
+Working title. The post is `running: true`: say what round 2 changes, and set `running: false` once the experiment ends.
+
+- **Suggested** · hypotheses written down before round 2 opens: which pairs, which direction
+- **Suggested** · real A/B tests: framing and logo as between-device randomisation, instead of both cards for everyone
+- **Suggested** · more made-up items, with neutral photos
+- **Suggested** · publish the aggregated data (up / down per item) and the notebook
+
+</div>
 
 ## Technical
 ### <span id=mca class = 'def'> Multiple Correspondence Analysis </span>
@@ -107,7 +321,21 @@ Formally spoken, my data is in the form of
 $$R\in \{-1, +1, \emptyset\}^{U\times I}, \quad R_{ui} = \text{vote of device }u\text{ on item }i$$
 A sparse, partially observed $user \times item$ matrix with binary signed entries
 Or: A signed bipartite graph with users opposing items, edge weights $\pm 1$
+
+<div class="todo">
+
+**Goes here** · the indicator matrix, and why MCA rather than PCA (the votes are categorical) · what a row coordinate means · how missing votes were treated · explained inertia · k-means and the silhouette score per k (`sil` in cell 18)
+
+</div>
+
 ### <span id=baseline class = 'def'> Baseline </span>
+
+<div class="todo">
+
+**Goes here** · which baseline (pooled 66 %, Vranistan 54 %, or the 77 % in the code) and why · its Wilson interval · why a baseline beats 50 % (the positivity figure)
+
+</div>
+
 ### <span id=t-test class = 'def'> Coolness </span>
 
 An item's like count follows a binomial distribution. 
@@ -128,6 +356,70 @@ stats = stats.assign(
     p_value=p,
     p_adj=pd.Series(false_discovery_control(p), index=p.index),  # Benjamini–Hochberg
 ```
+
+<div class="todo">
+
+- **Fix** · the code block is missing the closing `)` of `stats.assign(`, and still has `baseline = 0.77` (→ Baseline)
+- **Suggested** · one line on independence: one device votes on many items (→ Limitations)
+
+</div>
+
+### <span id=phi class='def'>Correlation</span>
+
+<div class="todo">
+
+**Goes here** · Pearson on ±1 data is the phi coefficient · pairwise-complete with ≥ 10 co-voters, so every cell rests on a different n · the ordering (average linkage on 1 − r) · Benjamini–Hochberg over all pairs
+
+</div>
+
+### <span id=mcnemar class='def'>McNemar's test</span>
+
+<div class="todo">
+
+**Goes here** · the 2×2 table of devices that voted on both items · only the discordant cells carry information · the exact (binomial) version, since discordant counts are small
+
+</div>
+
+### <span id=kaplan-meier class='def'>Kaplan–Meier</span>
+
+<div class="todo">
+
+**Goes here** · censoring in one line (a device that played through didn't "stop") · the estimator · the log-rank test, if curves are compared
+
+</div>
+
+### <span id=lmf class='def'>Logistic matrix factorisation</span>
+
+<div class="todo">
+
+**Goes here** · the full model with both biases · the loss (log-loss + L2) · missing votes skipped, not imputed · the held-out split · the dimensions vs error table
+
+</div>
+
+### <span id=thinking-time class='def'>Thinking time</span>
+
+<div class="todo">
+
+**Goes here** · what is measured (ms, only while the swipe view is on screen; `migrations/0002_thinking_time.sql` in the app repo) · why medians and a log scale · per-device normalisation
+
+</div>
+
+<div class="todo">
+
+**Suggested** · sources to add to `references.bib` for the new sections. Check each entry before citing:
+
+- Benjamini & Hochberg (1995): false discovery rate
+- Wilson (1927): score interval
+- McNemar (1947): paired proportions
+- Kaplan & Meier (1958): survival curves
+- Greenacre, "Correspondence Analysis in Practice": MCA, adjusted inertia
+- Rasch (1960): the zero-dimension model
+- Johnson (2014), "Logistic Matrix Factorization for Implicit Feedback Data": the notebook's link
+- Tversky & Kahneman (1981), "The Framing of Decisions and the Psychology of Choice": Coriander / Cilantro
+- Konovalov & Krajbich (2019), "Revealed strength of preference: Inference from response times": thinking time vs controversy
+
+</div>
+
 
 ## Special Thanks
 - Anja, Max, Pawlo and Paul for helping with getting the link out there.
