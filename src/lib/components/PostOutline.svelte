@@ -208,6 +208,10 @@
 		event.preventDefault();
 		const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		hold('');
+		// The native jump to #top would take focus off the link; preventing it leaves focus
+		// there, and a mouse-focused link starts matching :focus-visible at the first key
+		// press — which would pause following for the rest of the read.
+		(event.currentTarget as HTMLElement).blur();
 		window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 	}
 

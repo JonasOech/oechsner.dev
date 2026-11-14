@@ -371,6 +371,21 @@ test('a mouse click on an entry does not pause following for the rest of the rea
 	assertScrolloff(s);
 });
 
+test('back to top by mouse, then reading on by keyboard, does not pause following', async (page) => {
+	await open(page);
+	await placeHeading(page, 3, 98);
+	await page.locator('.outline__top').click();
+	await rest(page);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	for (let k = 0; k < 3; k++) await page.keyboard.press('PageDown');
+	await rest(page);
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	const s = await state(page);
+	assert.equal(s.active, 14);
+	assertScrolloff(s);
+});
+
 test('after a click the highlight tracks the reading again', async (page) => {
 	await open(page);
 	await page.locator('.outline__link').nth(10).click();
