@@ -190,6 +190,110 @@ test('back to top clears the highlight at once, and nothing lights up on the way
 	assert.deepEqual(await recorded(page), [-1]);
 });
 
+test('the list holds still while the active entry has room', async (page) => {
+	await open(page);
+	await placeHeading(page, 4, 98);
+	await rest(page);
+	assert.equal((await state(page)).scrollTop, 0);
+});
+
+test('the list follows down, keeping 3 entries below', async (page) => {
+	await open(page);
+	await placeHeading(page, 10, 98);
+	await rest(page);
+	assertScrolloff(await state(page));
+});
+
+test('and back up, keeping 3 entries above', async (page) => {
+	await open(page);
+	await placeHeading(page, 14, 98);
+	await rest(page);
+	assert.ok((await state(page)).scrollTop > 0, 'precondition: the list followed down');
+	await placeHeading(page, 5, 98);
+	await rest(page);
+	assertScrolloff(await state(page));
+});
+
+test('near the end the list goes all the way down', async (page) => {
+	await open(page);
+	const { n } = await state(page);
+	await placeHeading(page, n - 2, 98);
+	await rest(page);
+	const s = await state(page);
+	assert.ok(s.maxScroll - s.scrollTop <= 1, `scrolled to the end (${s.scrollTop} of ${s.maxScroll})`);
+});
+
+test('the list glides rather than jumps', async (page) => {
+	await open(page);
+	await placeHeading(page, 1, 98); // the first placement jumps; get it out of the way
+	await rest(page);
+	await watchList(page);
+	await placeHeading(page, 10, 98);
+	await rest(page);
+	assert.ok((await listTops(page)).length >= 3, 'passed through intermediate positions');
+});
+
+test('under reduced motion the list jumps', { reducedMotion: 'reduce' }, async (page) => {
+	await open(page);
+	await placeHeading(page, 1, 98);
+	await rest(page);
+	await watchList(page);
+	await placeHeading(page, 10, 98);
+	await rest(page);
+	assert.equal((await listTops(page)).length, 1);
+});
+
+test('a long glide from an anchor ends with room around the final entry', async (page) => {
+	await open(page);
+	const { n } = await state(page);
+	await page.evaluate((i) => {
+		location.hash = document.querySelectorAll('.outline__link')[i].hash;
+	}, n - 3);
+	await rest(page);
+	const s = await state(page);
+	assert.equal(s.active, n - 3);
+	assertScrolloff(s);
+});
+
+test('opening a post at a deep anchor shows that entry with room around it', async (page) => {
+	await open(page);
+	const hash = await page.locator('.outline__link').nth(14).evaluate((a) => a.hash);
+	await page.goto('about:blank');
+	await page.goto(BASE + POST + hash, { waitUntil: 'load' });
+	await page.waitForSelector('.outline__link');
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await rest(page);
+	const s = await state(page);
+	assert.equal(s.active, 14);
+	assertScrolloff(s);
+});
+
+test('moving to another post starts its list at the top', async (page) => {
+	await open(page);
+	await placeHeading(page, 15, 98);
+	await rest(page);
+	assert.ok((await state(page)).scrollTop > 0, 'precondition: the list has scrolled');
+	const before = page.url();
+	await page.locator('.post__nav-link--next').click();
+	await page.waitForURL((url) => url.href !== before);
+	await page.mouse.move(AWAY.x, AWAY.y);
+	await rest(page);
+	const s = await state(page);
+	assert.equal(s.scrollTop, 0);
+	assert.equal(s.active, -1);
+});
+
+test('on a short window the active entry is never hidden', { viewport: { width: 1200, height: 480 } }, async (page) => {
+	await open(page);
+	const { n } = await state(page);
+	for (let i = 0; i < n; i++) {
+		await placeHeading(page, i, 98);
+		await rest(page);
+		const s = await state(page);
+		assert.ok(s.firstFull <= i && i <= s.lastFull, `#${i} visible (shown: #${s.firstFull}–#${s.lastFull})`);
+	}
+});
+
 // — Runner —
 
 const browser = await chromium.launch();

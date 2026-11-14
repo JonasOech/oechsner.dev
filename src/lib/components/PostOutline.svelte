@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { Heading } from '$lib/posts';
+	import { entryBoxes, followTarget } from '$lib/outline-follow';
 
 	let { headings, activeId }: { headings: Heading[]; activeId: string } = $props();
 
@@ -23,6 +25,50 @@
 		heldId = id;
 		armRest();
 	}
+
+	// The list follows the reader: it keeps SCROLLOFF entries visible on each side of the lit
+	// one (nvim's `scrolloff`, see $lib/outline-follow), resting while there is room and
+	// moving just far enough when there is not. It moves with `scroller.scrollTo`, on the list
+	// alone — never `scrollIntoView`, which scrolls every scrollable ancestor, the page
+	// included, and would fight the reader's own scroll.
+	const SCROLLOFF = 3;
+	let nav: HTMLElement;
+	let scroller: HTMLElement;
+	/** Whether the list has been placed since load or since the last change of post. */
+	let placed = false;
+
+	function follow(id: string) {
+		if (!scroller || id === '') return;
+		const index = headings.findIndex((h) => h.id === id);
+		if (index === -1) return;
+		const items = scroller.querySelectorAll('.outline__list > li');
+		const target = followTarget(entryBoxes(scroller, items), index, scroller, SCROLLOFF);
+		// The first placement (a reload part-way down, a deep link) jumps: there is nothing
+		// for the eye to follow yet. Reduced motion always jumps.
+		const behavior =
+			!placed || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+		placed = true;
+		if (target !== null) scroller.scrollTo({ top: target, behavior });
+	}
+
+	// The instance survives client-side navigation between posts, so a new outline starts
+	// from scratch: list at the top, nothing held, the next placement a jump. Declared before
+	// the follow effect so it runs first.
+	$effect(() => {
+		void headings;
+		untrack(() => {
+			scroller?.scrollTo({ top: 0, behavior: 'instant' });
+			placed = false;
+			heldId = null;
+			clearTimeout(restTimer);
+		});
+	});
+
+	// Re-runs only when the lit entry changes; a hold released onto the same id does not.
+	$effect(() => {
+		const id = current;
+		untrack(() => follow(id));
+	});
 
 	// Overall progress through the article body, 0–1. Driven by a passive, rAF-throttled
 	// scroll listener rather than the post page's IntersectionObserver — that one only knows
@@ -90,7 +136,7 @@
 	);
 </script>
 
-<nav class="outline" aria-label="On this page">
+<nav class="outline" aria-label="On this page" bind:this={nav}>
 	<div class="outline__head">
 		<p class="outline__label">On this page</p>
 		<div class="outline__progress">
@@ -101,7 +147,7 @@
 		</div>
 	</div>
 
-	<div class="outline__scroll">
+	<div class="outline__scroll" bind:this={scroller}>
 		<ol class="outline__list">
 			{#each headings as heading (heading.id)}
 				{@const active = current === heading.id}
