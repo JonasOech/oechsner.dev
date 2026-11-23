@@ -3,7 +3,6 @@
 	import Rail from '$lib/components/Rail.svelte';
 	import ArticleRow from '$lib/components/ArticleRow.svelte';
 	import Nerdyness from '$lib/components/Nerdyness.svelte';
-	import { reveal } from '$lib/actions/reveal';
 	import Icon from '$lib/components/Icon.svelte';
 	import Running from '$lib/components/Running.svelte';
 	import { site, cvPath, feeds } from '$lib/data/site';
@@ -183,7 +182,7 @@
 			</div>
 		{/if}
 
-		<div class="articles" aria-live="polite" use:reveal={{ stagger: true }}>
+		<div class="articles" aria-live="polite">
 			{#if listed.length === 0}
 				<p class="empty">
 					{#if activeTag}

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { reveal } from '$lib/actions/reveal';
 
 	/**
 	 * A labelled section: letterspaced serif rail label on the left, narrow content
@@ -20,7 +19,7 @@
 	const labelId = $derived(id ? `${id}-label` : undefined);
 </script>
 
-<section class="section rail" {id} use:reveal aria-labelledby={labelId}>
+<section class="section rail" {id} aria-labelledby={labelId}>
 	{#if level === 1}
 		<h1 class="rail__label" id={labelId}>{label}</h1>
 	{:else}
