@@ -27,7 +27,6 @@ it — read it before moving anything above the fold.
 | `src/routes/+page.svelte` | **The writing index.** Lead post + archive + tag filter. |
 | `src/routes/blog/+server.ts` | 301s `/blog` → `/`. The only non-prerendered route. |
 | `src/lib/components/` | Header, Footer, Rail, ArticleRow, Icon, Seo. |
-| `src/lib/actions/reveal.ts` | The one-shot scroll-reveal action. No animation library. |
 | `resume.tex` | Source of the downloadable CV. Bilingual via the `\bi{}` macro. |
 | `scripts/build-cv.mjs` | Compiles `resume.tex` → `static/resume-en.pdf`. Run locally. |
 | `scripts/build-og-images.mjs` | Rasterises each `static/img/<postname>/cover.svg` (plus `og.svg`) → `.png` for social previews. |

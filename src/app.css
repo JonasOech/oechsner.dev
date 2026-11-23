@@ -674,23 +674,6 @@ a {
 	animation-delay: calc(60ms + var(--i, 0) * 90ms);
 }
 
-.reveal {
-	opacity: 0;
-	transform: translateY(18px);
-	transition:
-		opacity var(--dur-slow) var(--ease-out),
-		transform var(--dur-slow) var(--ease-out);
-}
-
-.reveal.is-visible {
-	opacity: 1;
-	transform: none;
-}
-
-.reveal--stagger > * {
-	transition-delay: calc(var(--i, 0) * 70ms);
-}
-
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -703,10 +686,6 @@ a {
 	.enter {
 		opacity: 1;
 		animation: none;
-	}
-	.reveal {
-		opacity: 1;
-		transform: none;
 	}
 }
 

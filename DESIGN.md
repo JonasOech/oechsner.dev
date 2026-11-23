@@ -614,14 +614,15 @@ at all — they gain `--surface`.
 ## 7. Animation & Interaction
 
 **Tier: L1 → low-L2.** Chosen deliberately over a higher tier because the reference template's
-entire character is stillness — see §10. What that buys: a soft entrance, one-shot scroll
-reveals, real hover/focus states, and a sticky header that acknowledges scroll. What it
-excludes: scroll-jacking, pinning, parallax, WebGL, and cursor replacement.
+entire character is stillness — see §10. What that buys: a soft entrance on the first screen,
+real hover/focus states, and a sticky header that acknowledges scroll. What it excludes:
+scroll reveals, scroll-jacking, pinning, parallax, WebGL, and cursor replacement.
 
 ### Dependencies
 
 **None.** No GSAP, no ScrollTrigger, no Lenis, no Motion One. Everything is CSS transitions, CSS
-keyframes, and two `IntersectionObserver`s. Total added JS: well under 50 lines.
+keyframes, and a few `IntersectionObserver`s that track state (the header's scrolled state, the
+post outline) — none of them hides or reveals content.
 
 ### Base setup
 
@@ -651,29 +652,14 @@ Fires once on load. Hero elements stagger by ~90ms; nothing else on the first sc
 
 ### Scroll behavior
 
-One-shot reveal per section, unobserved after firing — no persistent scroll listener, no
-per-frame work.
+**No scroll reveals.** Sections, rails and the article list are on the page, fully opaque and in
+place, the moment it renders; nothing fades or slides in as it scrolls into view.
 
-```css
-.reveal              { opacity: 0; transform: translateY(18px);
-                       transition: opacity var(--dur-slow) var(--ease-out),
-                                   transform var(--dur-slow) var(--ease-out); }
-.reveal.is-visible   { opacity: 1; transform: none; }
-.reveal--stagger > * { transition-delay: calc(var(--i, 0) * 70ms); }
-```
+The header's scrolled state uses an `IntersectionObserver` watching a 1px sentinel at the top of
+the document — **not** a `scroll` event listener.
 
-```js
-const io = new IntersectionObserver((entries) => {
-  for (const e of entries) {
-    if (!e.isIntersecting) continue;
-    e.target.classList.add('is-visible');
-    io.unobserve(e.target);                  // fire once, then stop
-  }
-}, { rootMargin: '0px 0px -12% 0px', threshold: 0.1 });
-```
-
-The header's scrolled state uses a second `IntersectionObserver` watching a 1px sentinel at the
-top of the document — **not** a `scroll` event listener.
+The post outline's list is the one element that scrolls itself, and only in answer to the
+reader's own scrolling — see *Post outline* in §4.
 
 The post outline's list is the one element that scrolls itself, and only in answer to the
 reader's own scrolling — see *Post outline* in §4.
@@ -725,15 +711,13 @@ followers, text scramble, marquees, or a WebGL layer.
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .enter  { opacity: 1; animation: none; }
-  .reveal { opacity: 1; transform: none; }
+  .enter { opacity: 1; animation: none; }
 }
 ```
 
-The reveal observer additionally checks `matchMedia('(prefers-reduced-motion: reduce)').matches`
-and, when set, marks everything visible immediately without observing. Content is **never**
-hidden behind an animation that might not run: the `.reveal` class is applied by JS on mount, so
-a no-JS visitor receives a fully rendered page.
+Content is **never** hidden behind an animation that might not run: `.enter` is a CSS animation
+that needs no script, so a no-JS visitor still sees it complete, and under reduced motion it is
+switched off and the element shown outright.
 
 ---
 
@@ -753,8 +737,8 @@ a no-JS visitor receives a fully rendered page.
 6. **Do** cap measure at `--measure`. A 1080px-wide paragraph is unreadable regardless of styling.
 7. **Do** keep interactive targets ≥44×44px on coarse pointers, padding the hit area rather than
    the visual.
-8. **Do** apply reveal classes from JS on mount, so the no-JS and reduced-motion paths render
-   complete content.
+8. **Do** keep content visible on the no-JS and reduced-motion paths. Motion may only play over
+   content that is already rendered; nothing waits on a script or on scroll position to appear.
 9. **Do** keep the header's `backdrop-filter` at 12px and confined to a thin bar.
 
 ### Don't
