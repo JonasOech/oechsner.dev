@@ -1,12 +1,16 @@
 avg_thinking_time,positivity,furthest_position,cluster
 3.31,-0.085,271,played through
 3.9,0.362,189,stopped early
+3.32,0.4,10,stopped early
 3.45,0.105,38,stopped early
 2.35,0.356,149,stopped early
 3.55,0.528,271,played through
 7.52,0.52,271,played through
+2.99,0.243,37,stopped early
+4.86,0.387,111,stopped early
 1.21,0.0,10,stopped early
-5.05,0.271,96,stopped early
+4.42,0.2,10,stopped early
+3.36,0.424,271,played through
 2.9,0.2,10,stopped early
 3.05,-0.21,271,played through
 3.6,0.2,10,stopped early
@@ -16,6 +20,7 @@ avg_thinking_time,positivity,furthest_position,cluster
 3.73,0.048,271,played through
 1.94,0.542,271,played through
 2.76,0.387,150,stopped early
+4.19,0.6,10,stopped early
 3.6,0.04,100,stopped early
 2.16,0.105,38,stopped early
 3.18,0.188,271,played through
@@ -32,6 +37,7 @@ avg_thinking_time,positivity,furthest_position,cluster
 2.3,0.521,203,stopped early
 2.35,0.273,33,stopped early
 2.67,0.35,80,stopped early
+2.83,0.2,10,stopped early
 2.09,0.077,271,played through
 2.28,0.148,108,stopped early
 2.67,0.469,271,played through
@@ -39,6 +45,7 @@ avg_thinking_time,positivity,furthest_position,cluster
 2.8,0.432,271,played through
 2.81,0.557,271,played through
 2.48,0.173,271,played through
+4.02,0.21,271,played through
 8.74,-0.2,5,stopped early
 3.04,0.387,271,played through
 2.31,0.461,271,played through
